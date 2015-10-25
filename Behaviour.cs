@@ -5,6 +5,8 @@ using System.Runtime.Serialization;
 using System.IO;
 using System.Diagnostics;
 using System;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace StatMaster
 {
@@ -15,6 +17,8 @@ namespace StatMaster
         private Data _data;
 
         private Debug _debug;
+
+        private ParkData _parkData;
 
         private bool _deleteDataFileOnDisable = false;
 
@@ -32,7 +36,15 @@ namespace StatMaster
 
             loadData(false);
 
-            StartCoroutine(autoDataUpdate());
+            initializePark();
+
+            StartCoroutine(autoDataUpdate());            
+        }
+
+        private void initializePark()
+        {
+            _parkData = new ParkData();
+            updateParkData(true);
         }
 
         private IEnumerator autoDataUpdate()
@@ -62,6 +74,11 @@ namespace StatMaster
                 string[] names = { "gameTime", "gameTimeTotal" };
                 long[] values = { _data.gameTime, _data.gameTimeTotal };
                 _debug.dataNotifications(names, values);
+
+                _debug.notification(_parkData.time.ToString());
+                _debug.notification(_parkData.name);
+                _debug.notification(_parkData.saveGame);
+
             }
             if (GUI.Button(new Rect(Screen.width - 200, 40, 200, 20), "Delete Files On Disable"))
             {
@@ -76,26 +93,81 @@ namespace StatMaster
             long previousCurrentRunTime = _data.gameTime;
             _data.gameTime = _sw.ElapsedMilliseconds;
             _data.gameTimeTotal = _data.gameTimeTotal + _data.gameTime - previousCurrentRunTime;
+
+            updateParkData(false);
+        }
+
+        private string calculateMD5Hash(string input)
+        {
+            MD5 md5 = MD5.Create();
+            byte[] inputBytes = Encoding.ASCII.GetBytes(input);
+            byte[] hash = md5.ComputeHash(inputBytes);
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++)
+            {
+                sb.Append(hash[i].ToString("X2"));
+            }
+            return sb.ToString();
+        }
+
+        private void updateParkData(bool start)
+        {
+            _parkData.time = Convert.ToInt64(ParkInfo.ParkTime);
+            _parkData.name = GameController.Instance.park.parkName.ToString();
+            if (start)
+            {
+                if (_parkData.gameTimeTotalStart == 0) _parkData.gameTimeTotalStart = _data.gameTimeTotal;
+            }
+            if (File.Exists(GameController.Instance.loadedSavegamePath))
+            {
+                _parkData.saveGame = GameController.Instance.loadedSavegamePath;
+            }
+            string lastParkId = _parkData.id;
+            if (_parkData.saveGame != "")
+            {
+                _parkData.id = calculateMD5Hash(_parkData.saveGame);
+            }
+            if (lastParkId != _parkData.id)
+            {
+                if (!_data.parks.ContainsKey(_parkData.id))
+                {
+                    if (_parkData.rootId != "") _debug.notification("Adding from root park " + _parkData.rootId);
+                    if (lastParkId == "")
+                    {
+                        _parkData.rootId = _parkData.id;
+                    }
+                    _debug.notification("Add new park " + _parkData.id + " to parks list");
+                    _data.parks.Add(_parkData.id, _parkData);
+                }
+            }
         }
 
         private void saveData()
         {
             _debug.notification("Save data");
 
-            BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Create(_data.file);
             try
             {
-                bf.Serialize(file, _data);
-            }
-            catch (SerializationException e)
+                BinaryFormatter bf = new BinaryFormatter();
+                FileStream file = File.Create(_data.file);
+                try
+                {
+                    bf.Serialize(file, _data);
+                }
+                catch (SerializationException e)
+                {
+                    _debug.notification("Failed to serialize. Reason: " + e.Message);
+                }
+                finally
+                {
+                    file.Close();
+                }
+            } catch (IOException e)
             {
-                _debug.notification("Failed to serialize. Reason: " + e.Message);
+                _debug.notification("Failed to save. Reason: " + e.Message);
             }
-            finally
-            {
-                file.Close();
-            }
+            
         }
 
         private void loadData(bool reload)
@@ -105,21 +177,37 @@ namespace StatMaster
 
             if (File.Exists(_data.file))
             {
-                BinaryFormatter bf = new BinaryFormatter();
-                FileStream file = File.Open(_data.file, FileMode.Open);
                 try
                 {
-                    _data = (Data)bf.Deserialize(file);
-                }
-                catch (SerializationException e)
+                    BinaryFormatter bf = new BinaryFormatter();
+                    FileStream file = File.Open(_data.file, FileMode.Open);
+                    try
+                    {
+                        try
+                        {
+                            _data = (Data)bf.Deserialize(file);
+                        }
+                        catch (Exception e)
+                        {
+                            _debug.notification("Failed to deserialize proper data, reset all data.");
+                            _data = new Data();
+                        }
+                        
+                    }
+                    catch (SerializationException e)
+                    {
+                        _debug.notification("Failed to deserialize. Reason: " + e.Message);
+                    }
+                    finally
+                    {
+                        file.Close();
+                    }
+                    if (reload == false) _data.gameTime = 0;
+                } catch (IOException e)
                 {
-                    _debug.notification("Failed to deserialize. Reason: " + e.Message);
+                    _debug.notification("Failed load. Reason: " + e.Message);
                 }
-                finally
-                {
-                    file.Close();
-                }
-                if (reload == false) _data.gameTime = 0;
+                
             }
         }
 

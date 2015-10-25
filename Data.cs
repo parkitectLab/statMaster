@@ -1,6 +1,6 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 namespace StatMaster
 {
@@ -12,6 +12,8 @@ namespace StatMaster
 
         public long gameTime = 0;
         public long gameTimeTotal = 0;
+
+        public Dictionary<string, ParkData> parks = new Dictionary<string, ParkData>();
 
     }
 }
