@@ -14,13 +14,9 @@ namespace StatMaster
 
         private Data _data;
 
-        private bool debugNotifications = true;
+        private Debug _debug;
 
-        public void showDebugNotfication(string msg)
-        {
-            if (debugNotifications)
-                Parkitect.UI.NotificationBar.Instance.addNotification("StatMaster: " + msg);
-        }
+        private bool _deleteDataFileOnDisable = false;
 
         private void Awake()
         {
@@ -29,23 +25,29 @@ namespace StatMaster
 
         private void Start()
         {
+            _debug = new Debug();
+            _debug.notification("Start");
+            
             _sw = Stopwatch.StartNew();
-            _data = new Data();
 
-            showDebugNotfication("StatMaster Mod Start");
-            showDebugNotfication(_data.file);
+            /*string spriteST = "icon";
+            Sprite[] sprites = Resources.LoadAll<Sprite>("/");
+            _debug.notification("Sprite search " + spriteST + " [ " + sprites.Length.ToString() + " ]");
+            for (int i = 0; i < sprites.Length; i++)
+            {
+                //showDebugNotfication(sprites[i].ToString());
+            }*/
 
-            loadMainData();
+            loadData();
 
-            if (debugNotifications) StartCoroutine(AutoDebugUpdate());
+            StartCoroutine(autoDataUpdate());
         }
 
-        private IEnumerator AutoDebugUpdate()
+        private IEnumerator autoDataUpdate()
         {
             for (;;)
             {
-                updateMainData();
-                
+                updateData();
                 yield return new WaitForSeconds(5);
             }
         }
@@ -55,25 +57,37 @@ namespace StatMaster
             if (Application.loadedLevel != 2)
                 return;
 
-            if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Perform Main Data Actions"))
+            if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Perform Data Actions"))
             {
-                updateMainData();
-                saveMainData();
-                loadMainData();
+                updateData();
+                saveData();
+                loadData();
+            }
+            if (GUI.Button(new Rect(Screen.width - 200, 20, 200, 20), "Debug Current Data"))
+            {
+                _debug.notification("Current data");
+                string[] names = { "gameTime", "gameTimeTotal" };
+                long[] values = { _data.gameTime, _data.gameTimeTotal };
+                _debug.dataNotifications(names, values);
+            }
+            if (GUI.Button(new Rect(Screen.width - 200, 40, 200, 20), "Delete Files On Disable"))
+            {
+                _deleteDataFileOnDisable = (_deleteDataFileOnDisable) ? false : true;
+                _debug.notification("Files deletion on disable = " + _deleteDataFileOnDisable.ToString());
             }
         }
 
-        private void updateMainData()
+        private void updateData()
         {
-            long previousCurrentRunTime = _data.currentRunTime;
-            _data.currentRunTime = _sw.ElapsedMilliseconds;
-            _data.totalRunTime = _data.totalRunTime + _data.currentRunTime - previousCurrentRunTime;
-            _data.print(this);
+            _debug.notification("Update data");
+            long previousCurrentRunTime = _data.gameTime;
+            _data.gameTime = _sw.ElapsedMilliseconds;
+            _data.gameTimeTotal = _data.gameTimeTotal + _data.gameTime - previousCurrentRunTime;
         }
 
-        private void saveMainData()
+        private void saveData()
         {
-            showDebugNotfication("Save main data");
+            _debug.notification("Save data");
 
             BinaryFormatter bf = new BinaryFormatter();
             FileStream file = File.Create(_data.file);
@@ -83,7 +97,7 @@ namespace StatMaster
             }
             catch (SerializationException e)
             {
-                showDebugNotfication("Failed to serialize. Reason: " + e.Message);
+                _debug.notification("Failed to serialize. Reason: " + e.Message);
             }
             finally
             {
@@ -91,9 +105,10 @@ namespace StatMaster
             }
         }
 
-        private void loadMainData()
+        private void loadData()
         {
-            showDebugNotfication("Load Main Data");
+            _debug.notification("Load data");
+            _data = new Data();
 
             if (File.Exists(_data.file))
             {
@@ -105,20 +120,27 @@ namespace StatMaster
                 }
                 catch (SerializationException e)
                 {
-                    showDebugNotfication("Failed to deserialize. Reason: " + e.Message);
+                    _debug.notification("Failed to deserialize. Reason: " + e.Message);
                 }
                 finally
                 {
                     file.Close();
                 }
             }
-            _data.currentRunTime = 0;
+            _data.gameTime = 0;
         }
 
         private void OnDisable()
         {
-            updateMainData();
-            saveMainData();
+            if (_deleteDataFileOnDisable)
+            {
+                if (File.Exists(_data.file)) File.Delete(_data.file);
+            } else
+            {
+                updateData();
+                saveData();
+            }
+            
         }
 
     }
