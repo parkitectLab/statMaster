@@ -9,7 +9,7 @@ namespace StatMaster
         public void onEnabled()
         {
             _go = new GameObject();
-            _go.AddComponent<StatMasterBehaviour>();
+            _go.AddComponent<Behaviour>();
         }
 
         public void onDisabled()

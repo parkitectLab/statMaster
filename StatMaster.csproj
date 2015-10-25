@@ -49,7 +49,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="StatMasterBehaviour.cs" />
+    <Compile Include="Data.cs" />
+    <Compile Include="Behaviour.cs" />
     <Compile Include="Main.cs" />
   </ItemGroup>
   <ItemGroup>
