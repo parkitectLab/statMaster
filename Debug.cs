@@ -4,7 +4,9 @@ namespace StatMaster
 {
     class Debug
     {
-        private string textPrefix = "StatMasterDebug: "; 
+        private string textPrefix = "StatMaster";
+
+        private bool showTime = true;
 
         public bool outputActive = true;
 
@@ -12,7 +14,8 @@ namespace StatMaster
         {
             if (outputActive == true)
             {
-                Parkitect.UI.NotificationBar.Instance.addNotification(textPrefix + text);
+                text = textPrefix + ((showTime) ? " " + DateTime.Now.ToString("HH:mm:ss") : "") + ": " + text;
+                Parkitect.UI.NotificationBar.Instance.addNotification(text);
             }
         }
 
