@@ -31,14 +31,14 @@ namespace StatMaster
         {
             _debug = new Debug();
             _debug.notification("Start");
-            
+
             _sw = Stopwatch.StartNew();
 
             loadData(false);
 
             initializePark();
 
-            StartCoroutine(autoDataUpdate());            
+            StartCoroutine(autoDataUpdate());  
         }
 
         private void initializePark()
@@ -118,17 +118,23 @@ namespace StatMaster
             if (start)
             {
                 if (_parkData.gameTimeTotalStart == 0) _parkData.gameTimeTotalStart = _data.gameTimeTotal;
-            }
+                finalizeParkData();
+            }            
+        }
+
+        private void finalizeParkData()
+        {
             if (File.Exists(GameController.Instance.loadedSavegamePath))
             {
                 _parkData.saveGame = GameController.Instance.loadedSavegamePath;
             }
             string lastParkId = _parkData.id;
-            if (_parkData.saveGame != "")
+            if (_parkData.saveGame.Length > 0)
             {
                 _parkData.id = calculateMD5Hash(_parkData.saveGame);
+                _debug.notification("[HASHED] ParkId " + _parkData.id);
             }
-            if (lastParkId != _parkData.id)
+            if (_parkData.id.Length > 0 && lastParkId != _parkData.id)
             {
                 if (!_data.parks.ContainsKey(_parkData.id))
                 {
@@ -187,16 +193,16 @@ namespace StatMaster
                         {
                             _data = (Data)bf.Deserialize(file);
                         }
-                        catch (Exception e)
+                        catch (SerializationException e)
                         {
-                            _debug.notification("Failed to deserialize proper data, reset all data.");
-                            _data = new Data();
+                            _debug.notification("Failed to deserialize. Reason: " + e.Message);
+                            throw;
                         }
-                        
                     }
-                    catch (SerializationException e)
+                    catch (Exception)
                     {
-                        _debug.notification("Failed to deserialize. Reason: " + e.Message);
+                        _debug.notification("Invalid data on load, reset all data.");
+                        _data = new Data();
                     }
                     finally
                     {
