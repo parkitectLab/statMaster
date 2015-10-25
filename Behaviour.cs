@@ -23,22 +23,14 @@ namespace StatMaster
             Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
         }
 
-        private void Start()
+        void Start()
         {
             _debug = new Debug();
             _debug.notification("Start");
             
             _sw = Stopwatch.StartNew();
 
-            /*string spriteST = "icon";
-            Sprite[] sprites = Resources.LoadAll<Sprite>("/");
-            _debug.notification("Sprite search " + spriteST + " [ " + sprites.Length.ToString() + " ]");
-            for (int i = 0; i < sprites.Length; i++)
-            {
-                //showDebugNotfication(sprites[i].ToString());
-            }*/
-
-            loadData();
+            loadData(false);
 
             StartCoroutine(autoDataUpdate());
         }
@@ -61,10 +53,11 @@ namespace StatMaster
             {
                 updateData();
                 saveData();
-                loadData();
+                loadData(true);
             }
             if (GUI.Button(new Rect(Screen.width - 200, 20, 200, 20), "Debug Current Data"))
             {
+                updateData();
                 _debug.notification("Current data");
                 string[] names = { "gameTime", "gameTimeTotal" };
                 long[] values = { _data.gameTime, _data.gameTimeTotal };
@@ -105,7 +98,7 @@ namespace StatMaster
             }
         }
 
-        private void loadData()
+        private void loadData(bool reload)
         {
             _debug.notification("Load data");
             _data = new Data();
@@ -126,11 +119,11 @@ namespace StatMaster
                 {
                     file.Close();
                 }
+                if (reload == false) _data.gameTime = 0;
             }
-            _data.gameTime = 0;
         }
 
-        private void OnDisable()
+        void OnDisable()
         {
             if (_deleteDataFileOnDisable)
             {
