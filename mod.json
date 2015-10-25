@@ -1,0 +1,7 @@
+{
+    "EntryPoint": "StatMaster.Main",
+    "IsEnabled": true,
+    "IsDevelopment": true,
+    "Name": "Stat Master",
+    "Project": "StatMaster.csproj"
+}
