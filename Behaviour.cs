@@ -65,14 +65,17 @@ namespace StatMaster
             _data.tsSessionStarts.Add(cTs);
 
             // determine existing save file to search for related 
-
+            _data.currentPark = new ParkData();
             if (File.Exists(GameController.Instance.loadedSavegamePath))
             {
-
+                string[] parkIdData = getParkIdData(null);
+                if (_data.parks[parkIdData[1]] != null) { 
+                  _data.currentPark = _data.parks[parkIdData[1]];
+                }
             }
 
-                _data.currentPark = new ParkData();
             if (_data.currentPark.tsStart == 0) _data.currentPark.tsStart = getCurrentTimestamp();
+            _data.currentPark.tsEnd = getCurrentTimestamp();
             _data.currentPark.tsSessionStarts.Add(cTs);
 
             ParkSessionData _parkDataSession = new ParkSessionData();
@@ -81,6 +84,26 @@ namespace StatMaster
             updateParkDataSession(_parkDataSession, _data.currentPark);
 
             _data.currentPark.sessions.Add(_parkDataSession);
+        }
+
+        private string[] getParkIdData(ParkSessionData pds)
+        {
+            string[] data = null;
+            if (File.Exists(GameController.Instance.loadedSavegamePath))
+            {
+                string[] parkSaveFileElements = GameController.Instance.loadedSavegamePath.Split(
+                    (Application.platform == RuntimePlatform.WindowsPlayer) ? '\\' : '/'
+                );
+                string parkSaveFile = parkSaveFileElements[parkSaveFileElements.Length - 1];
+                if (pds == null || (parkSaveFileElements.Length > 0 && (pds.saveFiles.Count == 0 || pds.saveFiles[pds.saveFiles.Count - 1] != parkSaveFile)))
+                {
+                    data = new string[2];
+                    data[0] = parkSaveFile;
+                    string parkId = calculateMD5Hash(parkSaveFile);
+                    data[1] = parkId;
+                }
+            }
+            return data;
         }
 
         private void updateParkDataSession(ParkSessionData pds, ParkData pd)
@@ -94,18 +117,11 @@ namespace StatMaster
                 pds.names.Add(parkName);
             }
 
-            if (File.Exists(GameController.Instance.loadedSavegamePath))
+            string[] parkIdData = getParkIdData(pds);
+            if (parkIdData != null)
             {
-                string[] parkSaveFileElements = GameController.Instance.loadedSavegamePath.Split(
-                    (Application.platform == RuntimePlatform.WindowsPlayer) ? '\\' : '/'
-                );
-                string parkSaveFile = parkSaveFileElements[parkSaveFileElements.Length - 1];
-                if (parkSaveFileElements.Length > 0 && (pds.saveFiles.Count == 0 || pds.saveFiles[pds.saveFiles.Count - 1] != parkSaveFile))
-                {
-                    pds.saveFiles.Add(parkSaveFile);
-                    string parkId = calculateMD5Hash(parkSaveFile);
-                    pd.ids.Add(parkId);
-                }
+                pds.saveFiles.Add(parkIdData[0]);
+                pd.ids.Add(parkIdData[1]);
             }
             pds.idx = pd.sessions.Count;
         }
@@ -115,17 +131,16 @@ namespace StatMaster
             _debug.notification("Update session");
 
             _data.tsEnd = getCurrentTimestamp();
+            _data.currentPark.tsEnd = getCurrentTimestamp();
 
-            _data.
-
-            
+            updateParkDataSession(_data.currentPark.sessions[_data.currentPark.sessionIdx], _data.currentPark);
         }
 
         private IEnumerator autoDataUpdate()
         {
             for (;;)
             {
-                updateData();
+                updateSession();
                 yield return new WaitForSeconds(5);
             }
         }
@@ -137,16 +152,16 @@ namespace StatMaster
 
             if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Perform Data Actions"))
             {
-                updateData();
-                saveData();
+                updateSession();
+                saveDataFile();
                 loadDataFile();
             }
             if (GUI.Button(new Rect(Screen.width - 200, 20, 200, 20), "Debug Current Data"))
             {
-                updateData();
-                _debug.notification("Current data");
-                string[] names = { "gameTime", "gameTimeTotal" };
-                long[] values = { _data.gameTime, _data.gameTimeTotal };
+                updateSession();
+                _debug.notification("Current session data");
+                string[] names = { "gameTime", "sessionTime" };
+                long[] values = { _data.tsEnd - _data.tsStart, _data.tsEnd - _data.tsSessionStarts[_data.sessionIdx] };
                 _debug.dataNotificationsTimes(names, values);
 
                 //_debug.notification(_parkData.time.ToString());
@@ -160,46 +175,8 @@ namespace StatMaster
                 _debug.notification("Files deletion on disable = " + _deleteDataFileOnDisable.ToString());
             }
         }
-        
 
-        private void updateParkData(bool start)
-        {
-            _parkData.time = Convert.ToInt64(ParkInfo.ParkTime) * 1000;
-            _parkData.name = GameController.Instance.park.parkName.ToString();
-            if (start)
-            {
-                finalizeParkData();
-            }            
-        }
-
-        private void finalizeParkData()
-        {
-            if (File.Exists(GameController.Instance.loadedSavegamePath))
-            {
-                _parkData.saveGame = GameController.Instance.loadedSavegamePath;
-            }
-            string lastParkId = _parkData.id;
-            if (_parkData.saveGame.Length > 0)
-            {
-                _parkData.id = calculateMD5Hash(_parkData.saveGame);
-                _debug.notification("[HASHED] ParkId " + _parkData.id);
-            }
-            if (_parkData.id.Length > 0 && lastParkId != _parkData.id)
-            {
-                if (!_data.parks.ContainsKey(_parkData.id))
-                {
-                    if (_parkData.rootId != "") _debug.notification("Adding from root park " + _parkData.rootId);
-                    if (lastParkId == "")
-                    {
-                        _parkData.rootId = _parkData.id;
-                    }
-                    _debug.notification("Add new park " + _parkData.id + " to parks list");
-                    _data.parks.Add(_parkData.id, _parkData);
-                }
-            }
-        }
-
-        private void saveData()
+        private void saveDataFile()
         {
             _debug.notification("Save data");
 
@@ -274,8 +251,8 @@ namespace StatMaster
                 if (File.Exists(_data.file)) File.Delete(_data.file);
             } else
             {
-                updateData();
-                saveData();
+                updateSession();
+                saveDataFile();
             }
             
         }
