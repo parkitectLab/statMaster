@@ -19,15 +19,25 @@ namespace StatMaster
             }
         }
 
-        public void dataNotifications(string[] names, long[] values)
+        public void dataNotifications(string[] names, string[] values)
         {
+            for (var i = 0; i < names.Length; i++)
+            {
+                notification("Data { " + names[i] + " = " + values[i] + " }");
+            }
+        }
+
+        public void dataNotificationsTimes(string[] names, long[] values)
+        {
+            string[] newValues = new string[names.Length];
             for (var i = 0; i < names.Length; i++)
             {
                 TimeSpan ts = TimeSpan.FromMilliseconds(Convert.ToDouble(
                     values[i]
                 ));
-                notification("Data { " + names[i] + " = " + ts.ToString() + " }");
+                newValues[i] = ts.ToString();
             }
+            dataNotifications(names, newValues);
         }
     }
 }
