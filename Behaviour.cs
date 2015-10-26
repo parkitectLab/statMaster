@@ -3,7 +3,6 @@ using System.Collections;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 using System.IO;
-using System.Diagnostics;
 using System;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,13 +11,9 @@ namespace StatMaster
 {
     class Behaviour : MonoBehaviour
     {
-        private Stopwatch _sw;
-
         private Data _data;
 
         private Debug _debug;
-
-        private ParkData _parkData;
 
         private bool _deleteDataFileOnDisable = false;
 
@@ -29,22 +24,101 @@ namespace StatMaster
 
         void Start()
         {
+
             _debug = new Debug();
             _debug.notification("Start");
 
-            _sw = Stopwatch.StartNew();
-
-            loadData(false);
-
-            initializePark();
+            initSession();
 
             StartCoroutine(autoDataUpdate());  
         }
 
-        private void initializePark()
+        private uint getCurrentTimestamp()
         {
-            _parkData = new ParkData();
-            updateParkData(true);
+            TimeSpan epochTicks = new TimeSpan(new DateTime(1970, 1, 1).Ticks);
+            TimeSpan unixTicks = new TimeSpan(DateTime.UtcNow.Ticks) - epochTicks;
+            return Convert.ToUInt32(unixTicks.TotalSeconds);
+        }
+
+        private string calculateMD5Hash(string input)
+        {
+            MD5 md5 = MD5.Create();
+            byte[] inputBytes = Encoding.ASCII.GetBytes(input);
+            byte[] hash = md5.ComputeHash(inputBytes);
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++)
+            {
+                sb.Append(hash[i].ToString("X2"));
+            }
+            return sb.ToString();
+        }
+
+        private void initSession() {
+            _debug.notification("Init seession");
+
+            _data = new Data();
+            if (!loadDataFile()) _data = new Data();
+            if (_data.tsStart == 0) _data.tsStart = getCurrentTimestamp();
+            
+            uint cTs = getCurrentTimestamp();
+            _data.tsSessionStarts.Add(cTs);
+
+            // determine existing save file to search for related 
+
+            if (File.Exists(GameController.Instance.loadedSavegamePath))
+            {
+
+            }
+
+                _data.currentPark = new ParkData();
+            if (_data.currentPark.tsStart == 0) _data.currentPark.tsStart = getCurrentTimestamp();
+            _data.currentPark.tsSessionStarts.Add(cTs);
+
+            ParkSessionData _parkDataSession = new ParkSessionData();
+            _parkDataSession.tsStart = cTs;
+
+            updateParkDataSession(_parkDataSession, _data.currentPark);
+
+            _data.currentPark.sessions.Add(_parkDataSession);
+        }
+
+        private void updateParkDataSession(ParkSessionData pds, ParkData pd)
+        {
+            _debug.notification("Update park data session");
+
+            pds.parkTime = Convert.ToUInt32(ParkInfo.ParkTime);
+            string parkName = GameController.Instance.park.parkName.ToString();
+            if (parkName != "Unamed Park" && (pds.names.Count == 0 || pds.names[pds.names.Count - 1] != parkName))
+            {
+                pds.names.Add(parkName);
+            }
+
+            if (File.Exists(GameController.Instance.loadedSavegamePath))
+            {
+                string[] parkSaveFileElements = GameController.Instance.loadedSavegamePath.Split(
+                    (Application.platform == RuntimePlatform.WindowsPlayer) ? '\\' : '/'
+                );
+                string parkSaveFile = parkSaveFileElements[parkSaveFileElements.Length - 1];
+                if (parkSaveFileElements.Length > 0 && (pds.saveFiles.Count == 0 || pds.saveFiles[pds.saveFiles.Count - 1] != parkSaveFile))
+                {
+                    pds.saveFiles.Add(parkSaveFile);
+                    string parkId = calculateMD5Hash(parkSaveFile);
+                    pd.ids.Add(parkId);
+                }
+            }
+            pds.idx = pd.sessions.Count;
+        }
+
+        private void updateSession()
+        {
+            _debug.notification("Update session");
+
+            _data.tsEnd = getCurrentTimestamp();
+
+            _data.
+
+            
         }
 
         private IEnumerator autoDataUpdate()
@@ -65,7 +139,7 @@ namespace StatMaster
             {
                 updateData();
                 saveData();
-                loadData(true);
+                loadDataFile();
             }
             if (GUI.Button(new Rect(Screen.width - 200, 20, 200, 20), "Debug Current Data"))
             {
@@ -73,11 +147,11 @@ namespace StatMaster
                 _debug.notification("Current data");
                 string[] names = { "gameTime", "gameTimeTotal" };
                 long[] values = { _data.gameTime, _data.gameTimeTotal };
-                _debug.dataNotifications(names, values);
+                _debug.dataNotificationsTimes(names, values);
 
-                _debug.notification(_parkData.time.ToString());
-                _debug.notification(_parkData.name);
-                _debug.notification(_parkData.saveGame);
+                //_debug.notification(_parkData.time.ToString());
+                //_debug.notification(_parkData.name);
+                //_debug.notification(_parkData.id);
 
             }
             if (GUI.Button(new Rect(Screen.width - 200, 40, 200, 20), "Delete Files On Disable"))
@@ -86,38 +160,14 @@ namespace StatMaster
                 _debug.notification("Files deletion on disable = " + _deleteDataFileOnDisable.ToString());
             }
         }
-
-        private void updateData()
-        {
-            _debug.notification("Update data");
-            long previousCurrentRunTime = _data.gameTime;
-            _data.gameTime = _sw.ElapsedMilliseconds;
-            _data.gameTimeTotal = _data.gameTimeTotal + _data.gameTime - previousCurrentRunTime;
-
-            updateParkData(false);
-        }
-
-        private string calculateMD5Hash(string input)
-        {
-            MD5 md5 = MD5.Create();
-            byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-            byte[] hash = md5.ComputeHash(inputBytes);
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < hash.Length; i++)
-            {
-                sb.Append(hash[i].ToString("X2"));
-            }
-            return sb.ToString();
-        }
+        
 
         private void updateParkData(bool start)
         {
-            _parkData.time = Convert.ToInt64(ParkInfo.ParkTime);
+            _parkData.time = Convert.ToInt64(ParkInfo.ParkTime) * 1000;
             _parkData.name = GameController.Instance.park.parkName.ToString();
             if (start)
             {
-                if (_parkData.gameTimeTotalStart == 0) _parkData.gameTimeTotalStart = _data.gameTimeTotal;
                 finalizeParkData();
             }            
         }
@@ -176,11 +226,11 @@ namespace StatMaster
             
         }
 
-        private void loadData(bool reload)
+        private bool loadDataFile()
         {
-            _debug.notification("Load data");
-            _data = new Data();
-
+            bool invalidData = false;
+            _debug.notification("Load data file");
+            
             if (File.Exists(_data.file))
             {
                 try
@@ -202,19 +252,19 @@ namespace StatMaster
                     catch (Exception)
                     {
                         _debug.notification("Invalid data on load, reset all data.");
-                        _data = new Data();
+                        invalidData = true;
                     }
                     finally
                     {
                         file.Close();
                     }
-                    if (reload == false) _data.gameTime = 0;
                 } catch (IOException e)
                 {
                     _debug.notification("Failed load. Reason: " + e.Message);
                 }
-                
             }
+
+            return invalidData;
         }
 
         void OnDisable()
