@@ -5,14 +5,12 @@ using System.Collections.Generic;
 namespace StatMaster
 {
     [Serializable]
-    class Data : System.Object
+    class Data : TimesData
     {
 
         public string file = Application.persistentDataPath + "/statMaster.dat";
 
-        public long gameTime = 0;
-        public long gameTimeTotal = 0;
-
+        public ParkData currentPark;
         public Dictionary<string, ParkData> parks = new Dictionary<string, ParkData>();
 
     }
