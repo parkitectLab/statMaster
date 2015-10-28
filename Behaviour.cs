@@ -30,7 +30,7 @@ namespace StatMaster
 
             initSession();
 
-            StartCoroutine(autoDataUpdate());  
+            StartCoroutine(autoDataUpdate());
         }
 
         private uint getCurrentTimestamp()
@@ -55,7 +55,7 @@ namespace StatMaster
         }
 
         private void initSession() {
-            _debug.notification("Init seession");
+            _debug.notification("Init session");
 
             _data = new Data();
             if (!loadDataFile()) _data = new Data();
@@ -88,6 +88,7 @@ namespace StatMaster
 
         private string[] getParkIdData(ParkSessionData pds)
         {
+            _debug.notification("Get park id data");
             string[] data = null;
             if (File.Exists(GameController.Instance.loadedSavegamePath))
             {
@@ -110,20 +111,25 @@ namespace StatMaster
         {
             _debug.notification("Update park data session");
 
+            _debug.notification("New park time " + ParkInfo.ParkTime.ToString());
             pds.parkTime = Convert.ToUInt32(ParkInfo.ParkTime);
             string parkName = GameController.Instance.park.parkName.ToString();
             if (parkName != "Unamed Park" && (pds.names.Count == 0 || pds.names[pds.names.Count - 1] != parkName))
             {
+                _debug.notification("New park name " + parkName);
                 pds.names.Add(parkName);
             }
 
             string[] parkIdData = getParkIdData(pds);
             if (parkIdData != null)
             {
+                _debug.notification("New save game / park id => " + parkIdData[0] + " / " + parkIdData[1]);
                 pds.saveFiles.Add(parkIdData[0]);
                 pd.ids.Add(parkIdData[1]);
             }
+
             pds.idx = pd.sessions.Count;
+            _debug.notification("Current session index " + pds.idx);
         }
 
         private void updateSession()
@@ -132,6 +138,8 @@ namespace StatMaster
 
             _data.tsEnd = getCurrentTimestamp();
             _data.currentPark.tsEnd = getCurrentTimestamp();
+
+            _debug.notification("Current session end time " + _data.tsEnd);
 
             updateParkDataSession(_data.currentPark.sessions[_data.currentPark.sessionIdx], _data.currentPark);
         }
@@ -162,7 +170,7 @@ namespace StatMaster
                 _debug.notification("Current session data");
                 string[] names = { "gameTime", "sessionTime" };
                 long[] values = { _data.tsEnd - _data.tsStart, _data.tsEnd - _data.tsSessionStarts[_data.sessionIdx] };
-                _debug.dataNotificationsTimes(names, values);
+                _debug.dataNotificationsTimes(names, values, true);
 
                 //_debug.notification(_parkData.time.ToString());
                 //_debug.notification(_parkData.name);
@@ -178,7 +186,8 @@ namespace StatMaster
 
         private void saveDataFile()
         {
-            _debug.notification("Save data");
+            _debug.notification("Save data, not working currently");
+            return;
 
             try
             {

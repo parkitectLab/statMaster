@@ -7,10 +7,14 @@ namespace StatMaster
     class ParkSessionData : System.Object
     {
         public int idx;
-        public List<string> names = new List<string>(); // to recognize name changes
-        public List<string> saveFiles = new List<string>(); // to recognize save file changes
+        // to recognize name changes
+        public List<string> names = new List<string>();
+        // to recognize save file changes
+        public List<string> saveFiles = new List<string>();
 
-        public uint tsStart = 0; // start time of session -> equivalent to ParkData.tsSessionStarts[related_idx]
-        public uint parkTime = 0; // last updated value of ParkInfo.ParkTime in session
+        // start time of session -> equivalent to ParkData.tsSessionStarts[related_idx]
+        public uint tsStart = 0;
+        // last updated value of ParkInfo.ParkTime in session
+        public uint parkTime = 0;
     }
 }

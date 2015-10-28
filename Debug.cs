@@ -27,15 +27,22 @@ namespace StatMaster
             }
         }
 
-        public void dataNotificationsTimes(string[] names, long[] values)
+        public void dataNotificationsTimes(string[] names, long[] values, bool keepTime = true)
         {
             string[] newValues = new string[names.Length];
             for (var i = 0; i < names.Length; i++)
             {
-                TimeSpan ts = TimeSpan.FromMilliseconds(Convert.ToDouble(
-                    values[i]
-                ));
-                newValues[i] = ts.ToString();
+                if (keepTime == true)
+                {
+                    newValues[i] = Convert.ToString(values[i]);
+                }
+                else
+                {
+                    TimeSpan ts = TimeSpan.FromMilliseconds(Convert.ToDouble(
+                        values[i]
+                    ));
+                    newValues[i] = ts.ToString();
+                }
             }
             dataNotifications(names, newValues);
         }
