@@ -50,11 +50,11 @@ namespace StatMaster
                 {
                     case "parksGF":
                         Dictionary<string, object> parksGF = (Dictionary<string, object>)dict[key];
-                        foreach (object parkGuid in parksGF.Keys)
+                        foreach (object parkG in parksGF.Keys)
                         {
                             ParkData nPark = new ParkData();
-                            nPark.guid = parkGuid.ToString();
-                            parks.Add(parkGuid.ToString(), nPark);
+                            nPark.guid = parkG.ToString();
+                            parks.Add(parkG.ToString(), nPark);
                         }
                         break;
                 }
@@ -65,10 +65,10 @@ namespace StatMaster
         public override bool updateHandles(string mode = "set")
         {
             bool success = base.updateHandles(mode);
-            foreach (ParkData park in parks.Values)
+            /*foreach (ParkData park in parks.Values)
             {
                 success = success && park.updateHandles(mode);
-            }
+            }*/
             return success;
         }
 

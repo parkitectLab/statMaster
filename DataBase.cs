@@ -40,8 +40,7 @@ namespace StatMaster
                 else
                 {
                     string content = fh.get(handle);
-                    success = success && (content != "");
-
+                    success = success && (content != null);
                     if (success) setByDict(Json.Deserialize(content) as Dictionary<string, object>);
                 }
             }

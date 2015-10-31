@@ -26,7 +26,7 @@ namespace StatMaster
 
         public string get(string handle)
         {
-            return contents[handle];
+            return contents.ContainsKey(handle) ? contents[handle] : null;
         }
 
         public string calculateMD5Hash(string input)
@@ -55,20 +55,23 @@ namespace StatMaster
             {
                 try
                 {
-                    FileStream file = File.Open(path + files[handle], FileMode.Open);
-                    try
+                    if (File.Exists(path + files[handle]))
                     {
-                        StreamReader sr = new StreamReader(file);
-                        contents[handle] = sr.ReadToEnd();
-                        messages.Add("Loaded " + handle + " data.");
-                    }
-                    catch (IOException e)
-                    {
-                        messages.Add("Failed to load " + handle + " data. Error: " + e.Message);
-                    }
-                    finally
-                    {
-                        file.Close();
+                        FileStream file = File.Open(path + files[handle], FileMode.Open);
+                        try
+                        {
+                            StreamReader sr = new StreamReader(file);
+                            contents[handle] = sr.ReadToEnd();
+                            messages.Add("Loaded " + handle + " data.");
+                        }
+                        catch (IOException e)
+                        {
+                            messages.Add("Failed to load " + handle + " data. Error: " + e.Message);
+                        }
+                        finally
+                        {
+                            file.Close();
+                        }
                     }
                 }
                 catch (IOException e)

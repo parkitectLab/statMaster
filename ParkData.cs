@@ -69,10 +69,10 @@ namespace StatMaster
                         break;
                     case "sessionsIF":
                         Dictionary<string, object> sessionsIF = (Dictionary<string, object>)dict[key];
-                        foreach (object sessionIdx in sessionsIF.Keys)
+                        foreach (object sessionI in sessionsIF.Keys)
                         {
                             ParkSessionData nSession = new ParkSessionData();
-                            nSession.idx = (int)sessionIdx;
+                            nSession.idx = (int)sessionI;
                             sessions.Add(nSession);
                         }
                         break;
