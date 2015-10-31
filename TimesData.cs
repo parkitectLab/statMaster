@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace StatMaster
 {
-    [Serializable]
-    class TimesData : System.Object
+    class TimesData
     {
         // all time related values are unix timestamps
-        public int sessionIdx = 0;
+        public int sessionIdx = -1;
         public List<uint> tsSessionStarts = new List<uint>();
 
         // first timestamp in record to start from

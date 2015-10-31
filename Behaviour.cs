@@ -4,8 +4,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 using System.IO;
 using System;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace StatMaster
 {
@@ -40,20 +38,6 @@ namespace StatMaster
             return Convert.ToUInt32(unixTicks.TotalSeconds);
         }
 
-        private string calculateMD5Hash(string input)
-        {
-            MD5 md5 = MD5.Create();
-            byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-            byte[] hash = md5.ComputeHash(inputBytes);
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < hash.Length; i++)
-            {
-                sb.Append(hash[i].ToString("X2"));
-            }
-            return sb.ToString();
-        }
-
         private void initSession() {
             _debug.notification("Init session");
 
@@ -64,19 +48,25 @@ namespace StatMaster
             uint cTs = getCurrentTimestamp();
             _data.tsSessionStarts.Add(cTs);
 
-            // determine existing save file to search for related 
-            _data.currentPark = new ParkData();
-            if (File.Exists(GameController.Instance.loadedSavegamePath))
+            // determine existing park by guid to search for related 
+            if (GameController.Instance.park.guid.Length > 0)
             {
-                string[] parkIdData = getParkIdData(null);
-                if (_data.parks[parkIdData[1]] != null) { 
-                  _data.currentPark = _data.parks[parkIdData[1]];
+                _debug.notification("Found park with guid " + GameController.Instance.park.guid);
+                if (_data.parks[GameController.Instance.park.guid] != null) { 
+                  _data.currentPark = _data.parks[GameController.Instance.park.guid];
                 }
+            }
+            if (_data.currentPark == null)
+            {
+                _data.currentPark = new ParkData();
+                _data.currentPark.guid = GameController.Instance.park.guid;
+                _data.parks.Add(GameController.Instance.park.guid, _data.currentPark);
             }
 
             if (_data.currentPark.tsStart == 0) _data.currentPark.tsStart = getCurrentTimestamp();
             _data.currentPark.tsEnd = getCurrentTimestamp();
             _data.currentPark.tsSessionStarts.Add(cTs);
+            _data.currentPark.sessionIdx = _data.currentPark.tsSessionStarts.Count - 1;
 
             ParkSessionData _parkDataSession = new ParkSessionData();
             _parkDataSession.tsStart = cTs;
@@ -86,25 +76,23 @@ namespace StatMaster
             _data.currentPark.sessions.Add(_parkDataSession);
         }
 
-        private string[] getParkIdData(ParkSessionData pds)
+        private void updateParkDataSessionSaveGames(ParkSessionData pds)
         {
-            _debug.notification("Get park id data");
-            string[] data = null;
+            _debug.notification("Update park data session save games");
+            string fileName = (pds.saveFiles.Count > 0 && pds.saveFiles[pds.saveFiles.Count - 1] != null)
+                ? pds.saveFiles[pds.saveFiles.Count - 1] : null;
             if (File.Exists(GameController.Instance.loadedSavegamePath))
             {
                 string[] parkSaveFileElements = GameController.Instance.loadedSavegamePath.Split(
                     (Application.platform == RuntimePlatform.WindowsPlayer) ? '\\' : '/'
                 );
-                string parkSaveFile = parkSaveFileElements[parkSaveFileElements.Length - 1];
-                if (pds == null || (parkSaveFileElements.Length > 0 && (pds.saveFiles.Count == 0 || pds.saveFiles[pds.saveFiles.Count - 1] != parkSaveFile)))
+                string dFileName = parkSaveFileElements[parkSaveFileElements.Length - 1];
+                if (pds == null || fileName != dFileName)
                 {
-                    data = new string[2];
-                    data[0] = parkSaveFile;
-                    string parkId = calculateMD5Hash(parkSaveFile);
-                    data[1] = parkId;
+                    _debug.notification("New save game => " + dFileName);
+                    pds.saveFiles.Add(dFileName);
                 }
             }
-            return data;
         }
 
         private void updateParkDataSession(ParkSessionData pds, ParkData pd)
@@ -113,28 +101,22 @@ namespace StatMaster
 
             _debug.notification("New park time " + ParkInfo.ParkTime.ToString());
             pds.parkTime = Convert.ToUInt32(ParkInfo.ParkTime);
-            string parkName = GameController.Instance.park.parkName.ToString();
+            string parkName = GameController.Instance.park.parkName;
             if (parkName != "Unamed Park" && (pds.names.Count == 0 || pds.names[pds.names.Count - 1] != parkName))
             {
                 _debug.notification("New park name " + parkName);
                 pds.names.Add(parkName);
             }
 
-            string[] parkIdData = getParkIdData(pds);
-            if (parkIdData != null)
-            {
-                _debug.notification("New save game / park id => " + parkIdData[0] + " / " + parkIdData[1]);
-                pds.saveFiles.Add(parkIdData[0]);
-                pd.ids.Add(parkIdData[1]);
-            }
+            updateParkDataSessionSaveGames(pds);
 
-            pds.idx = pd.sessions.Count;
-            _debug.notification("Current session index " + pds.idx);
+            if (pds.idx == -1) pds.idx = pd.sessions.Count;
+            _debug.notification("Session park session index " + pds.idx.ToString());
         }
 
         private void updateSession()
         {
-            _debug.notification("Update session");
+            _debug.notification("Update session index " + _data.currentPark.sessionIdx.ToString());
 
             _data.tsEnd = getCurrentTimestamp();
             _data.currentPark.tsEnd = getCurrentTimestamp();
@@ -186,8 +168,7 @@ namespace StatMaster
 
         private void saveDataFile()
         {
-            _debug.notification("Save data, not working currently");
-            return;
+            _debug.notification("Save data, not working, needs extensions ...");
 
             try
             {
@@ -195,7 +176,8 @@ namespace StatMaster
                 FileStream file = File.Create(_data.file);
                 try
                 {
-                    bf.Serialize(file, _data);
+                    // todo replace serialization by using MINIJson
+                    // bf.Serialize(file, _data);
                 }
                 catch (SerializationException e)
                 {
@@ -215,7 +197,7 @@ namespace StatMaster
         private bool loadDataFile()
         {
             bool invalidData = false;
-            _debug.notification("Load data file");
+            _debug.notification("Load data file, not working, needs extensions");
             
             if (File.Exists(_data.file))
             {
@@ -227,7 +209,8 @@ namespace StatMaster
                     {
                         try
                         {
-                            _data = (Data)bf.Deserialize(file);
+                            // todo replace serialization by using MINIJson
+                            //_data = (Data)bf.Deserialize(file);
                         }
                         catch (SerializationException e)
                         {

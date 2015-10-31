@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace StatMaster
 {
-    [Serializable]
-    class ParkSessionData : System.Object
+    class ParkSessionData
     {
-        public int idx;
+        public int idx = -1;
         // to recognize name changes
         public List<string> names = new List<string>();
         // to recognize save file changes

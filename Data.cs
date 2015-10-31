@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
-using System;
 using System.Collections.Generic;
 
 namespace StatMaster
 {
-    [Serializable]
     class Data : TimesData
     {
         /*
@@ -16,7 +14,7 @@ namespace StatMaster
         */
         public string file = Application.persistentDataPath + "/statMaster.dat";
 
-        public ParkData currentPark = new ParkData();
+        public ParkData currentPark = null;
         public Dictionary<string, ParkData> parks = new Dictionary<string, ParkData>();
 
     }
