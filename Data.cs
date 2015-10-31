@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MiniJSON;
 using System.Security.Cryptography;
 using System.Text;
+using System.IO;
 
 namespace StatMaster
 {
@@ -15,7 +16,7 @@ namespace StatMaster
         public uint tsStart = 0; // first timestamp in record to start from
         public uint tsEnd = 0; // last timestamp in record to go to
         */
-        private string path = Application.persistentDataPath + "/StatMaster/";
+        private string path = Application.persistentDataPath + "/statMaster/";
         private Dictionary<string, string> files = new Dictionary<string, string>();
 
         public ParkData currentPark = null;
@@ -49,17 +50,38 @@ namespace StatMaster
             main.Add("tsEnd", tsEnd);
 
             Dictionary<string, string> lParks = new Dictionary<string, string>();
-            if (parks.Count > 0)
+            foreach (string key in parks.Keys)
             {
-                foreach (string key in parks.Keys)
-                {
-                    // use parkitect guid + md5 data file name (guid with prefix)
-                    lParks.Add(key, calculateMD5Hash("statmaster_data_park_" + key).ToLower());
-                }
+                // use parkitect guid + md5 data file name (guid with prefix)
+                lParks.Add(key, calculateMD5Hash("statmaster_data_park_" + key).ToLower());
             }
             main.Add("parks", lParks);
 
             return Json.Serialize(main);
+        }
+
+        public List<string> save()
+        {
+            List<string> messages = new List<string>();
+            foreach (string key in files.Keys)
+            {
+                try
+                {
+                    Directory.CreateDirectory(path);
+                    FileStream file = File.Create(path + files[key]);
+                    StreamWriter sw = new StreamWriter(file);
+                    sw.Write(getJson());
+                    sw.Flush();
+                    file.Close();
+                    messages.Add("Saved file by handle: " + key);
+                }
+                catch (IOException e)
+                {
+                    messages.Add("Failed to save file by handle " + key + ". Reason: " + e.Message);
+                }
+            }
+            return messages;
+
         }
     }
 }

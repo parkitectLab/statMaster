@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System;
 
@@ -176,7 +177,11 @@ namespace StatMaster
             if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Perform Data Actions"))
             {
                 updateSession();
-                saveDataFile();
+                List<string> msgs = _data.save();
+                foreach (string value in msgs)
+                {
+                    _debug.notification(value);
+                }
                 loadDataFile();
             }
             if (GUI.Button(new Rect(Screen.width - 200, 30, 200, 20), "Debug Current Data"))
@@ -197,36 +202,6 @@ namespace StatMaster
                 _deleteDataFileOnDisable = (_deleteDataFileOnDisable) ? false : true;
                 _debug.notification("Files deletion on disable = " + _deleteDataFileOnDisable.ToString());
             }
-        }
-
-        private void saveDataFile()
-        {
-            _debug.notification("Save data, not working, needs extensions ...");
-
-            _debug.notification(_data.getJson());
-
-            /*try
-            {
-                BinaryFormatter bf = new BinaryFormatter();
-                FileStream file = File.Create(_data.file);
-                try
-                {
-                    // todo replace serialization by using MINIJson
-                    // bf.Serialize(file, _data);
-                }
-                catch (SerializationException e)
-                {
-                    _debug.notification("Failed to serialize. Reason: " + e.Message);
-                }
-                finally
-                {
-                    file.Close();
-                }
-            } catch (IOException e)
-            {
-                _debug.notification("Failed to save. Reason: " + e.Message);
-            }*/
-            
         }
 
         private bool loadDataFile()
@@ -282,7 +257,7 @@ namespace StatMaster
             } else
             {
                 updateSession();
-                saveDataFile();
+                _data.save();
             }
             
         }
