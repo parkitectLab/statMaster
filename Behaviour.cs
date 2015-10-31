@@ -140,7 +140,8 @@ namespace StatMaster
             _debug.notification("Update park data session");
 
             _debug.notification("New park time " + ParkInfo.ParkTime.ToString());
-            pds.parkTime = Convert.ToUInt32(ParkInfo.ParkTime);
+            pds.time = Convert.ToUInt32(ParkInfo.ParkTime);
+            pd.time = pds.time;
             string parkName = GameController.Instance.park.parkName;
 
             if (parkName != "Unnamed Park" && (pds.names.Count == 0 || pds.names[pds.names.Count - 1] != parkName))
@@ -177,7 +178,8 @@ namespace StatMaster
             if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Perform Data Actions"))
             {
                 updateSession();
-                List<string> msgs = _data.save();
+                _data.updateHandles();
+                List<string> msgs = _data.saveAllHandles();
                 foreach (string value in msgs)
                 {
                     _debug.notification(value);
@@ -257,7 +259,8 @@ namespace StatMaster
             } else
             {
                 updateSession();
-                _data.save();
+                _data.updateHandles();
+                _data.saveAllHandles();
             }
             
         }

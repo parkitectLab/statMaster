@@ -49,7 +49,6 @@ namespace StatMaster
                 }
                 else if (mode == 2)
                 {
-                    notification("times mode 2 test debug change");
                     TimeSpan ts = TimeSpan.FromMilliseconds(Convert.ToDouble(
                         values[i]
                     ));

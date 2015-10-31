@@ -49,6 +49,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataBase.cs" />
+    <Compile Include="FilesHandler.cs" />
     <Compile Include="ParkSessionData.cs" />
     <Compile Include="TimesData.cs" />
     <Compile Include="ParkData.cs" />
