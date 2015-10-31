@@ -16,33 +16,33 @@ namespace StatMaster
 
         private uint eventsProceed = 0;
 
-        private uint startPlayingParkTs = 0;
+        private uint tsSessionStart = 0;
 
         private void Awake()
         {
-            Parkitect.UI.EventManager.Instance.OnStartPlayingPark += myOnStartPlayingParkHandler;
+            Parkitect.UI.EventManager.Instance.OnStartPlayingPark += onStartPlayingParkHandler;
         }
 
         void Start()
         {
-            Parkitect.UI.EventManager.Instance.OnStartPlayingPark -= myOnStartPlayingParkHandler;
+            Parkitect.UI.EventManager.Instance.OnStartPlayingPark -= onStartPlayingParkHandler;
 
             initSession();
 
-            GameController.Instance.park.OnNameChanged += myOnParkNameChangedHandler;
+            GameController.Instance.park.OnNameChanged += onParkNameChangedHandler;
         }
 
-        private void myOnParkNameChangedHandler(string oldName, string newName)
+        private void onParkNameChangedHandler(string oldName, string newName)
         {
             _debug.notification("Park name change to " + newName);
             addParkName(newName);
             eventsProceed++;
         }
 
-        private void myOnStartPlayingParkHandler()
+        private void onStartPlayingParkHandler()
         {
-            startPlayingParkTs = getCurrentTimestamp();
-            _debug.notificationTs("Started playing at ", startPlayingParkTs);
+            tsSessionStart = getCurrentTimestamp();
+            _debug.notificationTs("Started playing at ", tsSessionStart);
             eventsProceed++;
         }
 
@@ -58,9 +58,9 @@ namespace StatMaster
 
             _data = new Data();
             if (!loadDataFile()) _data = new Data();
-            if (_data.tsStart == 0) _data.tsStart = startPlayingParkTs;
+            if (_data.tsStart == 0) _data.tsStart = tsSessionStart;
 
-            uint cTs = startPlayingParkTs;
+            uint cTs = tsSessionStart;
             _data.tsSessionStarts.Add(cTs);
             _data.sessionIdx++;
 
@@ -250,7 +250,7 @@ namespace StatMaster
 
         void OnDisable()
         {
-            GameController.Instance.park.OnNameChanged -= myOnParkNameChangedHandler;
+            GameController.Instance.park.OnNameChanged -= onParkNameChangedHandler;
 
             if (_deleteDataFileOnDisable)
             {
