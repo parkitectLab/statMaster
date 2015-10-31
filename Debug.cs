@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace StatMaster
 {
@@ -10,23 +11,28 @@ namespace StatMaster
 
         public bool outputActive = true;
 
-        public void notificationTs(string text, uint timestamp)
-        {
-            text = text + " " + Convert.ToString(getDateTime(timestamp));
-            notification(text);
-        }
-
         public void notification(string text)
         {
             if (outputActive == true)
             {
                 text = textPrefix + ((showTime) ? " " + DateTime.Now.ToString("HH:mm:ss") : "") + ": " + text;
-                
+
                 Parkitect.UI.NotificationBar.Instance.addNotification(text);
             }
         }
 
-        public void dataNotifications(string[] names, string[] values)
+        public void notification(List<string> texts)
+        {
+            foreach (string text in texts) notification(text);
+        }
+
+        public void notification(string text, uint timestamp)
+        {
+            text = text + " " + Convert.ToString(getDateTime(timestamp));
+            notification(text);
+        }
+
+        public void notification(string[] names, string[] values)
         {
             for (var i = 0; i < names.Length; i++)
             {
@@ -34,7 +40,7 @@ namespace StatMaster
             }
         }
 
-        public void dataNotificationsTimes(string[] names, long[] values, uint mode = 0)
+        public void notification(string[] names, long[] values, uint mode = 0)
         {
             string[] newValues = new string[names.Length];
             for (var i = 0; i < names.Length; i++)
@@ -56,7 +62,7 @@ namespace StatMaster
                     
                 }
             }
-            dataNotifications(names, newValues);
+            notification(names, newValues);
         }
 
         public DateTime getDateTime(uint timestamp)

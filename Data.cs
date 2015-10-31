@@ -20,28 +20,6 @@ namespace StatMaster
             addHandle("main");
         }
 
-        public override void updateHandles()
-        {
-            base.updateHandles();
-            foreach (ParkData park in parks.Values)
-            {
-                park.updateHandles();
-            }
-        }
-
-        public override List<string> saveAllHandles()
-        {
-            List<string> msgs = base.saveAllHandles();
-            foreach (ParkData park in parks.Values)
-            {
-                List<string> pMsgs = park.saveAllHandles();
-                foreach (string msg in pMsgs) {
-                    msgs.Add(msg);
-                }
-            }
-            return msgs;
-        }
-
         protected override Dictionary<string, object> getDict(string handle)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
@@ -62,6 +40,57 @@ namespace StatMaster
                 dict.Add("parksGF", parksGF);
             }
             return dict;
+        }
+
+        protected override bool setByDict(Dictionary<string, object> dict)
+        {
+            bool success = base.setByDict(dict);
+            foreach (string key in dict.Keys)
+            {
+                switch (key)
+                {
+                    case "parksGF":
+                        Dictionary<string, object> parksGF = (Dictionary<string, object>)dict[key];
+                        foreach (object parkGuid in parksGF.Keys)
+                        {
+                            ParkData nPark = new ParkData();
+                            nPark.guid = parkGuid.ToString();
+                            parks.Add(parkGuid.ToString(), nPark);
+                        }
+                        break;
+                }
+            }
+            return success;
+        }
+
+        public override bool updateHandles(string mode = "set")
+        {
+            bool success = base.updateHandles(mode);
+            foreach (ParkData park in parks.Values)
+            {
+                success = success && park.updateHandles(mode);
+            }
+            return success;
+        }
+
+        public override List<string> loadHandles()
+        {
+            List<string> msgs = base.loadHandles();
+            foreach (ParkData park in parks.Values)
+            {
+                msgs.AddRange(park.loadHandles());
+            }
+            return msgs;
+        }
+
+        public override List<string> saveHandles()
+        {
+            List<string> msgs = base.saveHandles();
+            foreach (ParkData park in parks.Values)
+            {
+                msgs.AddRange(park.saveHandles());
+            }
+            return msgs;
         }
     }
 }

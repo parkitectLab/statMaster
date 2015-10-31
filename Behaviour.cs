@@ -8,7 +8,7 @@ namespace StatMaster
 {
     class Behaviour : MonoBehaviour
     {
-        private Data _data;
+        private Data _data = new Data();
 
         private Debug _debug = new Debug();
 
@@ -42,7 +42,7 @@ namespace StatMaster
         private void onStartPlayingParkHandler()
         {
             tsSessionStart = getCurrentTimestamp();
-            _debug.notificationTs("Started playing at ", tsSessionStart);
+            _debug.notification("Started playing at ", tsSessionStart);
             eventsProceed++;
         }
 
@@ -56,8 +56,7 @@ namespace StatMaster
         private void initSession() {
             _debug.notification("Init session");
 
-            _data = new Data();
-            if (!loadDataFile()) _data = new Data();
+            if (_data.loadHandles() == null) _data = new Data();
             if (_data.tsStart == 0) _data.tsStart = tsSessionStart;
 
             uint cTs = tsSessionStart;
@@ -83,7 +82,7 @@ namespace StatMaster
             _data.currentPark.tsEnd = cTs;
             _data.currentPark.tsSessionStarts.Add(cTs);
             _data.currentPark.sessionIdx = _data.currentPark.tsSessionStarts.Count - 1;
-            _debug.notificationTs("Current session start time ", cTs);
+            _debug.notification("Current session start time ", cTs);
 
             ParkSessionData _parkDataSession = new ParkSessionData();
             _parkDataSession.tsStart = cTs;
@@ -166,7 +165,7 @@ namespace StatMaster
 
             updateParkDataSession(_data.currentPark.sessions[_data.currentPark.sessionIdx], _data.currentPark);
 
-            _debug.notificationTs("Current session end time ", _data.tsEnd);
+            _debug.notification("Current session end time ", _data.tsEnd);
         }
 
         private void OnGUI()
@@ -177,13 +176,8 @@ namespace StatMaster
             if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Perform Data Actions"))
             {
                 updateSession();
-                _data.updateHandles();
-                List<string> msgs = _data.saveAllHandles();
-                foreach (string value in msgs)
-                {
-                    _debug.notification(value);
-                }
-                loadDataFile();
+                _debug.notification(_data.saveHandles());
+                _debug.notification(_data.loadHandles());
             }
             if (GUI.Button(new Rect(Screen.width - 200, 30, 200, 20), "Debug Current Data"))
             {
@@ -195,7 +189,7 @@ namespace StatMaster
                     Convert.ToInt64(_data.tsEnd - _data.tsStart) * 1000,
                     Convert.ToInt64(_data.tsEnd - _data.tsSessionStarts[_data.sessionIdx]) * 1000
                 };
-                _debug.dataNotificationsTimes(names, values, 2);
+                _debug.notification(names, values, 2);
 
             }
             if (GUI.Button(new Rect(Screen.width - 200, 60, 200, 20), "Delete Files On Disable"))
@@ -203,49 +197,6 @@ namespace StatMaster
                 _deleteDataFileOnDisable = (_deleteDataFileOnDisable) ? false : true;
                 _debug.notification("Files deletion on disable = " + _deleteDataFileOnDisable.ToString());
             }
-        }
-
-        private bool loadDataFile()
-        {
-            bool success = true;
-            _debug.notification("Load data file, not working, needs extensions");
-            
-            /*if (File.Exists(_data.file))
-            {
-                try
-                {
-                    BinaryFormatter bf = new BinaryFormatter();
-                    FileStream file = File.Open(_data.file, FileMode.Open);
-                    try
-                    {
-                        try
-                        {
-                            // todo replace serialization by using MINIJson
-                            //_data = (Data)bf.Deserialize(file);
-                        }
-                        catch (SerializationException e)
-                        {
-                            _debug.notification("Failed to deserialize. Reason: " + e.Message);
-                            throw;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        _debug.notification("Invalid data on load, reset all data.");
-                        success = false;
-                    }
-                    finally
-                    {
-                        file.Close();
-                    }
-                } catch (IOException e)
-                {
-                    _debug.notification("Failed load. Reason: " + e.Message);
-                    success = false;
-                }
-            }*/
-
-            return success;
         }
 
         void OnDisable()
@@ -259,8 +210,7 @@ namespace StatMaster
             } else
             {
                 updateSession();
-                _data.updateHandles();
-                _data.saveAllHandles();
+                _data.saveHandles();
             }
             
         }

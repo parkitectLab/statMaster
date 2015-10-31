@@ -18,9 +18,15 @@ namespace StatMaster
             files.Add(handle, handle + ext);
         }
 
-        public void set(string handle, string content)
+        public bool set(string handle, string content)
         {
             contents[handle] = content;
+            return true; // todo add handle exists check
+        }
+
+        public string get(string handle)
+        {
+            return contents[handle];
         }
 
         public string calculateMD5Hash(string input)
@@ -40,6 +46,37 @@ namespace StatMaster
         public void deleteAll()
         {
             Directory.Delete(path, true);
+        }
+
+        public List<string> loadAll()
+        {
+            List<string> messages = new List<string>();
+            foreach (string handle in files.Keys)
+            {
+                try
+                {
+                    FileStream file = File.Open(path + files[handle], FileMode.Open);
+                    try
+                    {
+                        StreamReader sr = new StreamReader(file);
+                        contents[handle] = sr.ReadToEnd();
+                        messages.Add("Loaded " + handle + " data.");
+                    }
+                    catch (IOException e)
+                    {
+                        messages.Add("Failed to load " + handle + " data. Error: " + e.Message);
+                    }
+                    finally
+                    {
+                        file.Close();
+                    }
+                }
+                catch (IOException e)
+                {
+                    messages.Add("Failed to handle file for " + handle + " data. Error: " + e.Message);
+                }
+            }
+            return messages;
         }
 
         public List<string> saveAll()
@@ -74,6 +111,5 @@ namespace StatMaster
             }
             return messages;
         }
-
     }
 }

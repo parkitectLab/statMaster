@@ -14,6 +14,11 @@ namespace StatMaster
             return dict;
         }
 
+        protected virtual bool setByDict(Dictionary<string, object> dict)
+        {
+            return true;
+        }
+
         public void addHandle(string handle)
         {
             if (!handles.Contains(handle))
@@ -23,24 +28,38 @@ namespace StatMaster
             }
         }
 
-        public virtual void updateHandles()
+        public virtual bool updateHandles(string mode = "set")
         {
+            bool success = true;
             foreach (string handle in handles)
             {
-                fh.set(handle, Json.Serialize(getDict(handle)));
+                if (mode == "set")
+                {
+                    success = success && fh.set(handle, Json.Serialize(getDict(handle)));
+                }
+                else
+                {
+                    string content = fh.get(handle);
+                    success = success && (content != "");
+
+                    if (success) setByDict(Json.Deserialize(content) as Dictionary<string, object>);
+                }
             }
+            return success;
         }
 
-        public virtual List<string> saveAllHandles()
+        public virtual List<string> saveHandles()
         {
-            return fh.saveAll();
+            if (updateHandles("set")) return fh.saveAll();
+            return null;
             
         }
 
-        public virtual void loadHandles()
+        public virtual List<string> loadHandles()
         {
-            //fh.loadFiles();
-            return;
+            List<string> messages = fh.loadAll();
+            if (updateHandles("get")) return messages;
+            return null;
         }
     }
 }

@@ -23,39 +23,16 @@ namespace StatMaster
 
         public List<ParkSessionData> sessions = new List<ParkSessionData>();
 
-        public override void updateHandles()
-        {
-            base.updateHandles();
-            foreach (ParkSessionData session in sessions)
-            {
-                session.updateHandles();
-            }
-        }
-
-        public override List<string> saveAllHandles()
-        {
-            List<string> msgs = base.saveAllHandles();
-            foreach (ParkSessionData session in sessions)
-            {
-                List<string> pMsgs = session.saveAllHandles();
-                foreach (string msg in pMsgs)
-                {
-                    msgs.Add(msg);
-                }
-            }
-            return msgs;
-        }
-
         protected override Dictionary<string, object> getDict(string handle)
         {
             Dictionary<string, object> dict = base.getDict(handle);
-            string sessionHandle = "";
             dict.Add("guid", guid);
             dict.Add("time", time);
 
             dict.Add("names", names);
             dict.Add("saveFiles", saveFiles);
 
+            string sessionHandle = "";
             Dictionary<int, string> sessionsIF = new Dictionary<int, string>();
             for (int idx = 0; idx < sessions.Count; idx++)
             {
@@ -67,6 +44,73 @@ namespace StatMaster
             dict.Add("sessionsIF", sessionsIF);
 
             return dict;
+        }
+
+        protected override bool setByDict(Dictionary<string, object> dict)
+        {
+            bool success = base.setByDict(dict);
+            foreach (string key in dict.Keys)
+            {
+                switch (key)
+                {
+                    case "guid":
+                        guid = dict[key].ToString();
+                        break;
+                    case "time":
+                        time = (uint)dict[key];
+                        break;
+                    case "names":
+                        List<object> dNames = (List<object>)dict[key];
+                        foreach (object name in dNames) names.Add(name.ToString());
+                        break;
+                    case "saveFiles":
+                        List<object> dSaveFiles = (List<object>)dict[key];
+                        foreach (object saveFile in dSaveFiles) saveFiles.Add(saveFile.ToString());
+                        break;
+                    case "sessionsIF":
+                        Dictionary<string, object> sessionsIF = (Dictionary<string, object>)dict[key];
+                        foreach (object sessionIdx in sessionsIF.Keys)
+                        {
+                            ParkSessionData nSession = new ParkSessionData();
+                            nSession.idx = (int)sessionIdx;
+                            sessions.Add(nSession);
+                        }
+                        break;
+                }
+            }
+            sessionIdx = sessions.Count - 1;
+            return success;
+        }
+
+        public override bool updateHandles(string mode = "set")
+        {
+            bool success = base.updateHandles(mode);
+
+            foreach (ParkSessionData session in sessions)
+            {
+                success = success && session.updateHandles(mode);
+            }
+            return success;
+        }
+
+        public override List<string> loadHandles()
+        {
+            List<string> msgs = base.loadHandles();
+            foreach (ParkSessionData session in sessions)
+            {
+                msgs.AddRange(session.loadHandles());
+            }
+            return msgs;
+        }
+
+        public override List<string> saveHandles()
+        {
+            List<string> msgs = base.saveHandles();
+            foreach (ParkSessionData session in sessions)
+            {
+                msgs.AddRange(session.saveHandles());
+            }
+            return msgs;
         }
     }
 }
