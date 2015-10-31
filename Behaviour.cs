@@ -178,7 +178,9 @@ namespace StatMaster
         {
             _debug.notification("Save data, not working, needs extensions ...");
 
-            try
+            _debug.notification(_data.getJson());
+
+            /*try
             {
                 BinaryFormatter bf = new BinaryFormatter();
                 FileStream file = File.Create(_data.file);
@@ -198,7 +200,7 @@ namespace StatMaster
             } catch (IOException e)
             {
                 _debug.notification("Failed to save. Reason: " + e.Message);
-            }
+            }*/
             
         }
 
@@ -207,7 +209,7 @@ namespace StatMaster
             bool success = true;
             _debug.notification("Load data file, not working, needs extensions");
             
-            if (File.Exists(_data.file))
+            /*if (File.Exists(_data.file))
             {
                 try
                 {
@@ -240,7 +242,7 @@ namespace StatMaster
                     _debug.notification("Failed load. Reason: " + e.Message);
                     success = false;
                 }
-            }
+            }*/
 
             return success;
         }
@@ -249,7 +251,7 @@ namespace StatMaster
         {
             if (_deleteDataFileOnDisable)
             {
-                if (File.Exists(_data.file)) File.Delete(_data.file);
+                //if (File.Exists(_data.file)) File.Delete(_data.file);
             } else
             {
                 updateSession();
