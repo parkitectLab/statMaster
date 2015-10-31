@@ -10,28 +10,26 @@ namespace StatMaster
     {
         private Data _data;
 
-        private Debug _debug;
+        private Debug _debug = new Debug();
 
         private bool _deleteDataFileOnDisable = false;
 
-        private int eventsProceed = 0;
+        private uint eventsProceed = 0;
+
+        private uint startPlayingParkTs = 0;
 
         private void Awake()
         {
-            
+            Parkitect.UI.EventManager.Instance.OnStartPlayingPark += myOnStartPlayingParkHandler;
         }
 
         void Start()
         {
-            _debug = new Debug();
-            _debug.notification("Start");
+            Parkitect.UI.EventManager.Instance.OnStartPlayingPark -= myOnStartPlayingParkHandler;
 
             initSession();
 
-            //Parkitect.UI.EventManager.Instance.OnStartPlayingPark += myOnStartPlayingParkHandler;
             GameController.Instance.park.OnNameChanged += myOnParkNameChangedHandler;
-
-            StartCoroutine(autoDataUpdate());
         }
 
         private void myOnParkNameChangedHandler(string oldName, string newName)
@@ -43,16 +41,9 @@ namespace StatMaster
 
         private void myOnStartPlayingParkHandler()
         {
+            startPlayingParkTs = getCurrentTimestamp();
+            _debug.notificationTs("Started playing at ", startPlayingParkTs);
             eventsProceed++;
-        }
-
-        private IEnumerator autoDataUpdate()
-        {
-            for (;;)
-            {
-                updateSession();
-                yield return new WaitForSeconds(5);
-            }
         }
 
         private uint getCurrentTimestamp()
@@ -67,9 +58,9 @@ namespace StatMaster
 
             _data = new Data();
             if (!loadDataFile()) _data = new Data();
-            if (_data.tsStart == 0) _data.tsStart = getCurrentTimestamp();
-            
-            uint cTs = getCurrentTimestamp();
+            if (_data.tsStart == 0) _data.tsStart = startPlayingParkTs;
+
+            uint cTs = startPlayingParkTs;
             _data.tsSessionStarts.Add(cTs);
             _data.sessionIdx++;
 
@@ -259,7 +250,6 @@ namespace StatMaster
 
         void OnDisable()
         {
-            //Parkitect.UI.EventManager.Instance.OnStartPlayingPark -= myOnStartPlayingParkHandler;
             GameController.Instance.park.OnNameChanged -= myOnParkNameChangedHandler;
 
             if (_deleteDataFileOnDisable)
