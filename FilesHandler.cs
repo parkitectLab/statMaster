@@ -37,6 +37,11 @@ namespace StatMaster
             return sb.ToString();
         }
 
+        public void deleteAll()
+        {
+            Directory.Delete(path, true);
+        }
+
         public List<string> saveAll()
         {
             List<string> messages = new List<string>();

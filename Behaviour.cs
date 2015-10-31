@@ -254,7 +254,8 @@ namespace StatMaster
 
             if (_deleteDataFileOnDisable)
             {
-                //if (File.Exists(_data.file)) File.Delete(_data.file);
+                FilesHandler fh = new FilesHandler();
+                fh.deleteAll();
             } else
             {
                 updateSession();
