@@ -18,36 +18,26 @@ namespace StatMaster
 
         private void Awake()
         {
-            Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
+            
         }
 
         void Start()
         {
-
             _debug = new Debug();
             _debug.notification("Start");
 
             initSession();
 
-            setEventHandlers();
+            //Parkitect.UI.EventManager.Instance.OnStartPlayingPark += myOnStartPlayingParkHandler;
+            GameController.Instance.park.OnNameChanged += myOnParkNameChangedHandler;
 
             StartCoroutine(autoDataUpdate());
         }
 
-        private void setEventHandlers()
+        private void myOnParkNameChangedHandler(string oldName, string newName)
         {
-            Parkitect.UI.EventManager.Instance.OnStartPlayingPark += myOnStartPlayingParkHandler;
-            //GameController.Instance.park.OnNameChanged += myOnParkNameChangedHandler;
-        }
-
-        private void unsetEventHandlers()
-        {
-            Parkitect.UI.EventManager.Instance.OnStartPlayingPark -= myOnStartPlayingParkHandler;
-            //GameController.Instance.park.OnNameChanged -= myOnParkNameChangedHandler;
-        }
-
-        private void myOnParkNameChangedHandler()
-        {
+            _debug.notification("Park name change to " + newName);
+            addParkName(newName);
             eventsProceed++;
         }
 
@@ -112,27 +102,52 @@ namespace StatMaster
             _data.currentPark.sessions.Add(_parkDataSession);
         }
 
-        private void updateParkDataSessionSaveGames(ParkSessionData pds)
+        private bool addParkSaveGame(string name)
+        {
+            bool success = false;
+            string cName = (_data.currentPark.saveFiles.Count > 0) 
+                ? _data.currentPark.saveFiles[_data.currentPark.saveFiles.Count - 1] : null;
+            if (cName != name)
+            {
+                _data.currentPark.saveFiles.Add(name);
+                _data.currentPark.sessions[_data.currentPark.sessionIdx].saveFiles.Add(name);
+                success = true;
+            }
+            return success;
+        }
+
+        private void updateParkDataSessionSaveGames(ParkSessionData pds, ParkData pd)
         {
             bool updated = false;
             _debug.notification("Update park data session save games");
-            string fileName = (pds.saveFiles.Count > 0)
-                ? pds.saveFiles[pds.saveFiles.Count - 1] : null;
             if (File.Exists(GameController.Instance.loadedSavegamePath))
             {
                 string[] parkSaveFileElements = GameController.Instance.loadedSavegamePath.Split(
                     (Application.platform == RuntimePlatform.WindowsPlayer) ? '\\' : '/'
                 );
                 string dFileName = parkSaveFileElements[parkSaveFileElements.Length - 1];
-                if (pds == null || fileName != dFileName)
-                {
-                    _debug.notification("New save game => " + dFileName);
-                    pds.saveFiles.Add(dFileName);
-                    fileName = dFileName;
-                    updated = true;
-                }
+                updated = addParkSaveGame(dFileName);
+                if (updated) _debug.notification("New save game => " + dFileName);
             }
             if (updated == false) _debug.notification("No new save game");
+        }
+
+        private bool addParkName(string name)
+        {
+            bool success = false;
+            if (name != "Unnamed Park" && 
+                (_data.currentPark.names.Count == 0 || _data.currentPark.names[_data.currentPark.names.Count - 1] != name))
+            {
+                _debug.notification("New park name " + name);
+                _data.currentPark.names.Add(name);
+                _data.currentPark.sessions[_data.currentPark.sessionIdx].names.Add(name);
+                success = true;
+            }
+            else
+            {
+                _debug.notification("No new park name");
+            }
+            return success;
         }
 
         private void updateParkDataSession(ParkSessionData pds, ParkData pd)
@@ -144,15 +159,8 @@ namespace StatMaster
             pd.time = pds.time;
             string parkName = GameController.Instance.park.parkName;
 
-            if (parkName != "Unnamed Park" && (pds.names.Count == 0 || pds.names[pds.names.Count - 1] != parkName))
-            {
-                _debug.notification("New park name " + parkName);
-                pds.names.Add(parkName);
-            } else
-            {
-                _debug.notification("No new park name");
-            }
-            updateParkDataSessionSaveGames(pds);
+            addParkName(parkName);
+            updateParkDataSessionSaveGames(pds, pd);
             
             if (pds.idx == -1) pds.idx = pd.sessions.Count;
             _debug.notification("Current park session index " + pds.idx.ToString());
@@ -251,7 +259,8 @@ namespace StatMaster
 
         void OnDisable()
         {
-            unsetEventHandlers();
+            //Parkitect.UI.EventManager.Instance.OnStartPlayingPark -= myOnStartPlayingParkHandler;
+            GameController.Instance.park.OnNameChanged -= myOnParkNameChangedHandler;
 
             if (_deleteDataFileOnDisable)
             {
