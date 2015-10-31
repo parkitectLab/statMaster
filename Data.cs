@@ -53,7 +53,7 @@ namespace StatMaster
             {
                 foreach (string key in parks.Keys)
                 {
-                    // use parkitect key + md5 data file name with prefix
+                    // use parkitect guid + md5 data file name (guid with prefix)
                     lParks.Add(key, calculateMD5Hash("statmaster_data_park_" + key).ToLower());
                 }
             }

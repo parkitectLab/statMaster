@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
 using System.IO;
 using System;
 
@@ -14,6 +12,8 @@ namespace StatMaster
         private Debug _debug;
 
         private bool _deleteDataFileOnDisable = false;
+
+        private int eventsProceed = 0;
 
         private void Awake()
         {
@@ -28,7 +28,31 @@ namespace StatMaster
 
             initSession();
 
+            setEventHandlers();
+
             StartCoroutine(autoDataUpdate());
+        }
+
+        private void setEventHandlers()
+        {
+            Parkitect.UI.EventManager.Instance.OnStartPlayingPark += myOnStartPlayingParkHandler;
+            //GameController.Instance.park.OnNameChanged += myOnParkNameChangedHandler;
+        }
+
+        private void unsetEventHandlers()
+        {
+            Parkitect.UI.EventManager.Instance.OnStartPlayingPark -= myOnStartPlayingParkHandler;
+            //GameController.Instance.park.OnNameChanged -= myOnParkNameChangedHandler;
+        }
+
+        private void myOnParkNameChangedHandler()
+        {
+            eventsProceed++;
+        }
+
+        private void myOnStartPlayingParkHandler()
+        {
+            eventsProceed++;
         }
 
         private IEnumerator autoDataUpdate()
@@ -159,6 +183,7 @@ namespace StatMaster
             {
                 updateSession();
                 _debug.notification("Current session data");
+                _debug.notification("Events proceed " + eventsProceed.ToString());
                 string[] names = { "gameTime", "sessionTime" };
                 long[] values = {
                     Convert.ToInt64(_data.tsEnd - _data.tsStart) * 1000,
@@ -249,6 +274,8 @@ namespace StatMaster
 
         void OnDisable()
         {
+            unsetEventHandlers();
+
             if (_deleteDataFileOnDisable)
             {
                 //if (File.Exists(_data.file)) File.Delete(_data.file);
