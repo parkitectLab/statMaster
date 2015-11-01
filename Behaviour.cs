@@ -33,7 +33,7 @@ namespace StatMaster
         private void onGameSaved()
         {
             _debug.notification("Game saved");
-            addSaveFile();
+            addParkFile("save");
             eventsCallCount++;
         }
 
@@ -96,39 +96,45 @@ namespace StatMaster
             _parkDataSession.idx = _data.currentPark.sessions.Count;
             _data.currentPark.sessions.Add(_parkDataSession);
 
-            updateData();
+            updateData("load");
         }
 
-        private bool addParkSaveGame(string name)
+        private bool addParkFileToData(string name, string mode = "load")
         {
             bool success = false;
-            string cName = (_data.currentPark.saveFiles.Count > 0) 
-                ? _data.currentPark.saveFiles[_data.currentPark.saveFiles.Count - 1] : null;
+            string cName = (_data.currentPark.files.Count > 0) 
+                ? _data.currentPark.files[_data.currentPark.files.Count - 1] : null;
             if (cName != name)
             {
-                _data.currentPark.saveFiles.Add(name);
-                _data.currentPark.sessions[_data.currentPark.sessionIdx].saveFiles.Add(name);
+                _data.currentPark.files.Add(name);
+                if (mode == "save")
+                {
+                    _data.currentPark.sessions[_data.currentPark.sessionIdx].saveFiles.Add(name);
+                } else
+                {
+                    _data.currentPark.sessions[_data.currentPark.sessionIdx].loadFile = name;
+                }
                 success = true;
             }
             return success;
         }
 
-        private void addSaveFile()
+        private void addParkFile(string mode = "load")
         {
             ParkData pd = _data.currentPark;
             ParkSessionData pds = pd.sessions[pd.sessionIdx];
             bool updated = false;
-            _debug.notification("Update park data session save games");
+            _debug.notification("Add park file");
             if (File.Exists(GameController.Instance.loadedSavegamePath))
             {
                 string[] parkSaveFileElements = GameController.Instance.loadedSavegamePath.Split(
                     (Application.platform == RuntimePlatform.WindowsPlayer) ? '\\' : '/'
                 );
-                string dFileName = parkSaveFileElements[parkSaveFileElements.Length - 1];
-                updated = addParkSaveGame(dFileName);
-                if (updated) _debug.notification("New save game " + dFileName);
+                string dFile = parkSaveFileElements[parkSaveFileElements.Length - 1];
+                updated = addParkFileToData(dFile, mode);
+                if (updated) _debug.notification("New park file " + dFile + " mode (" + mode + ")");
             }
-            if (updated == false) _debug.notification("No new save game");
+            if (updated == false) _debug.notification("No new park file");
         }
 
         private bool addParkName(string name)
@@ -151,7 +157,7 @@ namespace StatMaster
             return success;
         }
 
-        private void updateData()
+        private void updateData(string mode = "load")
         {
             uint cTs = getCurrentTimestamp();
             _data.tsEnd = cTs;
@@ -166,7 +172,7 @@ namespace StatMaster
             _data.currentPark.time = pds.time;
             string parkName = GameController.Instance.park.parkName;
             addParkName(parkName);
-            addSaveFile();
+            addParkFile(mode);
         }
 
         private void OnGUI()
@@ -176,12 +182,12 @@ namespace StatMaster
 
             if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Save Data"))
             {
-                updateData();
+                updateData("save");
                 _debug.notification(_data.saveByHandles());
             }
             if (GUI.Button(new Rect(Screen.width - 200, 30, 200, 20), "Next Session"))
             {
-                updateData();
+                updateData("save");
                 _debug.notification(_data.saveByHandles());
                 tsSessionStart = getCurrentTimestamp();
                 _data = new Data();
@@ -198,7 +204,7 @@ namespace StatMaster
             }
             if (GUI.Button(new Rect(Screen.width - 200, 90, 200, 20), "Debug Data"))
             {
-                updateData();
+                updateData("save");
                 _debug.notification("Current session data");
                 _debug.notification("Events proceed " + eventsCallCount.ToString());
                 string[] names = { "gameTime", "sessionTime" };
@@ -214,8 +220,9 @@ namespace StatMaster
         void OnDisable()
         {
             GameController.Instance.park.OnNameChanged -= onParkNameChangedHandler;
+            Parkitect.UI.EventManager.Instance.OnGameSaved -= onGameSaved;
 
-            updateData();
+            updateData("save");
             _data.saveByHandles();
         }
 

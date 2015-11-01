@@ -17,10 +17,10 @@ namespace StatMaster
         // last updated value of ParkInfo.ParkTime in session
         public uint time = 0;
 
-        // to recognize name changes
+        // to recognize all names
         public List<string> names = new List<string>();
-        // to recognize save file changes
-        public List<string> saveFiles = new List<string>();
+        // to recognize all used files
+        public List<string> files = new List<string>();
 
         public List<ParkSessionData> sessions = new List<ParkSessionData>();
 
@@ -33,7 +33,7 @@ namespace StatMaster
             dict.Add("time", time);
 
             dict.Add("names", names);
-            dict.Add("saveFiles", saveFiles);
+            dict.Add("files", files);
 
             string sessionHandle = "";
             Dictionary<int, string> sessionsIF = new Dictionary<int, string>();
@@ -67,10 +67,10 @@ namespace StatMaster
                     if (dNames.Count > 0)
                         foreach (object name in dNames) names.Add(name.ToString());
                     break;
-                case "saveFiles":
-                    List<object> dSaveFiles = dict[key] as List<object>;
-                    if (dSaveFiles.Count > 0)
-                        foreach (object saveFile in dSaveFiles) saveFiles.Add(saveFile.ToString());
+                case "files":
+                    List<object> dFiles = dict[key] as List<object>;
+                    if (dFiles.Count > 0)
+                        foreach (object file in dFiles) files.Add(file.ToString());
                     break;
                 case "sessionsIF":
                     Dictionary<string, object> sessionsIF = dict[key] as Dictionary<string, object>;

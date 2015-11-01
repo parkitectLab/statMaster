@@ -10,6 +10,8 @@ namespace StatMaster
         public List<string> names = new List<string>();
         // to recognize save file changes
         public List<string> saveFiles = new List<string>();
+        // to recognize a file load
+        public string loadFile = "";
 
         // start time of session -> equivalent to ParkData.tsSessionStarts[related_idx]
         public uint tsStart = 0;
@@ -27,6 +29,7 @@ namespace StatMaster
 
             dict.Add("names", names);
             dict.Add("saveFiles", saveFiles);
+            dict.Add("loadFile", loadFile);
 
             return dict;
         }
@@ -54,6 +57,9 @@ namespace StatMaster
                     List<object> dSaveFiles = dict[key] as List<object>;
                     if (dSaveFiles.Count > 0)
                         foreach (object saveFile in dSaveFiles) saveFiles.Add(saveFile.ToString());
+                    break;
+                case "loadFile":
+                    loadFile = dict[key].ToString();
                     break;
             }
             return success;
