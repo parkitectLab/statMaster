@@ -88,25 +88,25 @@ namespace StatMaster
             return success;
         }
 
-        public override List<string> loadHandles()
+        public override List<string> loadByHandles()
         {
-            List<string> msgs = base.loadHandles();
+            List<string> msgs = base.loadByHandles();
             if (sessions.Count > 0)
                 foreach (ParkSessionData session in sessions)
                 {
-                    msgs.AddRange(session.loadHandles());
+                    msgs.AddRange(session.loadByHandles());
                     errorOnLoad = (session.errorOnLoad) ? session.errorOnLoad : errorOnLoad;
                 }
             return msgs;
         }
 
-        public override List<string> saveHandles()
+        public override List<string> saveByHandles()
         {
-            List<string> msgs = base.saveHandles();
+            List<string> msgs = base.saveByHandles();
             if (sessions.Count > 0)
                 foreach (ParkSessionData session in sessions)
                 {
-                    msgs.AddRange(session.saveHandles());
+                    msgs.AddRange(session.saveByHandles());
                     errorOnSave = (session.errorOnSave) ? session.errorOnSave : errorOnSave;
                 }
             return msgs;

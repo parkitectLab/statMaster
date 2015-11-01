@@ -63,24 +63,24 @@ namespace StatMaster
             return true;
         }
 
-        public override List<string> loadHandles()
+        public override List<string> loadByHandles()
         {
-            List<string> msgs = base.loadHandles();
+            List<string> msgs = base.loadByHandles();
             foreach (string parkGuid in parks.Keys)
             {
-                msgs.AddRange(parks[parkGuid].loadHandles());
+                msgs.AddRange(parks[parkGuid].loadByHandles());
                 errorOnLoad = (parks[parkGuid].errorOnLoad) ? parks[parkGuid].errorOnLoad : errorOnLoad;
             }
             return msgs;
         }
 
-        public override List<string> saveHandles()
+        public override List<string> saveByHandles()
         {
-            List<string> msgs = base.saveHandles();
+            List<string> msgs = base.saveByHandles();
             
             foreach (string parkGuid in parks.Keys)
             {
-                msgs.AddRange(parks[parkGuid].saveHandles());
+                msgs.AddRange(parks[parkGuid].saveByHandles());
                 errorOnSave = (parks[parkGuid].errorOnSave) ? parks[parkGuid].errorOnSave : errorOnSave;
             }
             return msgs;

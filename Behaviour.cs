@@ -52,7 +52,7 @@ namespace StatMaster
 
         private void initSession() {
             _debug.notification("Init session");
-            _debug.notification(_data.loadHandles());
+            _debug.notification(_data.loadByHandles());
             if (_data.errorOnLoad) _data = new Data();
             if (_data.tsStart == 0) _data.tsStart = tsSessionStart;
             _debug.notification("New data? " + !(_data.sessionIdx > 0));
@@ -174,12 +174,12 @@ namespace StatMaster
             if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Save Data"))
             {
                 updateSession();
-                _debug.notification(_data.saveHandles());
+                _debug.notification(_data.saveByHandles());
             }
             if (GUI.Button(new Rect(Screen.width - 200, 30, 200, 20), "Next Session"))
             {
                 updateSession();
-                _debug.notification(_data.saveHandles());
+                _debug.notification(_data.saveByHandles());
                 tsSessionStart = getCurrentTimestamp();
                 _data = new Data();
                 initSession();
@@ -213,7 +213,7 @@ namespace StatMaster
             GameController.Instance.park.OnNameChanged -= onParkNameChangedHandler;
 
             updateSession();
-            _data.saveHandles();
+            _data.saveByHandles();
         }
 
     }

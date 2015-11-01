@@ -41,7 +41,7 @@ namespace StatMaster
             }
         }
 
-        public virtual bool updateHandles(string mode = "set")
+        public virtual bool updateByHandles(string mode = "set")
         {
             bool success = true;
             foreach (string handle in handles)
@@ -62,10 +62,10 @@ namespace StatMaster
             return success;
         }
 
-        public virtual List<string> saveHandles()
+        public virtual List<string> saveByHandles()
         {
             errorOnSave = false;
-            errorOnSave = !updateHandles("set");
+            errorOnSave = !updateByHandles("set");
             List<string> messages = new List<string>();
             if (!errorOnSave) {
                 messages = fh.saveAll();
@@ -75,12 +75,12 @@ namespace StatMaster
             return messages;
         }
 
-        public virtual List<string> loadHandles()
+        public virtual List<string> loadByHandles()
         {
             errorOnLoad = false;
             List<string> messages = fh.loadAll();
             errorOnLoad = fh.errorOnLoad;
-            if (!errorOnLoad && !updateHandles("get")) errorOnLoad = true;
+            if (!errorOnLoad && !updateByHandles("get")) errorOnLoad = true;
             if (errorOnLoad) messages.Add("Error on load handles"); 
             return messages;
         }
