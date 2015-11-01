@@ -171,15 +171,19 @@ namespace StatMaster
             if (Application.loadedLevel != 2)
                 return;
 
-            if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Perform Data Actions"))
+            if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Save Session"))
+            {
+                updateSession();
+                _debug.notification(_data.saveHandles());
+            }
+            if (GUI.Button(new Rect(Screen.width - 200, 30, 200, 20), "Reset Session"))
             {
                 updateSession();
                 _debug.notification(_data.saveHandles());
                 _data = new Data();
-                _debug.notification(_data.loadHandles());
-                if (_data.errorOnLoad) _data = new Data();
+                initSession();
             }
-            if (GUI.Button(new Rect(Screen.width - 200, 30, 200, 20), "Debug Current Data"))
+            if (GUI.Button(new Rect(Screen.width - 200, 60, 200, 20), "Debug Data"))
             {
                 updateSession();
                 _debug.notification("Current session data");
@@ -192,7 +196,7 @@ namespace StatMaster
                 _debug.notification(names, values, 2);
 
             }
-            if (GUI.Button(new Rect(Screen.width - 200, 60, 200, 20), "Delete All Data Files"))
+            if (GUI.Button(new Rect(Screen.width - 200, 90, 200, 20), "Delete Files"))
             {
                 FilesHandler fh = new FilesHandler();
                 fh.deleteAll();

@@ -65,9 +65,6 @@ namespace StatMaster
             errorOnSave = false;
             List<string> messages = new List<string>();
             errorOnSave = !updateHandles("set");
-            {
-                errorOnSave = true; 
-            }
             if (!errorOnSave) {
                 messages = fh.saveAll();
                 errorOnSave = fh.errorOnSave;
