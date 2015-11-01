@@ -59,7 +59,7 @@ namespace StatMaster
                         foreach (object saveFile in dSaveFiles) saveFiles.Add(saveFile.ToString());
                     break;
                 case "loadFile":
-                    loadFile = dict[key].ToString();
+                    loadFile = (dict[key].ToString() != null) ? dict[key].ToString() : "";
                     break;
             }
             return success;

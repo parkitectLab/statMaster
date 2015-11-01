@@ -15,6 +15,8 @@ namespace StatMaster
 
         private uint tsSessionStart = 0;
 
+        private bool validPark = true;
+
         private void Awake()
         {
             Parkitect.UI.EventManager.Instance.OnStartPlayingPark += onStartPlayingParkHandler;
@@ -23,11 +25,17 @@ namespace StatMaster
         void Start()
         {
             Parkitect.UI.EventManager.Instance.OnStartPlayingPark -= onStartPlayingParkHandler;
-
-            initSession();
-
-            GameController.Instance.park.OnNameChanged += onParkNameChangedHandler;
-            Parkitect.UI.EventManager.Instance.OnGameSaved += onGameSaved;
+            validPark = (GameController.Instance.park.guid != null);
+            if (validPark)
+            {
+                initSession();
+                GameController.Instance.park.OnNameChanged += onParkNameChangedHandler;
+                Parkitect.UI.EventManager.Instance.OnGameSaved += onGameSaved;
+            }
+            else
+            {
+                _debug.notification("No valid park found!");
+            }
         }
 
         private void onGameSaved()
@@ -70,9 +78,8 @@ namespace StatMaster
             _data.tsSessionStarts.Add(cTs);
             _data.sessionIdx++;
 
-            // determine existing park by guid to search for related 
-            if (GameController.Instance.park.guid.Length > 0 && 
-                _data.parks.ContainsKey(GameController.Instance.park.guid))
+            // determine existing park by guid to search for related                 
+            if (_data.parks.ContainsKey(GameController.Instance.park.guid))
             {
                 _debug.notification("Found park with guid " + GameController.Instance.park.guid);
                 _data.currentPark = _data.parks[GameController.Instance.park.guid];
@@ -177,7 +184,7 @@ namespace StatMaster
 
         private void OnGUI()
         {
-            if (Application.loadedLevel != 2)
+            if (Application.loadedLevel != 2 || validPark == false)
                 return;
 
             if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Save Data"))
@@ -219,11 +226,14 @@ namespace StatMaster
 
         void OnDisable()
         {
-            GameController.Instance.park.OnNameChanged -= onParkNameChangedHandler;
-            Parkitect.UI.EventManager.Instance.OnGameSaved -= onGameSaved;
+            if (validPark == true)
+            {
+                GameController.Instance.park.OnNameChanged -= onParkNameChangedHandler;
+                Parkitect.UI.EventManager.Instance.OnGameSaved -= onGameSaved;
 
-            updateData("save");
-            _data.saveByHandles();
+                updateData("save");
+                _data.saveByHandles();
+            }
         }
 
     }
