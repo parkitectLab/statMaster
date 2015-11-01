@@ -63,11 +63,15 @@ namespace StatMaster
         public virtual List<string> saveHandles()
         {
             errorOnSave = false;
-            List<string> messages = fh.saveAll();
-            if (!fh.errorOnSave && !updateHandles("set"))
+            List<string> messages = new List<string>();
+            if (!updateHandles("set"))
             {
-                messages.Add("Error on save handles");
                 errorOnSave = true;
+                messages.Add("Error on save handles");
+            } else
+            {
+                messages = fh.saveAll();
+                errorOnSave = fh.errorOnSave;
             }
             return messages;
         }
