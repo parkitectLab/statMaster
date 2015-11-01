@@ -27,6 +27,14 @@ namespace StatMaster
             initSession();
 
             GameController.Instance.park.OnNameChanged += onParkNameChangedHandler;
+            Parkitect.UI.EventManager.Instance.OnGameSaved += onGameSaved;
+        }
+
+        private void onGameSaved()
+        {
+            _debug.notification("Game saved");
+            addSaveFile();
+            eventsCallCount++;
         }
 
         private void onParkNameChangedHandler(string oldName, string newName)
@@ -118,7 +126,7 @@ namespace StatMaster
                 );
                 string dFileName = parkSaveFileElements[parkSaveFileElements.Length - 1];
                 updated = addParkSaveGame(dFileName);
-                if (updated) _debug.notification("New save game => " + dFileName);
+                if (updated) _debug.notification("New save game " + dFileName);
             }
             if (updated == false) _debug.notification("No new save game");
         }
@@ -145,8 +153,9 @@ namespace StatMaster
 
         private void updateData()
         {
-            _data.tsEnd = getCurrentTimestamp();
-            _data.currentPark.tsEnd = getCurrentTimestamp();
+            uint cTs = getCurrentTimestamp();
+            _data.tsEnd = cTs;
+            _data.currentPark.tsEnd = cTs;
             _debug.notification("Current session end time ", _data.tsEnd);
 
             ParkSessionData pds = _data.currentPark.sessions[_data.currentPark.sessionIdx];
