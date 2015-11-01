@@ -17,9 +17,12 @@ namespace StatMaster
 
         private bool validPark = true;
 
+        private bool debugMode = false;
+
         private void Awake()
         {
             Parkitect.UI.EventManager.Instance.OnStartPlayingPark += onStartPlayingParkHandler;
+            if (debugMode == false) _debug.outputActive = false;
         }
 
         void Start()
@@ -184,7 +187,7 @@ namespace StatMaster
 
         private void OnGUI()
         {
-            if (Application.loadedLevel != 2 || validPark == false)
+            if (Application.loadedLevel != 2 || validPark == false || debugMode == false)
                 return;
 
             if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Save Data"))
