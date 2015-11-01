@@ -47,11 +47,9 @@ namespace StatMaster
             switch (key)
             {
                 case "parksGF":
-                    UnityEngine.Debug.Log(dict[key].ToString() + " -- " + key);
                     Dictionary<string, object> parksGF = dict[key] as Dictionary<string, object>;
                     foreach (object parkG in parksGF.Keys)
                     {
-                        UnityEngine.Debug.Log(parkG);
                         ParkData nPark = new ParkData();
                         nPark.guid = parkG.ToString();
                         parkHandle = fh.calculateMD5Hash("statmaster_data_park_" + nPark.guid).ToLower();
@@ -76,12 +74,9 @@ namespace StatMaster
 
         public override List<string> loadHandles()
         {
-            UnityEngine.Debug.Log("load handles data main");
             List<string> msgs = base.loadHandles();
-            UnityEngine.Debug.Log(" ----------------- " + parks.Keys.Count);
             foreach (ParkData park in parks.Values)
             {
-                UnityEngine.Debug.Log("load handles data park guid " + park.guid);
                 msgs.AddRange(park.loadHandles());
             }
             if (errorOnLoad == true) return null;

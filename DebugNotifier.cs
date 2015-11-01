@@ -5,6 +5,8 @@ namespace StatMaster
 {
     class DebugNotifier
     {
+        bool consoleOnly = true;
+
         private string textPrefix = "StatMaster";
 
         private bool showTime = true;
@@ -17,7 +19,14 @@ namespace StatMaster
             {
                 text = textPrefix + ((showTime) ? " " + DateTime.Now.ToString("HH:mm:ss") : "") + ": " + text;
 
-                Parkitect.UI.NotificationBar.Instance.addNotification(text);
+                if (consoleOnly)
+                {
+                    UnityEngine.Debug.Log(text);
+                }
+                else
+                {
+                    Parkitect.UI.NotificationBar.Instance.addNotification(text);
+                }
             }
         }
 

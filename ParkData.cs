@@ -49,8 +49,6 @@ namespace StatMaster
 
         protected override bool setByDictKey(Dictionary<string, object> dict, string key)
         {
-            UnityEngine.Debug.Log("set park key value from dict ... " + key);
-
             string sessionHandle = "";
             bool success = base.setByDictKey(dict, key);
             switch (key)
@@ -76,7 +74,6 @@ namespace StatMaster
                     Dictionary<string, object> sessionsIF = dict[key] as Dictionary<string, object>;
                     foreach (object sessionI in sessionsIF.Keys)
                     {
-                        UnityEngine.Debug.Log("park session key value " + sessionI.ToString());
                         ParkSessionData nSession = new ParkSessionData();
                         nSession.idx = Convert.ToInt32(sessionI);
                         sessionHandle = fh.calculateMD5Hash("statmaster_data_park_session_" + nSession.idx).ToLower();
@@ -84,7 +81,6 @@ namespace StatMaster
                         sessions.Add(nSession);
                     }
                     if (sessions.Count == 0) success = false;
-                    UnityEngine.Debug.Log("sessionIF result == " + sessions.Count);
                     break;
             }
             return success;
@@ -104,13 +100,10 @@ namespace StatMaster
 
         public override List<string> loadHandles()
         {
-            UnityEngine.Debug.Log("load handles in park data itself ... ");
             List<string> msgs = base.loadHandles();
-            UnityEngine.Debug.Log("go through sessions ... ");
             if (sessions.Count > 0)
                 foreach (ParkSessionData session in sessions)
                 {
-                    UnityEngine.Debug.Log("sessions active ? " + session.ToString());
                     msgs.AddRange(session.loadHandles());
                 }
             return msgs;

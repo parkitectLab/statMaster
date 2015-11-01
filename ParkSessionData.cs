@@ -31,8 +31,6 @@ namespace StatMaster
 
         protected override bool setByDictKey(Dictionary<string, object> dict, string key)
         {
-            UnityEngine.Debug.Log("set park session key value from dict ... " + key);
-
             bool success = base.setByDictKey(dict, key);
             switch (key)
             {

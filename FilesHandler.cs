@@ -54,14 +54,11 @@ namespace StatMaster
         public List<string> loadAll()
         {
             errorOnLoad = false;
-            Debug.Log("load all ");
             List<string> messages = new List<string>();
             foreach (string handle in files.Keys)
             {
-                UnityEngine.Debug.Log("try file by handle " + handle);
                 try
                 {
-                    UnityEngine.Debug.Log("try to open/load file " + path + files[handle]);
                     if (File.Exists(path + files[handle]))
                     {
                         FileStream file = File.Open(path + files[handle], FileMode.Open);

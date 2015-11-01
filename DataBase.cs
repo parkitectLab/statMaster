@@ -29,7 +29,6 @@ namespace StatMaster
             {
                 success = success && setByDictKey(dict, key);
             }
-            UnityEngine.Debug.Log(success);
             return success;
         }
 
@@ -53,15 +52,11 @@ namespace StatMaster
                 }
                 else
                 {
-                    UnityEngine.Debug.Log("update handles mode get for " + handle);
                     string content = fh.get(handle);
                     success = success && (content != null);
                     if (success) success = success && setByDict(Json.Deserialize(content) as Dictionary<string, object>);
                 }
             }
-
-            UnityEngine.Debug.Log(success);
-
             return success;
         }
 
@@ -80,7 +75,6 @@ namespace StatMaster
         public virtual List<string> loadHandles()
         {
             errorOnLoad = false;
-            UnityEngine.Debug.Log("Load handles here ...");
             List<string> messages = fh.loadAll();
             if (!fh.errorOnLoad && !updateHandles("get"))
             {
