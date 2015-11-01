@@ -27,6 +27,8 @@ namespace StatMaster
         protected override Dictionary<string, object> getDict(string handle)
         {
             Dictionary<string, object> dict = base.getDict(handle);
+            if (guid.Length == 0 || sessions.Count == 0) return null;
+
             dict.Add("guid", guid);
             dict.Add("time", time);
 
@@ -35,12 +37,12 @@ namespace StatMaster
 
             string sessionHandle = "";
             Dictionary<int, string> sessionsIF = new Dictionary<int, string>();
-            foreach (int idx in sessionsIF.Keys)
+            foreach (ParkSessionData session in sessions)
             {
                 // use session idx + md5 data file name (idx with prefix)
-                sessionHandle = fh.calculateMD5Hash("statmaster_data_park_session_" + idx).ToLower();
-                sessionsIF.Add(idx, sessionHandle);
-                sessions[idx].addHandle("park_session_" + sessionHandle);
+                sessionHandle = fh.calculateMD5Hash("statmaster_data_park_session_" + session.idx).ToLower();
+                sessionsIF.Add(session.idx, sessionHandle);
+                sessions[session.idx].addHandle("park_session_" + sessionHandle);
             }
 
             dict.Add("sessionsIF", sessionsIF);

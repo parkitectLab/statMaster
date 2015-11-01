@@ -19,6 +19,8 @@ namespace StatMaster
         protected override Dictionary<string, object> getDict(string handle)
         {
             Dictionary<string, object> dict = base.getDict(handle);
+            if (idx == -1) return null;
+
             dict.Add("idx", idx);
             dict.Add("tsStart", tsStart);
             dict.Add("time", time);

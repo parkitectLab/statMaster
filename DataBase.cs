@@ -48,7 +48,9 @@ namespace StatMaster
             {
                 if (mode == "set")
                 {
-                    success = success && fh.set(handle, Json.Serialize(getDict(handle)));
+                    Dictionary<string, object> dict = getDict(handle);
+                    success = success && (dict != null);
+                    if (success) success = success && fh.set(handle, Json.Serialize(getDict(handle)));
                 }
                 else
                 {

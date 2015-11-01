@@ -27,6 +27,7 @@ namespace StatMaster
             if (handle == "main")
             {
                 dict = base.getDict(handle);
+                if (parks.Count == 0) return null;
 
                 Dictionary<string, string> parksGF = new Dictionary<string, string>();
                 foreach (string key in parks.Keys)
@@ -35,7 +36,6 @@ namespace StatMaster
                     parkHandle = fh.calculateMD5Hash("statmaster_data_park_" + key).ToLower();
                     parksGF.Add(key, parkHandle);
                     parks[key].addHandle("park_" + parkHandle);
-                    UnityEngine.Debug.Log("park data to dict " + parkHandle);
                 }
                 dict.Add("parksGF", parksGF);
             }
