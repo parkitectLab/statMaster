@@ -54,7 +54,7 @@
     <Compile Include="ParkSessionData.cs" />
     <Compile Include="TimesData.cs" />
     <Compile Include="ParkData.cs" />
-    <Compile Include="Debug.cs" />
+    <Compile Include="DebugNotifier.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="Behaviour.cs" />
     <Compile Include="Main.cs" />

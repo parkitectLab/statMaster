@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace StatMaster
 {
@@ -28,34 +29,34 @@ namespace StatMaster
             return dict;
         }
 
-        protected override bool setByDict(Dictionary<string, object> dict)
+        protected override bool setByDictKey(Dictionary<string, object> dict, string key)
         {
-            bool success = base.setByDict(dict);
-            foreach (string key in dict.Keys)
+            UnityEngine.Debug.Log("set park session key value from dict ... " + key);
+
+            bool success = base.setByDictKey(dict, key);
+            switch (key)
             {
-                switch (key)
-                {
-                    case "idx":
-                        idx = (int)dict[key];
-                        break;
-                    case "tsStart":
-                        tsStart = (uint)dict[key];
-                        break;
-                    case "time":
-                        time = (uint)dict[key];
-                        break;
-                    case "names":
-                        List<object> dNames = (List<object>)dict[key];
+                case "idx":
+                    idx = Convert.ToInt32(dict[key]);
+                    break;
+                case "tsStart":
+                    tsStart = Convert.ToUInt32(dict[key]);
+                    break;
+                case "time":
+                    time = Convert.ToUInt32(dict[key]);
+                    break;
+                case "names":
+                    List<object> dNames = dict[key] as List<object>;
+                    if (dNames.Count > 0)
                         foreach (object name in dNames) names.Add(name.ToString());
-                        break;
-                    case "saveFiles":
-                        List<object> dSaveFiles = (List<object>)dict[key];
+                    break;
+                case "saveFiles":
+                    List<object> dSaveFiles = dict[key] as List<object>;
+                    if (dSaveFiles.Count > 0)
                         foreach (object saveFile in dSaveFiles) saveFiles.Add(saveFile.ToString());
-                        break;
-                }
+                    break;
             }
             return success;
         }
-
     }
 }

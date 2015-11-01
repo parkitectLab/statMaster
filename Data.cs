@@ -40,45 +40,51 @@ namespace StatMaster
             }
             return dict;
         }
-
-        protected override bool setByDict(Dictionary<string, object> dict)
+        protected override bool setByDictKey(Dictionary<string, object> dict, string key)
         {
-            bool success = base.setByDict(dict);
-            foreach (string key in dict.Keys)
+            bool success = base.setByDictKey(dict, key);
+            string parkHandle = "";
+            switch (key)
             {
-                switch (key)
-                {
-                    case "parksGF":
-                        Dictionary<string, object> parksGF = (Dictionary<string, object>)dict[key];
-                        foreach (object parkG in parksGF.Keys)
-                        {
-                            ParkData nPark = new ParkData();
-                            nPark.guid = parkG.ToString();
-                            parks.Add(parkG.ToString(), nPark);
-                        }
-                        break;
-                }
+                case "parksGF":
+                    UnityEngine.Debug.Log(dict[key].ToString() + " -- " + key);
+                    Dictionary<string, object> parksGF = dict[key] as Dictionary<string, object>;
+                    foreach (object parkG in parksGF.Keys)
+                    {
+                        UnityEngine.Debug.Log(parkG);
+                        ParkData nPark = new ParkData();
+                        nPark.guid = parkG.ToString();
+                        parkHandle = fh.calculateMD5Hash("statmaster_data_park_" + nPark.guid).ToLower();
+                        nPark.addHandle("park_" + parkHandle);
+                        parks.Add(parkG.ToString(), nPark);
+                    }
+                    if (parks.Count == 0) success = false;
+                    break;
             }
-            return success;
+            return true;
         }
 
         public override bool updateHandles(string mode = "set")
         {
             bool success = base.updateHandles(mode);
-            /*foreach (ParkData park in parks.Values)
+            foreach (ParkData park in parks.Values)
             {
                 success = success && park.updateHandles(mode);
-            }*/
+            }
             return success;
         }
 
         public override List<string> loadHandles()
         {
+            UnityEngine.Debug.Log("load handles data main");
             List<string> msgs = base.loadHandles();
+            UnityEngine.Debug.Log(" ----------------- " + parks.Keys.Count);
             foreach (ParkData park in parks.Values)
             {
+                UnityEngine.Debug.Log("load handles data park guid " + park.guid);
                 msgs.AddRange(park.loadHandles());
             }
+            if (errorOnLoad == true) return null;
             return msgs;
         }
 
@@ -89,6 +95,7 @@ namespace StatMaster
             {
                 msgs.AddRange(park.saveHandles());
             }
+            if (errorOnSave == true) return null;
             return msgs;
         }
     }

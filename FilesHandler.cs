@@ -13,6 +13,9 @@ namespace StatMaster
         public Dictionary<string, string> files = new Dictionary<string, string>();
         public Dictionary<string, string> contents = new Dictionary<string, string>();
 
+        public bool errorOnLoad = false;
+        public bool errorOnSave = false;
+
         public void add(string handle)
         {
             files.Add(handle, handle + ext);
@@ -50,22 +53,37 @@ namespace StatMaster
 
         public List<string> loadAll()
         {
+            errorOnLoad = false;
+            Debug.Log("load all ");
             List<string> messages = new List<string>();
             foreach (string handle in files.Keys)
             {
+                UnityEngine.Debug.Log("try file by handle " + handle);
                 try
                 {
+                    UnityEngine.Debug.Log("try to open/load file " + path + files[handle]);
                     if (File.Exists(path + files[handle]))
                     {
                         FileStream file = File.Open(path + files[handle], FileMode.Open);
                         try
                         {
-                            StreamReader sr = new StreamReader(file);
-                            contents[handle] = sr.ReadToEnd();
-                            messages.Add("Loaded " + handle + " data.");
+                            try
+                            {
+                                StreamReader sr = new StreamReader(file);
+                                contents[handle] = sr.ReadToEnd();
+                            } catch
+                            {
+                                throw new System.Exception("Cannot read file with stream reader");
+                            }
+                            if (contents[handle] == "")
+                            {
+                                throw new System.Exception("Content cannot be empty");
+                            }
+                            messages.Add("Loaded " + handle + " data. " + contents[handle]);
                         }
-                        catch (IOException e)
+                        catch (System.Exception e)
                         {
+                            errorOnLoad = true;
                             messages.Add("Failed to load " + handle + " data. Error: " + e.Message);
                         }
                         finally
@@ -76,6 +94,7 @@ namespace StatMaster
                 }
                 catch (IOException e)
                 {
+                    errorOnLoad = true;
                     messages.Add("Failed to handle file for " + handle + " data. Error: " + e.Message);
                 }
             }
@@ -84,6 +103,7 @@ namespace StatMaster
 
         public List<string> saveAll()
         {
+            errorOnLoad = false;
             List<string> messages = new List<string>();
             foreach (string handle in files.Keys)
             {
@@ -93,13 +113,25 @@ namespace StatMaster
                     FileStream file = File.Create(path + files[handle]);
                     try
                     {
-                        StreamWriter sw = new StreamWriter(file);
-                        sw.Write(contents[handle]);
-                        sw.Flush();
-                        messages.Add("Saved " + handle + " data.");
+                        if (contents[handle] == "")
+                        {
+                            throw new System.Exception("Content cannot be empty");
+                        }
+                        try
+                        {
+                            StreamWriter sw = new StreamWriter(file);
+                            sw.Write(contents[handle]);
+                            sw.Flush();
+                            messages.Add("Saved " + handle + " data.");
+                        }
+                        catch
+                        {
+                            throw new System.Exception("Cannot save file with stream writer");
+                        }                  
                     }
-                    catch (IOException e)
+                    catch (System.Exception e)
                     {
+                        errorOnSave = true;
                         messages.Add("Failed to save " + handle + " data. Error: " + e.Message);
                     }
                     finally
@@ -109,6 +141,7 @@ namespace StatMaster
                 }
                 catch (IOException e)
                 {
+                    errorOnSave = true;
                     messages.Add("Failed to handle file for " + handle + " data. Error: " + e.Message);
                 }
             }

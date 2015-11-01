@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.IO;
 using System;
+using System.Collections.Generic;
 
 namespace StatMaster
 {
@@ -8,7 +9,7 @@ namespace StatMaster
     {
         private Data _data = new Data();
 
-        private Debug _debug = new Debug();
+        private DebugNotifier _debug = new DebugNotifier();
 
         private bool _deleteDataFileOnDisable = false;
 
@@ -52,9 +53,10 @@ namespace StatMaster
         }
 
         private void initSession() {
-            _debug.notification("Init session");
-
+            Debug.Log("Init session");
+            Debug.Log("loaded on init passed, has new data? " + !(_data.sessionIdx > 0));
             if (_data.loadHandles() == null) _data = new Data();
+            Debug.Log("loaded on init passed, has new data? " + !(_data.sessionIdx > 0));
             if (_data.tsStart == 0) _data.tsStart = tsSessionStart;
 
             uint cTs = tsSessionStart;

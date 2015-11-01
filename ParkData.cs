@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace StatMaster
 {
@@ -34,7 +35,7 @@ namespace StatMaster
 
             string sessionHandle = "";
             Dictionary<int, string> sessionsIF = new Dictionary<int, string>();
-            for (int idx = 0; idx < sessions.Count; idx++)
+            foreach (int idx in sessionsIF.Keys)
             {
                 // use session idx + md5 data file name (idx with prefix)
                 sessionHandle = fh.calculateMD5Hash("statmaster_data_park_session_" + idx).ToLower();
@@ -46,39 +47,46 @@ namespace StatMaster
             return dict;
         }
 
-        protected override bool setByDict(Dictionary<string, object> dict)
+        protected override bool setByDictKey(Dictionary<string, object> dict, string key)
         {
-            bool success = base.setByDict(dict);
-            foreach (string key in dict.Keys)
+            UnityEngine.Debug.Log("set park key value from dict ... " + key);
+
+            string sessionHandle = "";
+            bool success = base.setByDictKey(dict, key);
+            switch (key)
             {
-                switch (key)
-                {
-                    case "guid":
-                        guid = dict[key].ToString();
-                        break;
-                    case "time":
-                        time = (uint)dict[key];
-                        break;
-                    case "names":
-                        List<object> dNames = (List<object>)dict[key];
+                case "guid":
+                    guid = dict[key].ToString();
+                    if (guid.Length == 0) success = false;
+                    break;
+                case "time":
+                    time = Convert.ToUInt32(dict[key]);
+                    break;
+                case "names":
+                    List<object> dNames = dict[key] as List<object>;
+                    if (dNames.Count > 0)
                         foreach (object name in dNames) names.Add(name.ToString());
-                        break;
-                    case "saveFiles":
-                        List<object> dSaveFiles = (List<object>)dict[key];
+                    break;
+                case "saveFiles":
+                    List<object> dSaveFiles = dict[key] as List<object>;
+                    if (dSaveFiles.Count > 0)
                         foreach (object saveFile in dSaveFiles) saveFiles.Add(saveFile.ToString());
-                        break;
-                    case "sessionsIF":
-                        Dictionary<string, object> sessionsIF = (Dictionary<string, object>)dict[key];
-                        foreach (object sessionI in sessionsIF.Keys)
-                        {
-                            ParkSessionData nSession = new ParkSessionData();
-                            nSession.idx = (int)sessionI;
-                            sessions.Add(nSession);
-                        }
-                        break;
-                }
+                    break;
+                case "sessionsIF":
+                    Dictionary<string, object> sessionsIF = dict[key] as Dictionary<string, object>;
+                    foreach (object sessionI in sessionsIF.Keys)
+                    {
+                        UnityEngine.Debug.Log("park session key value " + sessionI.ToString());
+                        ParkSessionData nSession = new ParkSessionData();
+                        nSession.idx = Convert.ToInt32(sessionI);
+                        sessionHandle = fh.calculateMD5Hash("statmaster_data_park_session_" + nSession.idx).ToLower();
+                        nSession.addHandle("park_session_" + sessionHandle);
+                        sessions.Add(nSession);
+                    }
+                    if (sessions.Count == 0) success = false;
+                    UnityEngine.Debug.Log("sessionIF result == " + sessions.Count);
+                    break;
             }
-            sessionIdx = sessions.Count - 1;
             return success;
         }
 
@@ -86,30 +94,36 @@ namespace StatMaster
         {
             bool success = base.updateHandles(mode);
 
-            foreach (ParkSessionData session in sessions)
-            {
-                success = success && session.updateHandles(mode);
-            }
+            if (sessions.Count > 0)
+                foreach (ParkSessionData session in sessions)
+                {
+                    success = success && session.updateHandles(mode);
+                }
             return success;
         }
 
         public override List<string> loadHandles()
         {
+            UnityEngine.Debug.Log("load handles in park data itself ... ");
             List<string> msgs = base.loadHandles();
-            foreach (ParkSessionData session in sessions)
-            {
-                msgs.AddRange(session.loadHandles());
-            }
+            UnityEngine.Debug.Log("go through sessions ... ");
+            if (sessions.Count > 0)
+                foreach (ParkSessionData session in sessions)
+                {
+                    UnityEngine.Debug.Log("sessions active ? " + session.ToString());
+                    msgs.AddRange(session.loadHandles());
+                }
             return msgs;
         }
 
         public override List<string> saveHandles()
         {
             List<string> msgs = base.saveHandles();
-            foreach (ParkSessionData session in sessions)
-            {
-                msgs.AddRange(session.saveHandles());
-            }
+            if (sessions.Count > 0)
+                foreach (ParkSessionData session in sessions)
+                {
+                    msgs.AddRange(session.saveHandles());
+                }
             return msgs;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System;
 
 namespace StatMaster
 {
@@ -13,28 +14,31 @@ namespace StatMaster
         // last timestamp in record to go to
         public uint tsEnd = 0;
 
+        protected override bool setByDictKey(Dictionary<string, object> dict, string key)
+        {
+            switch (key)
+            {
+                case "sessionIdx":
+                    sessionIdx = Convert.ToInt32(dict[key]);
+                    break;
+                case "tsSessionStarts":
+                    List<object> starts = dict[key] as List<object>;
+                    if (starts.Count > 0)
+                        foreach (object start in starts) tsSessionStarts.Add(Convert.ToUInt32(start));
+                    break;
+                case "tsStart":
+                    tsStart = Convert.ToUInt32(dict[key]);
+                    break;
+                case "tsEnd":
+                    tsEnd = Convert.ToUInt32(dict[key]);
+                    break;
+            }
+            return true;
+        }
+
         protected override bool setByDict(Dictionary<string, object> dict)
         {
             bool success = base.setByDict(dict);
-            foreach (string key in dict.Keys)
-            {
-                switch (key)
-                {
-                    case "sessionIdx":
-                        sessionIdx = (int)dict[key];
-                        break;
-                    case "tsSessionStarts":
-                        List<object> starts = (List<object>)dict[key];
-                        foreach (object start in starts) tsSessionStarts.Add((uint)start);
-                        break;
-                    case "tsStart":
-                        tsStart = (uint)dict[key];
-                        break;
-                    case "tsEnd":
-                        tsEnd = (uint)dict[key];
-                        break;
-                }
-            }
             sessionIdx = tsSessionStarts.Count - 1;
             return success;
         }
