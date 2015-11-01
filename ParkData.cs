@@ -42,8 +42,8 @@ namespace StatMaster
                 sessionsIF.Add(idx, sessionHandle);
                 sessions[idx].addHandle("park_session_" + sessionHandle);
             }
-            dict.Add("sessionsIF", sessionsIF);
 
+            dict.Add("sessionsIF", sessionsIF);
             return dict;
         }
 

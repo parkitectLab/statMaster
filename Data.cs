@@ -35,6 +35,7 @@ namespace StatMaster
                     parkHandle = fh.calculateMD5Hash("statmaster_data_park_" + key).ToLower();
                     parksGF.Add(key, parkHandle);
                     parks[key].addHandle("park_" + parkHandle);
+                    UnityEngine.Debug.Log("park data to dict " + parkHandle);
                 }
                 dict.Add("parksGF", parksGF);
             }
@@ -75,22 +76,23 @@ namespace StatMaster
         public override List<string> loadHandles()
         {
             List<string> msgs = base.loadHandles();
-            foreach (ParkData park in parks.Values)
+            foreach (string parkGuid in parks.Keys)
             {
-                msgs.AddRange(park.loadHandles());
+                msgs.AddRange(parks[parkGuid].loadHandles());
+                errorOnLoad = (parks[parkGuid].errorOnLoad) ? parks[parkGuid].errorOnLoad : errorOnLoad;
             }
-            if (errorOnLoad == true) return null;
             return msgs;
         }
 
         public override List<string> saveHandles()
         {
             List<string> msgs = base.saveHandles();
-            foreach (ParkData park in parks.Values)
+            
+            foreach (string parkGuid in parks.Keys)
             {
-                msgs.AddRange(park.saveHandles());
+                msgs.AddRange(parks[parkGuid].saveHandles());
+                errorOnSave = (parks[parkGuid].errorOnSave) ? parks[parkGuid].errorOnSave : errorOnSave;
             }
-            if (errorOnSave == true) return null;
             return msgs;
         }
     }

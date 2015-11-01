@@ -8,8 +8,8 @@ namespace StatMaster
         protected FilesHandler fh = new FilesHandler();
         protected List<string> handles = new List<string>();
 
-        protected bool errorOnLoad = false;
-        protected bool errorOnSave = false;
+        public bool errorOnLoad = false;
+        public bool errorOnSave = false;
 
         protected virtual Dictionary<string, object> getDict(string handle)
         {
@@ -64,27 +64,24 @@ namespace StatMaster
         {
             errorOnSave = false;
             List<string> messages = new List<string>();
-            if (!updateHandles("set"))
+            errorOnSave = !updateHandles("set");
             {
-                errorOnSave = true;
-                messages.Add("Error on save handles");
-            } else
-            {
+                errorOnSave = true; 
+            }
+            if (!errorOnSave) {
                 messages = fh.saveAll();
                 errorOnSave = fh.errorOnSave;
             }
+            if (errorOnSave) messages.Add("Error on save handles"); 
             return messages;
         }
 
         public virtual List<string> loadHandles()
         {
-            errorOnLoad = false;
             List<string> messages = fh.loadAll();
-            if (!fh.errorOnLoad && !updateHandles("get"))
-            {
-                messages.Add("Error on load handles");
-                errorOnLoad = true;
-            }
+            errorOnLoad = fh.errorOnLoad;
+            if (!errorOnLoad && !updateHandles("get")) errorOnLoad = true;
+            if (errorOnLoad) messages.Add("Error on load handles"); 
             return messages;
         }
     }
