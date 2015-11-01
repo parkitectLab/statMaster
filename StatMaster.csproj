@@ -60,6 +60,7 @@
     <Compile Include="Main.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="LICENSE.md" />
     <None Include="mod.json" />
     <None Include="README.md" />
   </ItemGroup>
