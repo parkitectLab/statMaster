@@ -10,9 +10,7 @@ namespace StatMaster
 
         private DebugNotifier _debug = new DebugNotifier();
 
-        private bool _deleteDataFileOnDisable = false;
-
-        private uint eventsProceed = 0;
+        private uint eventsCallCount = 0;
 
         private uint tsSessionStart = 0;
 
@@ -34,14 +32,14 @@ namespace StatMaster
         {
             _debug.notification("Park name change to " + newName);
             addParkName(newName);
-            eventsProceed++;
+            eventsCallCount++;
         }
 
         private void onStartPlayingParkHandler()
         {
             tsSessionStart = getCurrentTimestamp();
             _debug.notification("Started playing at ", tsSessionStart);
-            eventsProceed++;
+            eventsCallCount++;
         }
 
         private uint getCurrentTimestamp()
@@ -181,7 +179,7 @@ namespace StatMaster
             {
                 updateSession();
                 _debug.notification("Current session data");
-                _debug.notification("Events proceed " + eventsProceed.ToString());
+                _debug.notification("Events proceed " + eventsCallCount.ToString());
                 string[] names = { "gameTime", "sessionTime" };
                 long[] values = {
                     Convert.ToInt64(_data.tsEnd - _data.tsStart) * 1000,
@@ -190,10 +188,11 @@ namespace StatMaster
                 _debug.notification(names, values, 2);
 
             }
-            if (GUI.Button(new Rect(Screen.width - 200, 60, 200, 20), "Delete Files On Disable"))
+            if (GUI.Button(new Rect(Screen.width - 200, 60, 200, 20), "Delete All Data Files"))
             {
-                _deleteDataFileOnDisable = (_deleteDataFileOnDisable) ? false : true;
-                _debug.notification("Files deletion on disable = " + _deleteDataFileOnDisable.ToString());
+                FilesHandler fh = new FilesHandler();
+                fh.deleteAll();
+                _debug.notification("All data files have been deleted");
             }
         }
 
@@ -201,16 +200,8 @@ namespace StatMaster
         {
             GameController.Instance.park.OnNameChanged -= onParkNameChangedHandler;
 
-            if (_deleteDataFileOnDisable)
-            {
-                FilesHandler fh = new FilesHandler();
-                fh.deleteAll();
-            } else
-            {
-                updateSession();
-                _data.saveHandles();
-            }
-            
+            updateSession();
+            _data.saveHandles();
         }
 
     }
