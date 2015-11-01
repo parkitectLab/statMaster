@@ -63,16 +63,6 @@ namespace StatMaster
             return true;
         }
 
-        public override bool updateHandles(string mode = "set")
-        {
-            bool success = base.updateHandles(mode);
-            foreach (ParkData park in parks.Values)
-            {
-                success = success && park.updateHandles(mode);
-            }
-            return success;
-        }
-
         public override List<string> loadHandles()
         {
             List<string> msgs = base.loadHandles();

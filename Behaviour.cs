@@ -52,7 +52,7 @@ namespace StatMaster
 
         private void initSession() {
             _debug.notification("Init session");
-            _data.loadHandles();
+            _debug.notification(_data.loadHandles());
             if (_data.errorOnLoad) _data = new Data();
             if (_data.tsStart == 0) _data.tsStart = tsSessionStart;
             _debug.notification("New data? " + !(_data.sessionIdx > 0));
@@ -171,19 +171,29 @@ namespace StatMaster
             if (Application.loadedLevel != 2)
                 return;
 
-            if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Save Session"))
+            if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Save Data"))
             {
                 updateSession();
                 _debug.notification(_data.saveHandles());
             }
-            if (GUI.Button(new Rect(Screen.width - 200, 30, 200, 20), "Reset Session"))
+            if (GUI.Button(new Rect(Screen.width - 200, 30, 200, 20), "Next Session"))
             {
                 updateSession();
                 _debug.notification(_data.saveHandles());
+                tsSessionStart = getCurrentTimestamp();
                 _data = new Data();
                 initSession();
             }
-            if (GUI.Button(new Rect(Screen.width - 200, 60, 200, 20), "Debug Data"))
+            if (GUI.Button(new Rect(Screen.width - 200, 60, 200, 20), "Reset Data"))
+            {
+                FilesHandler fh = new FilesHandler();
+                fh.deleteAll();
+                _debug.notification("All data files have been deleted");
+                tsSessionStart = getCurrentTimestamp();
+                _data = new Data();
+                initSession();
+            }
+            if (GUI.Button(new Rect(Screen.width - 200, 90, 200, 20), "Debug Data"))
             {
                 updateSession();
                 _debug.notification("Current session data");
@@ -195,12 +205,6 @@ namespace StatMaster
                 };
                 _debug.notification(names, values, 2);
 
-            }
-            if (GUI.Button(new Rect(Screen.width - 200, 90, 200, 20), "Delete Files"))
-            {
-                FilesHandler fh = new FilesHandler();
-                fh.deleteAll();
-                _debug.notification("All data files have been deleted");
             }
         }
 

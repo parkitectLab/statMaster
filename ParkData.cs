@@ -88,18 +88,6 @@ namespace StatMaster
             return success;
         }
 
-        public override bool updateHandles(string mode = "set")
-        {
-            bool success = base.updateHandles(mode);
-
-            if (sessions.Count > 0)
-                foreach (ParkSessionData session in sessions)
-                {
-                    success = success && session.updateHandles(mode);
-                }
-            return success;
-        }
-
         public override List<string> loadHandles()
         {
             List<string> msgs = base.loadHandles();
@@ -107,6 +95,7 @@ namespace StatMaster
                 foreach (ParkSessionData session in sessions)
                 {
                     msgs.AddRange(session.loadHandles());
+                    errorOnLoad = (session.errorOnLoad) ? session.errorOnLoad : errorOnLoad;
                 }
             return msgs;
         }
@@ -118,6 +107,7 @@ namespace StatMaster
                 foreach (ParkSessionData session in sessions)
                 {
                     msgs.AddRange(session.saveHandles());
+                    errorOnSave = (session.errorOnSave) ? session.errorOnSave : errorOnSave;
                 }
             return msgs;
         }

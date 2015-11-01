@@ -65,8 +65,8 @@ namespace StatMaster
         public virtual List<string> saveHandles()
         {
             errorOnSave = false;
-            List<string> messages = new List<string>();
             errorOnSave = !updateHandles("set");
+            List<string> messages = new List<string>();
             if (!errorOnSave) {
                 messages = fh.saveAll();
                 errorOnSave = fh.errorOnSave;
@@ -77,6 +77,7 @@ namespace StatMaster
 
         public virtual List<string> loadHandles()
         {
+            errorOnLoad = false;
             List<string> messages = fh.loadAll();
             errorOnLoad = fh.errorOnLoad;
             if (!errorOnLoad && !updateHandles("get")) errorOnLoad = true;

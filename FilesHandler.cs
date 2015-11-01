@@ -48,7 +48,8 @@ namespace StatMaster
 
         public void deleteAll()
         {
-            Directory.Delete(path, true);
+            if (Directory.Exists(path))
+                Directory.Delete(path, true);
         }
 
         public List<string> loadAll()
