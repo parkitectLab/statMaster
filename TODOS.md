@@ -3,15 +3,20 @@
 ## Data related
 * Guests count (park.getGuests)
 * Employees count (park.getEmployees)
-* Rides related (park.getAttractions)
-* Shops related (park.getShops)
 * Finance stats (park.parkInfo.getMonthlyTransactions)
-* Park entrance fee (park.parkInfo.parkEntranceFee)
-* (average) Attraction entrance fee (attraction.entranceFee)
 * Rating Cleanliness (in park.parkInfo)
 * Rating Happiness (in park.parkInfo)
 * Rating RatingPriceSatisfaction (in park.parkInfo)
-* (average) Guest stats (properties in Guest)
+
+Fee related (prio 2):
+* Park entrance fee (park.parkInfo.parkEntranceFee)
+* (average) Attraction entrance fee (attraction.entranceFee)
+* (average) Shop fee (???)
+
+More data to have a look at (prio 3):
+* (average) Guest stats (properties in Guest?)
+* Rides related (park.getAttractions)
+* Shops related (park.getShops)
 
 ## Aggregator related
 * set / use update intervals for complex data
