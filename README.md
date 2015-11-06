@@ -7,4 +7,6 @@ A Parkitect Game Modification which offers the ability to:
 
 ... all statistics of your game sessions.
 
-(c) Martin 'yokumo' Kelm 2015
+### Contributors
+* Martin 'yokumo' Kelm  @ [parkitectLab](https://github.com/parkitectLab/modTools)
+* Tim Potze @ [ikkentim](https://github.com/ikkentim/statMaster)
