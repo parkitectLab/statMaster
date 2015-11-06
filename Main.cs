@@ -2,7 +2,7 @@
 
 namespace StatMaster
 {
-    class Main : IMod
+    public class Main : IMod
     {
         private GameObject _go;
 
