@@ -64,6 +64,7 @@
     <None Include="LICENSE.md" />
     <None Include="mod.json" />
     <None Include="README.md" />
+    <None Include="TODOS.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
