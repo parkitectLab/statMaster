@@ -9,9 +9,9 @@ using UnityEngine;
 public static class Debug
 {
 
-    static bool isEnable = true;
+    static public bool isEnable = true;
 
-    static bool consoleOnly = true;
+    static public bool consoleOnly = true;
 
     static private string textPrefix = "StatMaster";
 

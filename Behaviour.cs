@@ -25,15 +25,18 @@ namespace StatMaster
         {
             Parkitect.UI.EventManager.Instance.OnStartPlayingPark -= onStartPlayingParkHandler;
             validPark = (GameController.Instance.park.guid != null);
+
+            Debug.isEnable = devMode;
+
+            initSession();
             if (validPark)
             {
-                initSession();
                 GameController.Instance.park.OnNameChanged += onParkNameChangedHandler;
                 Parkitect.UI.EventManager.Instance.OnGameSaved += onGameSaved;
             }
             else
             {
-                Debug.LogMT("No valid park found!");
+                Debug.LogMT("No valid park found, park stats disabled!");
             }
         }
 
@@ -76,31 +79,34 @@ namespace StatMaster
 
             _data.tsSessionStarts.Add(cTs);
             _data.sessionIdx++;
-
-            // determine existing park by guid to search for related                 
-            if (_data.parks.ContainsKey(GameController.Instance.park.guid))
-            {
-                Debug.LogMT("Found park with guid " + GameController.Instance.park.guid);
-                _data.currentPark = _data.parks[GameController.Instance.park.guid];
-            }
-            if (_data.currentPark == null)
-            {
-                Debug.LogMT("Add new park with guid " + GameController.Instance.park.guid);
-                _data.currentPark = new ParkData();
-                _data.currentPark.guid = GameController.Instance.park.guid;
-                _data.parks.Add(GameController.Instance.park.guid, _data.currentPark);
-            }
-            
-            if (_data.currentPark.tsStart == 0) _data.currentPark.tsStart = cTs;
-            _data.currentPark.tsEnd = cTs;
-            _data.currentPark.tsSessionStarts.Add(cTs);
-            _data.currentPark.sessionIdx = _data.currentPark.tsSessionStarts.Count - 1;
             Debug.LogMT("Current session start time ", cTs);
 
-            ParkSessionData _parkDataSession = new ParkSessionData();
-            _parkDataSession.tsStart = cTs;
-            _parkDataSession.idx = _data.currentPark.sessions.Count;
-            _data.currentPark.sessions.Add(_parkDataSession);
+            // determine existing park by guid to search for related     
+            if (validPark)
+            {
+                if (_data.parks.ContainsKey(GameController.Instance.park.guid))
+                {
+                    Debug.LogMT("Found park with guid " + GameController.Instance.park.guid);
+                    _data.currentPark = _data.parks[GameController.Instance.park.guid];
+                }
+                if (_data.currentPark == null)
+                {
+                    Debug.LogMT("Add new park with guid " + GameController.Instance.park.guid);
+                    _data.currentPark = new ParkData();
+                    _data.currentPark.guid = GameController.Instance.park.guid;
+                    _data.parks.Add(GameController.Instance.park.guid, _data.currentPark);
+                }
+
+                if (_data.currentPark.tsStart == 0) _data.currentPark.tsStart = cTs;
+                _data.currentPark.tsEnd = cTs;
+                _data.currentPark.tsSessionStarts.Add(cTs);
+                _data.currentPark.sessionIdx = _data.currentPark.tsSessionStarts.Count - 1;
+
+                ParkSessionData _parkDataSession = new ParkSessionData();
+                _parkDataSession.tsStart = cTs;
+                _parkDataSession.idx = _data.currentPark.sessions.Count;
+                _data.currentPark.sessions.Add(_parkDataSession);
+            }
 
             updateData("load");
         }
@@ -167,23 +173,27 @@ namespace StatMaster
         {
             uint cTs = getCurrentTimestamp();
             _data.tsEnd = cTs;
-            _data.currentPark.tsEnd = cTs;
-            Debug.LogMT("Current session end time ", _data.tsEnd);
 
-            ParkSessionData pds = _data.currentPark.sessions[_data.currentPark.sessionIdx];
-            Debug.LogMT("Update park data with session " + pds.idx.ToString());
+            if (validPark)
+            {
+                _data.currentPark.tsEnd = cTs;
+                Debug.LogMT("Current session end time ", _data.tsEnd);
 
-            Debug.LogMT("New park time " + ParkInfo.ParkTime.ToString());
-            pds.time = Convert.ToUInt32(ParkInfo.ParkTime);
-            _data.currentPark.time = pds.time;
-            string parkName = GameController.Instance.park.parkName;
-            addParkName(parkName);
-            addParkFile(mode);
+                ParkSessionData pds = _data.currentPark.sessions[_data.currentPark.sessionIdx];
+                Debug.LogMT("Update park data with session " + pds.idx.ToString());
+
+                Debug.LogMT("New park time " + ParkInfo.ParkTime.ToString());
+                pds.time = Convert.ToUInt32(ParkInfo.ParkTime);
+                _data.currentPark.time = pds.time;
+                string parkName = GameController.Instance.park.parkName;
+                addParkName(parkName);
+                addParkFile(mode);
+           }
         }
 
         private void OnGUI()
         {
-            if (Application.loadedLevel != 2 || validPark == false || devMode == false)
+            if (Application.loadedLevel != 2 || devMode == false)
                 return;
 
             if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Save Data"))
@@ -229,10 +239,9 @@ namespace StatMaster
             {
                 GameController.Instance.park.OnNameChanged -= onParkNameChangedHandler;
                 Parkitect.UI.EventManager.Instance.OnGameSaved -= onGameSaved;
-
-                updateData("save");
-                _data.saveByHandles();
             }
+            updateData("save");
+            _data.saveByHandles();
         }
 
     }
