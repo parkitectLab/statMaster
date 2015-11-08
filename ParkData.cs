@@ -22,7 +22,8 @@ namespace StatMaster
         // to recognize all used files
         public List<string> files = new List<string>();
 
-        public List<ParkSessionData> sessions = new List<ParkSessionData>();
+        public bool currentSessionOnly = true;
+        public Dictionary<int, ParkSessionData> sessions = new Dictionary<int, ParkSessionData>();
 
         protected override Dictionary<string, object> getDict(string handle)
         {
@@ -37,12 +38,15 @@ namespace StatMaster
 
             string sessionHandle = "";
             Dictionary<int, string> sessionsIF = new Dictionary<int, string>();
-            foreach (ParkSessionData session in sessions)
+            foreach (int sIdx in sessions.Keys)
             {
                 // use session idx + md5 data file name (idx with prefix)
-                sessionHandle = fh.calculateMD5Hash("statmaster_data_park_session_" + session.idx).ToLower();
-                sessionsIF.Add(session.idx, sessionHandle);
-                sessions[session.idx].addHandle("park_session_" + sessionHandle);
+                sessionHandle = fh.calculateMD5Hash("statmaster_data_park_session_" + sIdx).ToLower();
+                sessionsIF.Add(sIdx, sessionHandle);
+                if (currentSessionOnly == false || (sessionIdx == sIdx))
+                {
+                    sessions[sIdx].addHandle("park_session_" + sessionHandle);
+                }
             }
 
             dict.Add("sessionsIF", sessionsIF);
@@ -76,11 +80,18 @@ namespace StatMaster
                     Dictionary<string, object> sessionsIF = dict[key] as Dictionary<string, object>;
                     foreach (object sessionI in sessionsIF.Keys)
                     {
-                        ParkSessionData nSession = new ParkSessionData();
-                        nSession.idx = Convert.ToInt32(sessionI);
-                        sessionHandle = fh.calculateMD5Hash("statmaster_data_park_session_" + nSession.idx).ToLower();
-                        nSession.addHandle("park_session_" + sessionHandle);
-                        sessions.Add(nSession);
+                        if (currentSessionOnly == false || (sessionIdx == Convert.ToInt32(sessionI)))
+                        { 
+                            ParkSessionData nSession = new ParkSessionData();
+                            nSession.idx = Convert.ToInt32(sessionI);
+                            sessionHandle = fh.calculateMD5Hash("statmaster_data_park_session_" + nSession.idx).ToLower();
+                            nSession.addHandle("park_session_" + sessionHandle);
+                            sessions.Add(nSession.idx, nSession);
+                        }
+                        else
+                        {
+                            sessions.Add(Convert.ToInt32(sessionI), null);
+                        }
                     }
                     if (sessions.Count == 0) success = false;
                     break;
@@ -92,10 +103,13 @@ namespace StatMaster
         {
             List<string> msgs = base.loadByHandles();
             if (sessions.Count > 0)
-                foreach (ParkSessionData session in sessions)
+                foreach (int sIdx in sessions.Keys)
                 {
-                    msgs.AddRange(session.loadByHandles());
-                    errorOnLoad = (session.errorOnLoad) ? session.errorOnLoad : errorOnLoad;
+                    if (currentSessionOnly == false || (sessionIdx == sIdx))
+                    { 
+                        msgs.AddRange(sessions[sIdx].loadByHandles());
+                        errorOnLoad = (sessions[sIdx].errorOnLoad) ? sessions[sIdx].errorOnLoad : errorOnLoad;
+                    }
                 }
             return msgs;
         }
@@ -104,10 +118,13 @@ namespace StatMaster
         {
             List<string> msgs = base.saveByHandles();
             if (sessions.Count > 0)
-                foreach (ParkSessionData session in sessions)
+                foreach (int sIdx in sessions.Keys)
                 {
-                    msgs.AddRange(session.saveByHandles());
-                    errorOnSave = (session.errorOnSave) ? session.errorOnSave : errorOnSave;
+                    if (currentSessionOnly == false || (sessionIdx == sIdx))
+                    {
+                        msgs.AddRange(sessions[sIdx].saveByHandles());
+                        errorOnSave = (sessions[sIdx].errorOnSave) ? sessions[sIdx].errorOnSave : errorOnSave;
+                    }
                 }
             return msgs;
         }

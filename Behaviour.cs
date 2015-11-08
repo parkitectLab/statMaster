@@ -72,6 +72,7 @@ namespace StatMaster
             uint cTs = (tsSessionStart > 0) ? tsSessionStart : getCurrentTimestamp();
 
             Debug.LogMT("Init session");
+            if (validPark) _data.currentParkGuid = GameController.Instance.park.guid;
             Debug.LogMT(_data.loadByHandles());
             if (_data.errorOnLoad) _data = new Data();
             if (_data.tsStart == 0) _data.tsStart = cTs;
@@ -105,7 +106,7 @@ namespace StatMaster
                 ParkSessionData _parkDataSession = new ParkSessionData();
                 _parkDataSession.tsStart = cTs;
                 _parkDataSession.idx = _data.currentPark.sessions.Count;
-                _data.currentPark.sessions.Add(_parkDataSession);
+                _data.currentPark.sessions.Add(_parkDataSession.idx, _parkDataSession);
             }
 
             updateData("load");

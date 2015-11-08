@@ -11,7 +11,10 @@ namespace StatMaster
         public uint tsStart = 0; // first timestamp in record to start from
         public uint tsEnd = 0; // last timestamp in record to go to
         */
+
+        public bool currentParkOnly = true;
         public ParkData currentPark = null;
+        public string currentParkGuid = null;
         public Dictionary<string, ParkData> parks = new Dictionary<string, ParkData>();
 
         public Data()
@@ -30,12 +33,15 @@ namespace StatMaster
                 if (parks.Count == 0) return null;
 
                 Dictionary<string, string> parksGF = new Dictionary<string, string>();
-                foreach (string key in parks.Keys)
+                foreach (string parkGuid in parks.Keys)
                 {
                     // use parkitect guid + md5 data file name (guid with prefix)
-                    parkHandle = fh.calculateMD5Hash("statmaster_data_park_" + key).ToLower();
-                    parksGF.Add(key, parkHandle);
-                    parks[key].addHandle("park_" + parkHandle);
+                    parkHandle = fh.calculateMD5Hash("statmaster_data_park_" + parkGuid).ToLower();
+                    parksGF.Add(parkGuid, parkHandle);
+                    if (currentParkOnly == false || (currentParkGuid == parkGuid))
+                    {
+                        parks[parkGuid].addHandle("park_" + parkHandle);
+                    }
                 }
                 dict.Add("parksGF", parksGF);
             }
@@ -51,11 +57,16 @@ namespace StatMaster
                     Dictionary<string, object> parksGF = dict[key] as Dictionary<string, object>;
                     foreach (object parkG in parksGF.Keys)
                     {
-                        ParkData nPark = new ParkData();
-                        nPark.guid = parkG.ToString();
-                        parkHandle = fh.calculateMD5Hash("statmaster_data_park_" + nPark.guid).ToLower();
-                        nPark.addHandle("park_" + parkHandle);
-                        parks.Add(parkG.ToString(), nPark);
+                        if (currentParkOnly == false || (currentParkGuid == parkG.ToString())) {
+                            ParkData nPark = new ParkData();
+                            nPark.guid = parkG.ToString();
+                            parkHandle = fh.calculateMD5Hash("statmaster_data_park_" + nPark.guid).ToLower();
+                            nPark.addHandle("park_" + parkHandle);
+                            parks.Add(parkG.ToString(), nPark);
+                        } else
+                        {
+                            parks.Add(parkG.ToString(), null);
+                        }
                     }
                     if (parks.Count == 0) success = false;
                     break;
@@ -66,10 +77,14 @@ namespace StatMaster
         public override List<string> loadByHandles()
         {
             List<string> msgs = base.loadByHandles();
+
             foreach (string parkGuid in parks.Keys)
             {
-                msgs.AddRange(parks[parkGuid].loadByHandles());
-                errorOnLoad = (parks[parkGuid].errorOnLoad) ? parks[parkGuid].errorOnLoad : errorOnLoad;
+                if (currentParkOnly == false || (currentParkGuid == parkGuid))
+                {
+                    msgs.AddRange(parks[parkGuid].loadByHandles());
+                    errorOnLoad = (parks[parkGuid].errorOnLoad) ? parks[parkGuid].errorOnLoad : errorOnLoad;
+                }
             }
             return msgs;
         }
@@ -77,11 +92,14 @@ namespace StatMaster
         public override List<string> saveByHandles()
         {
             List<string> msgs = base.saveByHandles();
-            
+                        
             foreach (string parkGuid in parks.Keys)
             {
-                msgs.AddRange(parks[parkGuid].saveByHandles());
-                errorOnSave = (parks[parkGuid].errorOnSave) ? parks[parkGuid].errorOnSave : errorOnSave;
+                if (currentParkOnly == false || (currentParkGuid == parkGuid))
+                {
+                    msgs.AddRange(parks[parkGuid].saveByHandles());
+                    errorOnSave = (parks[parkGuid].errorOnSave) ? parks[parkGuid].errorOnSave : errorOnSave;
+                }
             }
             return msgs;
         }
