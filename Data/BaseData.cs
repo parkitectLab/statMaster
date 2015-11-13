@@ -3,7 +3,7 @@ using MiniJSON;
 
 namespace StatMaster.Data
 {
-    class Base
+    class BaseData
     {
         protected FilesHandler fh = new FilesHandler();
         protected List<string> handles = new List<string>();

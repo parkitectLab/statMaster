@@ -3,7 +3,7 @@ using System;
 
 namespace StatMaster.Data
 {
-    class Times : Base
+    class TimeData : BaseData
     {
         // all time related values are unix timestamps
         public int sessionIdx = -1;

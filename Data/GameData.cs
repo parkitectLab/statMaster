@@ -2,7 +2,7 @@
 
 namespace StatMaster.Data
 {
-    class Game : Times
+    class GameData : TimeData
     {
         /*
         public int sessionIdx = 0;
@@ -13,11 +13,11 @@ namespace StatMaster.Data
         */
 
         public bool currentParkOnly = true;
-        public Park currentPark = null;
+        public ParkData currentPark = null;
         public string currentParkGuid = null;
-        public Dictionary<string, Park> parks = new Dictionary<string, Park>();
+        public Dictionary<string, ParkData> parks = new Dictionary<string, ParkData>();
 
-        public Game()
+        public GameData()
         {
             addHandle("main");
         }
@@ -58,7 +58,7 @@ namespace StatMaster.Data
                     foreach (object parkG in parksGF.Keys)
                     {
                         if (currentParkOnly == false || (currentParkGuid == parkG.ToString())) {
-                            Park nPark = new Park();
+                            ParkData nPark = new ParkData();
                             nPark.guid = parkG.ToString();
                             parkHandle = fh.calculateMD5Hash("statmaster_data_park_" + nPark.guid).ToLower();
                             nPark.addHandle("park_" + parkHandle);

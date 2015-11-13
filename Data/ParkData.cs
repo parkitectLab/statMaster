@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace StatMaster.Data
 {
-    class Park : Times
+    class ParkData : TimeData
     {
         /*
         public int sessionIdx = 0;
@@ -23,7 +23,7 @@ namespace StatMaster.Data
         public List<string> files = new List<string>();
 
         public bool currentSessionOnly = true;
-        public Dictionary<int, ParkSession> sessions = new Dictionary<int, ParkSession>();
+        public Dictionary<int, ParkSessionData> sessions = new Dictionary<int, ParkSessionData>();
 
         protected override Dictionary<string, object> getDict(string handle)
         {
@@ -82,7 +82,7 @@ namespace StatMaster.Data
                     {
                         if (currentSessionOnly == false || (sessionIdx == Convert.ToInt32(sessionI)))
                         {
-                            ParkSession nSession = new ParkSession();
+                            ParkSessionData nSession = new ParkSessionData();
                             nSession.idx = Convert.ToInt32(sessionI);
                             sessionHandle = fh.calculateMD5Hash("statmaster_data_park_session_" + nSession.idx).ToLower();
                             nSession.addHandle("park_session_" + sessionHandle);

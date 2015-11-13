@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace StatMaster.Data
 {
-    class ParkSession : Base
+    class ParkSessionData : BaseData
     {
         public int idx = -1;
         // to recognize name changes
