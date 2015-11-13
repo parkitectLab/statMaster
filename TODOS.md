@@ -12,7 +12,6 @@ More data to have a look at:
 * Shops related (park.getShops)
 
 ## Aggregator related
-* set / use update intervals for complex data
 * prepare data for different overview / filtered outputs
 
 ## Export / Generator related
