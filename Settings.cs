@@ -39,7 +39,7 @@ namespace StatMaster
         void Start()
         {
             // set window to center of screen with default size
-            const int windowHeight = 140;
+            const int windowHeight = 200;
             const int windowWidth = 320;
             _window = new Rect(
                 Screen.width / 2 - windowWidth / 2,
