@@ -65,7 +65,7 @@ namespace StatMaster
         {
             while (true)
             {
-                if (_settings.updateProgressionData) {
+                if (_settings.updateParkData && _settings.updateProgressionData) {
 
                     uint cTs = getCurrentTimestamp();
 
