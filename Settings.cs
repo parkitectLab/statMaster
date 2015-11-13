@@ -15,6 +15,12 @@ namespace StatMaster
 
         public bool devMode = false;
 
+        public bool updateGameData = true;
+
+        public bool updateParkData = true;
+
+        public bool updateProgressionData = true;
+
         public uint dataUpdateInterval = 10;
 
         private bool _showWindow = false;
@@ -77,12 +83,18 @@ namespace StatMaster
         {
             var index = 0;
 
-            GUI.Label(_rect(index++), "Update e.g. guests count every " + dataUpdateInterval + " seconds.");
+            updateGameData = GUI.Toggle(_rect(index++), updateProgressionData, " Update game data");
+
+            updateParkData = GUI.Toggle(_rect(index++), updateProgressionData, " Update park data");
+
+            updateProgressionData = GUI.Toggle(_rect(index++), updateProgressionData, " Update park progression data");
+
+            GUI.Label(_rect(index++), "Update park progression data every " + dataUpdateInterval + " seconds.");
             dataUpdateInterval = Convert.ToUInt32(
                 GUI.HorizontalSlider(_rect(index++), dataUpdateInterval, 1, 120)
             );
 
-            devMode = GUI.Toggle(_rect(index++), devMode, " Developer Mode with debug messages / actions UI");
+            devMode = GUI.Toggle(_rect(index++), devMode, " Developer mode with debug messages / actions");
 
             if (GUI.Button(_rect(index++), "Close")) _showWindow = false;
 
