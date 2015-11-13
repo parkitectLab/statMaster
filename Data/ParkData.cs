@@ -41,7 +41,9 @@ namespace StatMaster.Data
             foreach (int sIdx in sessions.Keys)
             {
                 // use session idx + md5 data file name (idx with prefix)
-                sessionHandle = fh.calculateMD5Hash("statmaster_data_park_session_" + sIdx).ToLower();
+                sessionHandle = fh.calculateMD5Hash(
+                    "statmaster_data_park_" + guid + "_session_" + sIdx
+                ).ToLower();
                 sessionsIF.Add(sIdx, sessionHandle);
                 if (currentSessionOnly == false || (sessionIdx == sIdx))
                 {
@@ -84,7 +86,9 @@ namespace StatMaster.Data
                         {
                             ParkSessionData nSession = new ParkSessionData();
                             nSession.idx = Convert.ToInt32(sessionI);
-                            sessionHandle = fh.calculateMD5Hash("statmaster_data_park_session_" + nSession.idx).ToLower();
+                            sessionHandle = fh.calculateMD5Hash(
+                                "statmaster_data_park_" + guid + "_session_" + nSession.idx
+                            ).ToLower();
                             nSession.addHandle("park_session_" + sessionHandle);
                             sessions.Add(nSession.idx, nSession);
                         }

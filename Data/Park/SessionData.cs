@@ -18,6 +18,17 @@ namespace StatMaster.Data
         // last updated value of ParkInfo.ParkTime in session
         public uint time = 0;
 
+        // park progression data
+        public Dictionary<uint, uint> guestsCount = new Dictionary<uint, uint>();
+        public Dictionary<uint, uint> employeesCount = new Dictionary<uint, uint>();
+        public Dictionary<uint, uint> attractionsCount = new Dictionary<uint, uint>();
+        public Dictionary<uint, uint> shopsCount = new Dictionary<uint, uint>();
+
+        public Dictionary<uint, float> money = new Dictionary<uint, float>();
+        public Dictionary<uint, float> ratingCleanliness = new Dictionary<uint, float>();
+        public Dictionary<uint, float> ratingHappiness = new Dictionary<uint, float>();
+        public Dictionary<uint, float> ratingPriceSatisfaction = new Dictionary<uint, float>();
+
         protected override Dictionary<string, object> getDict(string handle)
         {
             Dictionary<string, object> dict = base.getDict(handle);
@@ -30,6 +41,16 @@ namespace StatMaster.Data
             dict.Add("names", names);
             dict.Add("saveFiles", saveFiles);
             dict.Add("loadFile", loadFile);
+
+            dict.Add("guestsCount", guestsCount);
+            dict.Add("employeesCount", employeesCount);
+            dict.Add("attractionsCount", attractionsCount);
+            dict.Add("shopsCount", shopsCount);
+
+            dict.Add("money", money);
+            dict.Add("ratingCleanliness", ratingCleanliness);
+            dict.Add("ratingHappiness", ratingHappiness);
+            dict.Add("ratingPriceSatisfaction", ratingPriceSatisfaction);
 
             return dict;
         }
@@ -60,6 +81,61 @@ namespace StatMaster.Data
                     break;
                 case "loadFile":
                     loadFile = (dict[key].ToString() != null) ? dict[key].ToString() : "";
+                    break;
+                case "guestsCount":
+                case "employeesCount":
+                case "attractionsCount":
+                case "shopsCount":
+                    Dictionary<string, object> countValuesDict = dict[key] as Dictionary<string, object>;
+                    foreach (string vdKey in countValuesDict.Keys)
+                    {
+                        uint ts = Convert.ToUInt32(vdKey);
+                        uint count = Convert.ToUInt32(countValuesDict[vdKey]);
+
+                        switch (key)
+                        {
+                            case "guestsCount":
+                                guestsCount.Add(ts, count);
+                                break;
+                            case "employeesCount":
+                                employeesCount.Add(ts, count);
+                                break;
+                            case "attractionsCount":
+                                attractionsCount.Add(ts, count);
+                                break;
+                            case "shopsCount":
+                                shopsCount.Add(ts, count);
+                                break;
+                        }
+                        
+                    }
+                    break;
+                case "money":
+                case "ratingCleanliness":
+                case "ratingHappiness":
+                case "ratingPriceSatisfaction":
+                    Dictionary<string, object> valuesDict = dict[key] as Dictionary<string, object>;
+                    foreach (string vdKey in valuesDict.Keys)
+                    {
+                        uint ts = Convert.ToUInt32(vdKey);
+                        float value = Convert.ToSingle(valuesDict[vdKey]);
+
+                        switch (key)
+                        {
+                            case "money":
+                                money.Add(ts, value);
+                                break;
+                            case "ratingCleanliness":
+                                ratingCleanliness.Add(ts, value);
+                                break;
+                            case "ratingHappiness":
+                                ratingHappiness.Add(ts, value);
+                                break;
+                            case "ratingPriceSatisfaction":
+                                ratingPriceSatisfaction.Add(ts, value);
+                                break;
+                        }
+                    }
                     break;
             }
             return success;

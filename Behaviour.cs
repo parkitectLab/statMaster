@@ -18,6 +18,8 @@ namespace StatMaster
 
         private Settings _settings;
 
+        private IEnumerator _updateProgressionDataCoroutine;
+
         private void Awake()
         {
             Parkitect.UI.EventManager.Instance.OnStartPlayingPark += onStartPlayingParkHandler;
@@ -37,6 +39,9 @@ namespace StatMaster
             {
                 GameController.Instance.park.OnNameChanged += onParkNameChangedHandler;
                 Parkitect.UI.EventManager.Instance.OnGameSaved += onGameSaved;
+
+                _updateProgressionDataCoroutine = updateProgressionData();
+                StartCoroutine(_updateProgressionDataCoroutine);
             }
             else
             {
@@ -50,6 +55,46 @@ namespace StatMaster
             {
                 _settings = FindObjectOfType<Settings>();
                 yield return new WaitForSeconds(1);
+            }
+        }
+
+        private IEnumerator updateProgressionData()
+        {
+            while (true)
+            {
+                uint cTs = getCurrentTimestamp();
+
+                Debug.LogMT("Update progression data with interval " + _settings.dataUpdateInterval);
+
+                // uint count values
+                _data.currentPark.sessions[_data.currentPark.sessionIdx].guestsCount.Add(
+                  cTs, Convert.ToUInt32(GameController.Instance.park.getGuests().Count)
+                );
+                _data.currentPark.sessions[_data.currentPark.sessionIdx].employeesCount.Add(
+                  cTs, Convert.ToUInt32(GameController.Instance.park.getEmployees().Count)
+                );
+                _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsCount.Add(
+                  cTs, Convert.ToUInt32(GameController.Instance.park.getAttractions().Count)
+                );
+                _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsCount.Add(
+                  cTs, Convert.ToUInt32(GameController.Instance.park.getShops().Count)
+                );
+
+                // float values
+                _data.currentPark.sessions[_data.currentPark.sessionIdx].money.Add(
+                  cTs, GameController.Instance.park.parkInfo.money
+                );
+                _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingCleanliness.Add(
+                  cTs, GameController.Instance.park.parkInfo.RatingCleanliness
+                );
+                _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingHappiness.Add(
+                  cTs, GameController.Instance.park.parkInfo.RatingCleanliness
+                );
+                _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingPriceSatisfaction.Add(
+                  cTs, GameController.Instance.park.parkInfo.RatingPriceSatisfaction
+                );
+
+                yield return new WaitForSeconds(_settings.dataUpdateInterval);
             }
         }
 
@@ -118,8 +163,8 @@ namespace StatMaster
 
                 ParkSessionData _parkDataSession = new ParkSessionData();
                 _parkDataSession.tsStart = cTs;
-                _parkDataSession.idx = _data.currentPark.sessions.Count;
-                _data.currentPark.sessions.Add(_parkDataSession.idx, _parkDataSession);
+                _parkDataSession.idx = _data.currentPark.sessionIdx;
+                _data.currentPark.sessions.Add(_data.currentPark.sessionIdx, _parkDataSession);
             }
 
             updateData("load");
@@ -251,6 +296,8 @@ namespace StatMaster
         {
             if (validPark == true)
             {
+                StopCoroutine(_updateProgressionDataCoroutine);
+
                 GameController.Instance.park.OnNameChanged -= onParkNameChangedHandler;
                 Parkitect.UI.EventManager.Instance.OnGameSaved -= onGameSaved;
             }
