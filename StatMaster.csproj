@@ -52,14 +52,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataBase.cs" />
+    <Compile Include="Data\Base.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="FilesHandler.cs" />
-    <Compile Include="ParkSessionData.cs" />
+    <Compile Include="Data\Park\Session.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TimesData.cs" />
-    <Compile Include="ParkData.cs" />
-    <Compile Include="Data.cs" />
+    <Compile Include="Data\Times.cs" />
+    <Compile Include="Data\Park.cs" />
+    <Compile Include="Data\Game.cs" />
     <Compile Include="Behaviour.cs" />
     <Compile Include="Main.cs" />
   </ItemGroup>

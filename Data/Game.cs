@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace StatMaster
+namespace StatMaster.Data
 {
-    class Data : TimesData
+    class Game : Times
     {
         /*
         public int sessionIdx = 0;
@@ -13,11 +13,11 @@ namespace StatMaster
         */
 
         public bool currentParkOnly = true;
-        public ParkData currentPark = null;
+        public Park currentPark = null;
         public string currentParkGuid = null;
-        public Dictionary<string, ParkData> parks = new Dictionary<string, ParkData>();
+        public Dictionary<string, Park> parks = new Dictionary<string, Park>();
 
-        public Data()
+        public Game()
         {
             addHandle("main");
         }
@@ -58,7 +58,7 @@ namespace StatMaster
                     foreach (object parkG in parksGF.Keys)
                     {
                         if (currentParkOnly == false || (currentParkGuid == parkG.ToString())) {
-                            ParkData nPark = new ParkData();
+                            Park nPark = new Park();
                             nPark.guid = parkG.ToString();
                             parkHandle = fh.calculateMD5Hash("statmaster_data_park_" + nPark.guid).ToLower();
                             nPark.addHandle("park_" + parkHandle);

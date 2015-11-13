@@ -6,7 +6,7 @@ namespace StatMaster
 {
     class Behaviour : MonoBehaviour
     {
-        private Data _data = new Data();
+        private Data.Game _data = new Data.Game();
 
         private uint eventsCallCount = 0;
 
@@ -74,7 +74,7 @@ namespace StatMaster
             Debug.LogMT("Init session");
             if (validPark) _data.currentParkGuid = GameController.Instance.park.guid;
             Debug.LogMT(_data.loadByHandles());
-            if (_data.errorOnLoad) _data = new Data();
+            if (_data.errorOnLoad) _data = new Data.Game();
             if (_data.tsStart == 0) _data.tsStart = cTs;
             Debug.LogMT("New data? " + !(_data.sessionIdx > 0));
 
@@ -93,7 +93,7 @@ namespace StatMaster
                 if (_data.currentPark == null)
                 {
                     Debug.LogMT("Add new park with guid " + GameController.Instance.park.guid);
-                    _data.currentPark = new ParkData();
+                    _data.currentPark = new Data.Park();
                     _data.currentPark.guid = GameController.Instance.park.guid;
                     _data.parks.Add(GameController.Instance.park.guid, _data.currentPark);
                 }
@@ -103,7 +103,7 @@ namespace StatMaster
                 _data.currentPark.tsSessionStarts.Add(cTs);
                 _data.currentPark.sessionIdx = _data.currentPark.tsSessionStarts.Count - 1;
 
-                ParkSessionData _parkDataSession = new ParkSessionData();
+                Data.ParkSession _parkDataSession = new Data.ParkSession();
                 _parkDataSession.tsStart = cTs;
                 _parkDataSession.idx = _data.currentPark.sessions.Count;
                 _data.currentPark.sessions.Add(_parkDataSession.idx, _parkDataSession);
@@ -134,8 +134,8 @@ namespace StatMaster
 
         private void addParkFile(string mode = "load")
         {
-            ParkData pd = _data.currentPark;
-            ParkSessionData pds = pd.sessions[pd.sessionIdx];
+            Data.Park pd = _data.currentPark;
+            Data.ParkSession pds = pd.sessions[pd.sessionIdx];
             bool updated = false;
             Debug.LogMT("Add park file");
             if (File.Exists(GameController.Instance.loadedSavegamePath))
@@ -152,8 +152,8 @@ namespace StatMaster
 
         private bool addParkName(string name)
         {
-            ParkData pd = _data.currentPark;
-            ParkSessionData pds = pd.sessions[pd.sessionIdx];
+            Data.Park pd = _data.currentPark;
+            Data.ParkSession pds = pd.sessions[pd.sessionIdx];
             bool success = false;
             if (name != "Unnamed Park" && 
                 (pd.names.Count == 0 || pd.names[pd.names.Count - 1] != name))
@@ -180,7 +180,7 @@ namespace StatMaster
                 _data.currentPark.tsEnd = cTs;
                 Debug.LogMT("Current session end time ", _data.tsEnd);
 
-                ParkSessionData pds = _data.currentPark.sessions[_data.currentPark.sessionIdx];
+                Data.ParkSession pds = _data.currentPark.sessions[_data.currentPark.sessionIdx];
                 Debug.LogMT("Update park data with session " + pds.idx.ToString());
 
                 Debug.LogMT("New park time " + ParkInfo.ParkTime.ToString());
@@ -207,7 +207,7 @@ namespace StatMaster
                 updateData("save");
                 Debug.LogMT(_data.saveByHandles());
                 tsSessionStart = getCurrentTimestamp();
-                _data = new Data();
+                _data = new Data.Game();
                 initSession();
             }
             if (GUI.Button(new Rect(Screen.width - 200, 60, 200, 20), "Reset Data"))
@@ -216,7 +216,7 @@ namespace StatMaster
                 fh.deleteAll();
                 Debug.LogMT("All data files have been deleted");
                 tsSessionStart = getCurrentTimestamp();
-                _data = new Data();
+                _data = new Data.Game();
                 initSession();
             }
             if (GUI.Button(new Rect(Screen.width - 200, 90, 200, 20), "Debug Data"))

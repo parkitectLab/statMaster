@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace StatMaster
+namespace StatMaster.Data
 {
-    class ParkSessionData : DataBase
+    class ParkSession : Base
     {
         public int idx = -1;
         // to recognize name changes

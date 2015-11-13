@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace StatMaster
+namespace StatMaster.Data
 {
-    class ParkData : TimesData
+    class Park : Times
     {
         /*
         public int sessionIdx = 0;
@@ -23,7 +23,7 @@ namespace StatMaster
         public List<string> files = new List<string>();
 
         public bool currentSessionOnly = true;
-        public Dictionary<int, ParkSessionData> sessions = new Dictionary<int, ParkSessionData>();
+        public Dictionary<int, ParkSession> sessions = new Dictionary<int, ParkSession>();
 
         protected override Dictionary<string, object> getDict(string handle)
         {
@@ -81,8 +81,8 @@ namespace StatMaster
                     foreach (object sessionI in sessionsIF.Keys)
                     {
                         if (currentSessionOnly == false || (sessionIdx == Convert.ToInt32(sessionI)))
-                        { 
-                            ParkSessionData nSession = new ParkSessionData();
+                        {
+                            ParkSession nSession = new ParkSession();
                             nSession.idx = Convert.ToInt32(sessionI);
                             sessionHandle = fh.calculateMD5Hash("statmaster_data_park_session_" + nSession.idx).ToLower();
                             nSession.addHandle("park_session_" + sessionHandle);

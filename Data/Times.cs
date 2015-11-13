@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System;
 
-namespace StatMaster
+namespace StatMaster.Data
 {
-    class TimesData : DataBase
+    class Times : Base
     {
         // all time related values are unix timestamps
         public int sessionIdx = -1;

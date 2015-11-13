@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using MiniJSON;
 
-namespace StatMaster
+namespace StatMaster.Data
 {
-    class DataBase
+    class Base
     {
         protected FilesHandler fh = new FilesHandler();
         protected List<string> handles = new List<string>();
