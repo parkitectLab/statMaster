@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using StatMaster.Data;
+using System;
 
 namespace StatMaster
 {
@@ -13,6 +14,8 @@ namespace StatMaster
         public bool isActive = false;
 
         public bool devMode = false;
+
+        public uint dataUpdateInterval = 10;
 
         private bool _showWindow = false;
 
@@ -73,7 +76,13 @@ namespace StatMaster
         private void _doWindow(int id)
         {
             var index = 0;
-            devMode = GUI.Toggle(_rect(index++), devMode, "Developer Mode");
+
+            GUI.Label(_rect(index++), "Update e.g. guests count every " + dataUpdateInterval + " seconds.");
+            dataUpdateInterval = Convert.ToUInt32(
+                GUI.HorizontalSlider(_rect(index++), dataUpdateInterval, 1, 120)
+            );
+
+            devMode = GUI.Toggle(_rect(index++), devMode, " Developer Mode with debug messages / actions UI");
 
             if (GUI.Button(_rect(index++), "Close")) _showWindow = false;
 

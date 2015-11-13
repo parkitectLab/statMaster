@@ -14,6 +14,8 @@ namespace StatMaster.Data
 
             dict.Add("devMode", settings.devMode);
 
+            dict.Add("dataUpdateInterval", settings.dataUpdateInterval);
+
             return dict;
         }
 
@@ -25,6 +27,9 @@ namespace StatMaster.Data
             {
                 case "devMode":
                     settings.devMode = Convert.ToBoolean(dict[key]);
+                    break;
+                case "dataUpdateInterval":
+                    settings.dataUpdateInterval = Convert.ToUInt32(dict[key]);
                     break;
             }
 
