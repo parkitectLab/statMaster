@@ -7,6 +7,13 @@ A Parkitect Game Modification which offers the ability to:
 
 ... all statistics of your game sessions.
 
+## Compatibility
++ Please use pre-alpha 4 (or later) parks to get full park statistics
+  - old parks (pre-alpha 3, savegames) can not have own statistics currently
+  - as long as Parkitect does not generate a Park-GUID therefor
++ AutoSave Mod related, current problems with regular save actions after AutoSave mod actions
+  - https://parkitectnexus.com/assets/472f0d493e/autosave#comment-95881f2823
+
 ## Ingame Settings
 
 **Shortcut**: LeftCtrl + F12
@@ -32,6 +39,10 @@ A Parkitect Game Modification which offers the ability to:
 + Update Interval Progression Data (every 1 - 120 seconds)
   - all other data will be updated on session start / end
   - or if a related ingame event has been occured
++ Update AutoSave mod data (depends on Park Data)
+  - AutoSaves / QuickSaves count (for Park and Park Session)
++ Ignore AutoSave-File names (in regular park file names log)
++ Ignore QuickSave-File names (in regular park file names log)
 + Developer Mode activation
   - Set debug messages and show dev UI controls
 
