@@ -131,9 +131,16 @@ namespace StatMaster
                 GUI.Label(_rect(index++), "Update AutoSave mod data (disabled).");
             }
 
-            ignoreAutoSaveFileNames = GUI.Toggle(_rect(index++), ignoreAutoSaveFileNames, " Ignore AutoSave-File names");
+            if (updateGameData && updateParkData)
+            {
+                ignoreAutoSaveFileNames = GUI.Toggle(_rect(index++), ignoreAutoSaveFileNames, " Ignore AutoSave-File names");
 
-            ignoreQuickSaveFileNames = GUI.Toggle(_rect(index++), ignoreQuickSaveFileNames, " Ignore QuickSave-File names");
+                ignoreQuickSaveFileNames = GUI.Toggle(_rect(index++), ignoreQuickSaveFileNames, " Ignore QuickSave-File names");
+            } else
+            {
+                GUI.Label(_rect(index++), "Ignore AutoSave-File names (not active).");
+                GUI.Label(_rect(index++), "Ignore QuickSave-File names (not active).");
+            }
 
             devMode = GUI.Toggle(_rect(index++), devMode, " Developer mode with debug messages / actions");
 
