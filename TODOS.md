@@ -1,15 +1,13 @@
 # Parkitect StatMaster Todos
 
 ## Data related
-Fee related:
-* Park entrance fee (park.parkInfo.parkEntranceFee)
-* (average) Attraction entrance fee (attraction.entranceFee)
-* (average) Shop fee (???)
-
-More data to have a look at:
 * (average) Guest stats (properties in Guest?)
-* Rides related (park.getAttractions)
-* Shops related (park.getShops)
+* Shops related, improve shops item fee avg calculation
+  * Needs related shop property first
+* Attractions related, builded / destroyed progress
+  * Needs related events to improve attraction related count values
+* Shops related, builded / destroyed progress
+  * Needs related events to improve shop related count values
 
 ## Aggregator related
 * prepare data for different overview / filtered outputs
