@@ -39,6 +39,10 @@ A Parkitect Game Modification which offers the ability to:
 + Update Interval Progression Data (every 1 - 120 seconds)
   - all other data will be updated on session start / end
   - or if a related ingame event has been occured
++ Update Fee Progression Data (depends on Progression Data)
+  - Park entrance fee, Average Attraction / Shop Item Fee
++ Update Further Progression Data (depends on Progression Data)
+  - Count values (Attractions / Shops Opened & Customers)
 + Update AutoSave mod data (depends on Park Data)
   - AutoSaves / QuickSaves count (for Park and Park Session)
 + Ignore AutoSave-File names (in regular park file names log)
