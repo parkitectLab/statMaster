@@ -32,6 +32,10 @@ namespace StatMaster.Data
         public Dictionary<uint, float> ratingHappiness = new Dictionary<uint, float>();
         public Dictionary<uint, float> ratingPriceSatisfaction = new Dictionary<uint, float>();
 
+        public Dictionary<uint, float> entranceFee = new Dictionary<uint, float>();
+        public Dictionary<uint, float> attractionsEntranceFeeAvg = new Dictionary<uint, float>();
+        public Dictionary<uint, float> shopsItemFeeAvg = new Dictionary<uint, float>();
+
         protected override Dictionary<string, object> getDict(string handle)
         {
             Dictionary<string, object> dict = base.getDict(handle);
@@ -57,6 +61,10 @@ namespace StatMaster.Data
             dict.Add("ratingCleanliness", ratingCleanliness);
             dict.Add("ratingHappiness", ratingHappiness);
             dict.Add("ratingPriceSatisfaction", ratingPriceSatisfaction);
+
+            dict.Add("entranceFee", entranceFee);
+            dict.Add("attractionsEntranceFeeAvg", attractionsEntranceFeeAvg);
+            dict.Add("shopsItemFeeAvg", shopsItemFeeAvg);
 
             return dict;
         }
@@ -126,6 +134,9 @@ namespace StatMaster.Data
                 case "ratingCleanliness":
                 case "ratingHappiness":
                 case "ratingPriceSatisfaction":
+                case "entranceFee":
+                case "attractionsEntranceFeeAvg":
+                case "shopsItemFeeAvg":
                     Dictionary<string, object> valuesDict = dict[key] as Dictionary<string, object>;
                     foreach (string vdKey in valuesDict.Keys)
                     {
@@ -145,6 +156,15 @@ namespace StatMaster.Data
                                 break;
                             case "ratingPriceSatisfaction":
                                 ratingPriceSatisfaction.Add(ts, value);
+                                break;
+                            case "entranceFee":
+                                entranceFee.Add(ts, value);
+                                break;
+                            case "attractionsEntranceFeeAvg":
+                                attractionsEntranceFeeAvg.Add(ts, value);
+                                break;
+                            case "shopsItemFeeAvg":
+                                shopsItemFeeAvg.Add(ts, value);
                                 break;
                         }
                     }

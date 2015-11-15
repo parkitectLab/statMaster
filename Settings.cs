@@ -23,6 +23,8 @@ namespace StatMaster
 
         public bool updateProgressionData = true;
 
+        public bool updateFeeProgressionData = true;
+
         public uint dataUpdateInterval = 10;
 
         public bool updateAutoSaveData = true;
@@ -30,6 +32,8 @@ namespace StatMaster
         public bool ignoreAutoSaveFileNames = true;
 
         public bool ignoreQuickSaveFileNames = true;
+
+        private uint _windowRectsCount = 11;
 
         private bool _showWindow = false;
 
@@ -47,8 +51,8 @@ namespace StatMaster
         void Start()
         {
             // set window to center of screen with default size
-            const int windowHeight = 300;
-            const int windowWidth = 320;
+            uint windowHeight = _windowRectsCount * 30;
+            uint windowWidth = 320;
             _window = new Rect(
                 Screen.width / 2 - windowWidth / 2,
                 Screen.height / 2 - windowHeight / 2,
@@ -118,12 +122,16 @@ namespace StatMaster
                     dataUpdateInterval = Convert.ToUInt32(
                         GUI.HorizontalSlider(_rect(index++), dataUpdateInterval, 1, 120)
                     );
+
+                    updateFeeProgressionData = GUI.Toggle(_rect(index++), updateFeeProgressionData, " Update fee progression data");
                 }
             }
             else
             {
                 GUI.Label(_rect(index++), "Update park progression data (disabled).");
             }
+            if (!updateGameData || !updateParkData || !updateParkSessionData || !updateProgressionData)
+                GUI.Label(_rect(index++), "Update fee progression data (disabled).");
 
             if (updateGameData && updateParkData) { 
                 updateAutoSaveData = GUI.Toggle(_rect(index++), updateAutoSaveData, " Update AutoSave mod data");

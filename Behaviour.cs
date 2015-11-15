@@ -3,6 +3,7 @@ using System.IO;
 using System;
 using StatMaster.Data;
 using System.Collections;
+using System.Collections.ObjectModel;
 
 namespace StatMaster
 {
@@ -103,6 +104,39 @@ namespace StatMaster
                     _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingPriceSatisfaction.Add(
                       cTs, GameController.Instance.park.parkInfo.RatingPriceSatisfaction
                     );
+
+                    // fee float values
+                    if (_settings.updateFeeProgressionData)
+                    {
+                        Debug.LogMT("Update fee progression data");
+
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].entranceFee.Add(
+                          cTs, GameController.Instance.park.parkInfo.parkEntranceFee
+                        );
+
+                        float attractionsEntranceFeeAvg = 0f;
+                        ReadOnlyCollection<Attraction> attractions = GameController.Instance.park.getAttractions();
+                        for (int i = 0; i < attractions.Count; i++)
+                        {
+                            attractionsEntranceFeeAvg += attractions[i].entranceFee;
+                        }
+                        if (attractionsEntranceFeeAvg > 0f)
+                            attractionsEntranceFeeAvg = attractionsEntranceFeeAvg / attractions.Count;
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsEntranceFeeAvg.Add(
+                          cTs, attractionsEntranceFeeAvg
+                        );
+
+                        float shopsItemFeeAvg = 0f;
+                        /* not yet available? need more info ...
+                        ReadOnlyCollection<Shop> shops = GameController.Instance.park.getShops();
+                        for (int i = 0; i < shops.Count; i++) { }
+                        if (shopsItemFeeAvg > 0f)
+                            shopsItemFeeAvg = shopsItemFeeAvg / shops.Count;
+                        */
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsItemFeeAvg.Add(
+                          cTs, shopsItemFeeAvg
+                        );
+                    }
                 }
 
                 yield return new WaitForSeconds(_settings.dataUpdateInterval);
