@@ -99,10 +99,9 @@ namespace StatMaster
                     _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingPriceSatisfaction.Add(
                       cTs, GameController.Instance.park.parkInfo.RatingPriceSatisfaction
                     );
-
-                    yield return new WaitForSeconds(_settings.dataUpdateInterval);
-
                 }
+
+                yield return new WaitForSeconds(_settings.dataUpdateInterval);
             }
         }
 
