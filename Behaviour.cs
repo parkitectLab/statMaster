@@ -113,6 +113,10 @@ namespace StatMaster
         {
             Debug.LogMT("Game saved");
             addParkFile("save");
+
+            if (_settings.updateAutoSaveData)
+                addAutoSaveParkFileToData(getParkFileName(), "save");
+
             eventsCallCount++;
         }
 
@@ -214,15 +218,28 @@ namespace StatMaster
             if (name.IndexOf("QuickSave-") != -1 || name.IndexOf("AutoSave-") != -1)
             {
                 bool isAutoSave = (name.IndexOf("AutoSave-") != -1);
-                // todo further data handling logic
+                Debug.LogMT("AutoSave file to data " + name);
+
+                if (isAutoSave) _data.currentPark.autoSavesCount++;
+                if (!isAutoSave) _data.currentPark.quickSavesCount++;
+
                 if (_settings.updateParkSessionData)
                 {
-
+                    if (isAutoSave) _data.currentPark.sessions[_data.currentPark.sessionIdx].autoSavesCount++;
+                    if (!isAutoSave) _data.currentPark.sessions[_data.currentPark.sessionIdx].quickSavesCount++;
                 }
                 success = true;
             }
             
             return success;
+        }
+
+        private string getParkFileName()
+        {
+            string[] parkSaveFileElements = GameController.Instance.loadedSavegamePath.Split(
+                    (Application.platform == RuntimePlatform.WindowsPlayer) ? '\\' : '/'
+                );
+            return parkSaveFileElements[parkSaveFileElements.Length - 1];
         }
 
         private void addParkFile(string mode = "load")
@@ -231,10 +248,7 @@ namespace StatMaster
             Debug.LogMT("Add park file");
             if (File.Exists(GameController.Instance.loadedSavegamePath))
             {
-                string[] parkSaveFileElements = GameController.Instance.loadedSavegamePath.Split(
-                    (Application.platform == RuntimePlatform.WindowsPlayer) ? '\\' : '/'
-                );
-                string dFile = parkSaveFileElements[parkSaveFileElements.Length - 1];
+                string dFile = getParkFileName();
 
                 if ((!_settings.ignoreQuickSaveFileNames ||
                      (_settings.ignoreQuickSaveFileNames && dFile.IndexOf("QuickSave-") == -1)) &&
@@ -244,8 +258,6 @@ namespace StatMaster
                     updated = addParkFileToData(dFile, mode);
                     if (updated) Debug.LogMT("New park file " + dFile + " mode (" + mode + ")");
                 }
-                if (_settings.updateAutoSaveData)
-                    addAutoSaveParkFileToData(dFile, mode);
             }
             if (updated == false) Debug.LogMT("No new park file");
         }

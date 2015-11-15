@@ -13,6 +13,9 @@ namespace StatMaster.Data
         // to recognize a file load
         public string loadFile = "";
 
+        public uint autoSavesCount = 0;
+        public uint quickSavesCount = 0;
+
         // start time of session -> equivalent to ParkData.tsSessionStarts[related_idx]
         public uint tsStart = 0;
         // last updated value of ParkInfo.ParkTime in session
@@ -41,6 +44,9 @@ namespace StatMaster.Data
             dict.Add("names", names);
             dict.Add("saveFiles", saveFiles);
             dict.Add("loadFile", loadFile);
+
+            dict.Add("autoSavesCount", autoSavesCount);
+            dict.Add("quickSaveCount", quickSavesCount);
 
             dict.Add("guestsCount", guestsCount);
             dict.Add("employeesCount", employeesCount);
@@ -81,6 +87,12 @@ namespace StatMaster.Data
                     break;
                 case "loadFile":
                     loadFile = (dict[key].ToString() != null) ? dict[key].ToString() : "";
+                    break;
+                case "autoSavesCount":
+                    autoSavesCount = Convert.ToUInt32(dict[key]);
+                    break;
+                case "quickSavesCount":
+                    quickSavesCount = Convert.ToUInt32(dict[key]);
                     break;
                 case "guestsCount":
                 case "employeesCount":

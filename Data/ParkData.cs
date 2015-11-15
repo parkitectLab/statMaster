@@ -22,6 +22,9 @@ namespace StatMaster.Data
         // to recognize all used files
         public List<string> files = new List<string>();
 
+        public uint autoSavesCount = 0;
+        public uint quickSavesCount = 0;
+
         public bool currentSessionOnly = true;
         public Dictionary<int, ParkSessionData> sessions = new Dictionary<int, ParkSessionData>();
 
@@ -35,6 +38,9 @@ namespace StatMaster.Data
 
             dict.Add("names", names);
             dict.Add("files", files);
+
+            dict.Add("autoSavesCount", autoSavesCount);
+            dict.Add("quickSaveCount", quickSavesCount);
 
             string sessionHandle = "";
             Dictionary<int, string> sessionsIF = new Dictionary<int, string>();
@@ -77,6 +83,12 @@ namespace StatMaster.Data
                     List<object> dFiles = dict[key] as List<object>;
                     if (dFiles.Count > 0)
                         foreach (object file in dFiles) files.Add(file.ToString());
+                    break;
+                case "autoSavesCount":
+                    autoSavesCount = Convert.ToUInt32(dict[key]);
+                    break;
+                case "quickSavesCount":
+                    quickSavesCount = Convert.ToUInt32(dict[key]);
                     break;
                 case "sessionsIF":
                     Dictionary<string, object> sessionsIF = dict[key] as Dictionary<string, object>;
