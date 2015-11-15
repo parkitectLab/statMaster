@@ -214,8 +214,15 @@ namespace StatMaster
                     (Application.platform == RuntimePlatform.WindowsPlayer) ? '\\' : '/'
                 );
                 string dFile = parkSaveFileElements[parkSaveFileElements.Length - 1];
-                updated = addParkFileToData(dFile, mode);
-                if (updated) Debug.LogMT("New park file " + dFile + " mode (" + mode + ")");
+
+                if ((!_settings.ignoreQuickSaveEvents ||
+                     (_settings.ignoreQuickSaveEvents && dFile.IndexOf("QuickSave-") == -1)) &&
+                    (!_settings.ignoreAutoSaveEvents ||
+                     (_settings.ignoreAutoSaveEvents && dFile.IndexOf("AutoSave-") == -1)))
+                {
+                    updated = addParkFileToData(dFile, mode);
+                    if (updated) Debug.LogMT("New park file " + dFile + " mode (" + mode + ")");
+                }
             }
             if (updated == false) Debug.LogMT("No new park file");
         }

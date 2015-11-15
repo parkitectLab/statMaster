@@ -25,6 +25,10 @@ namespace StatMaster
 
         public uint dataUpdateInterval = 10;
 
+        public bool ignoreQuickSaveEvents = true;
+
+        public bool ignoreAutoSaveEvents = true;
+
         private bool _showWindow = false;
 
         private Rect _window = new Rect(50, 50, 1, 1);
@@ -41,7 +45,7 @@ namespace StatMaster
         void Start()
         {
             // set window to center of screen with default size
-            const int windowHeight = 225;
+            const int windowHeight = 275;
             const int windowWidth = 320;
             _window = new Rect(
                 Screen.width / 2 - windowWidth / 2,
@@ -118,6 +122,10 @@ namespace StatMaster
             {
                 GUI.Label(_rect(index++), "Update park progression data (disabled).");
             }
+
+            ignoreQuickSaveEvents = GUI.Toggle(_rect(index++), ignoreQuickSaveEvents, " Ignore QuickSave-Events");
+
+            ignoreAutoSaveEvents = GUI.Toggle(_rect(index++), ignoreAutoSaveEvents, " Ignore AutoSave-Events");
 
             devMode = GUI.Toggle(_rect(index++), devMode, " Developer mode with debug messages / actions");
 
