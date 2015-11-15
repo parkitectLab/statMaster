@@ -85,18 +85,39 @@ namespace StatMaster
         {
             var index = 0;
 
-            updateGameData = GUI.Toggle(_rect(index++), updateProgressionData, " Update game data");
+            updateGameData = GUI.Toggle(_rect(index++), updateGameData, " Update game data");
 
-            updateParkData = GUI.Toggle(_rect(index++), updateProgressionData, " Update park data");
+            if (updateGameData)
+            {
+                updateParkData = GUI.Toggle(_rect(index++), updateParkData, " Update park data");
+            } else
+            {
+                GUI.Label(_rect(index++), "Update park data (disabled).");
+            }
 
-            updateParkSessionData = GUI.Toggle(_rect(index++), updateParkSessionData, " Update park session data");
+            if (updateGameData && updateParkData)
+            {
+                updateParkSessionData = GUI.Toggle(_rect(index++), updateParkSessionData, " Update park session data");
+            } else
+            {
+                GUI.Label(_rect(index++), "Update park session data (disabled).");
+            }
 
-            updateProgressionData = GUI.Toggle(_rect(index++), updateProgressionData, " Update park progression data");
-
-            GUI.Label(_rect(index++), "Update park progression data every " + dataUpdateInterval + " seconds.");
-            dataUpdateInterval = Convert.ToUInt32(
-                GUI.HorizontalSlider(_rect(index++), dataUpdateInterval, 1, 120)
-            );
+            if (updateGameData && updateParkData && updateParkSessionData)
+            {
+                updateProgressionData = GUI.Toggle(_rect(index++), updateProgressionData, " Update park progression data");
+                if (updateProgressionData)
+                {
+                    GUI.Label(_rect(index++), "Update park progression data every " + dataUpdateInterval + " seconds.");
+                    dataUpdateInterval = Convert.ToUInt32(
+                        GUI.HorizontalSlider(_rect(index++), dataUpdateInterval, 1, 120)
+                    );
+                }
+            }
+            else
+            {
+                GUI.Label(_rect(index++), "Update park progression data (disabled).");
+            }
 
             devMode = GUI.Toggle(_rect(index++), devMode, " Developer mode with debug messages / actions");
 
