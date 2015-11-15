@@ -125,7 +125,7 @@ namespace StatMaster
                 GUI.Label(_rect(index++), "Update park progression data (disabled).");
             }
 
-            if (updateGameData && updateParkData && updateParkSessionData) { 
+            if (updateGameData && updateParkData) { 
                 updateAutoSaveData = GUI.Toggle(_rect(index++), updateAutoSaveData, " Update AutoSave mod data");
             } else {
                 GUI.Label(_rect(index++), "Update AutoSave mod data (disabled).");
