@@ -19,6 +19,8 @@ namespace StatMaster
 
         public bool updateParkData = true;
 
+        public bool updateParkSessionData = true;
+
         public bool updateProgressionData = true;
 
         public uint dataUpdateInterval = 10;
@@ -39,7 +41,7 @@ namespace StatMaster
         void Start()
         {
             // set window to center of screen with default size
-            const int windowHeight = 200;
+            const int windowHeight = 225;
             const int windowWidth = 320;
             _window = new Rect(
                 Screen.width / 2 - windowWidth / 2,
@@ -76,7 +78,7 @@ namespace StatMaster
             const int height = 20;
             const int margin = 5;
 
-            return new Rect(5, 20 + (height + margin) * index, 300, height);
+            return new Rect(10, 20 + (height + margin) * index, 300, height);
         }
 
         private void _doWindow(int id)
@@ -86,6 +88,8 @@ namespace StatMaster
             updateGameData = GUI.Toggle(_rect(index++), updateProgressionData, " Update game data");
 
             updateParkData = GUI.Toggle(_rect(index++), updateProgressionData, " Update park data");
+
+            updateParkSessionData = GUI.Toggle(_rect(index++), updateParkSessionData, " Update park session data");
 
             updateProgressionData = GUI.Toggle(_rect(index++), updateProgressionData, " Update park progression data");
 

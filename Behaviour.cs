@@ -65,7 +65,8 @@ namespace StatMaster
         {
             while (true)
             {
-                if (_settings.updateParkData && _settings.updateProgressionData) {
+                if (_settings.updateParkData && _settings.updateParkSessionData &&
+                    _settings.updateProgressionData) {
 
                     uint cTs = getCurrentTimestamp();
 
@@ -158,7 +159,7 @@ namespace StatMaster
                 if (_data.currentPark == null)
                 {
                     Debug.LogMT("Add new park with guid " + GameController.Instance.park.guid);
-                    _data.currentPark = new Data.ParkData();
+                    _data.currentPark = new ParkData();
                     _data.currentPark.guid = GameController.Instance.park.guid;
                     _data.parks.Add(GameController.Instance.park.guid, _data.currentPark);
                 }
@@ -168,10 +169,13 @@ namespace StatMaster
                 _data.currentPark.tsSessionStarts.Add(cTs);
                 _data.currentPark.sessionIdx = _data.currentPark.tsSessionStarts.Count - 1;
 
-                ParkSessionData _parkDataSession = new ParkSessionData();
-                _parkDataSession.tsStart = cTs;
-                _parkDataSession.idx = _data.currentPark.sessionIdx;
-                _data.currentPark.sessions.Add(_data.currentPark.sessionIdx, _parkDataSession);
+                if (_settings.updateParkSessionData)
+                {
+                    ParkSessionData _parkDataSession = new ParkSessionData();
+                    _parkDataSession.tsStart = cTs;
+                    _parkDataSession.idx = _data.currentPark.sessionIdx;
+                    _data.currentPark.sessions.Add(_data.currentPark.sessionIdx, _parkDataSession);
+                }
             }
 
             updateData("load");
@@ -185,12 +189,16 @@ namespace StatMaster
             if (cName != name)
             {
                 _data.currentPark.files.Add(name);
-                if (mode == "save")
+                if (_settings.updateParkSessionData)
                 {
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].saveFiles.Add(name);
-                } else
-                {
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].loadFile = name;
+                    if (mode == "save")
+                    {
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].saveFiles.Add(name);
+                    }
+                    else
+                    {
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].loadFile = name;
+                    }
                 }
                 success = true;
             }
@@ -199,8 +207,6 @@ namespace StatMaster
 
         private void addParkFile(string mode = "load")
         {
-            ParkData pd = _data.currentPark;
-            ParkSessionData pds = pd.sessions[pd.sessionIdx];
             bool updated = false;
             Debug.LogMT("Add park file");
             if (File.Exists(GameController.Instance.loadedSavegamePath))
@@ -218,14 +224,14 @@ namespace StatMaster
         private bool addParkName(string name)
         {
             ParkData pd = _data.currentPark;
-            ParkSessionData pds = pd.sessions[pd.sessionIdx];
             bool success = false;
             if (name != "Unnamed Park" && 
                 (pd.names.Count == 0 || pd.names[pd.names.Count - 1] != name))
             {
                 Debug.LogMT("New park name " + name);
                 pd.names.Add(name);
-                pds.names.Add(name);
+                if (_settings.updateParkSessionData)
+                    pd.sessions[pd.sessionIdx].names.Add(name);
                 success = true;
             }
             else
@@ -237,6 +243,8 @@ namespace StatMaster
 
         private void updateData(string mode = "load")
         {
+            Debug.LogMT("Update park data with session " + _data.currentPark.sessionIdx);
+
             uint cTs = getCurrentTimestamp();
             _data.tsEnd = cTs;
 
@@ -245,12 +253,15 @@ namespace StatMaster
                 _data.currentPark.tsEnd = cTs;
                 Debug.LogMT("Current session end time ", _data.tsEnd);
 
-                ParkSessionData pds = _data.currentPark.sessions[_data.currentPark.sessionIdx];
-                Debug.LogMT("Update park data with session " + pds.idx.ToString());
-
                 Debug.LogMT("New park time " + ParkInfo.ParkTime.ToString());
-                pds.time = Convert.ToUInt32(ParkInfo.ParkTime);
-                _data.currentPark.time = pds.time;
+                _data.currentPark.time = Convert.ToUInt32(ParkInfo.ParkTime);
+
+                if (_settings.updateParkSessionData)
+                {
+                    ParkSessionData pds = _data.currentPark.sessions[_data.currentPark.sessionIdx];
+                    pds.time = _data.currentPark.time;
+                }
+
                 string parkName = GameController.Instance.park.parkName;
                 addParkName(parkName);
                 addParkFile(mode);
