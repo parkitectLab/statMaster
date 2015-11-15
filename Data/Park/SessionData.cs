@@ -36,6 +36,11 @@ namespace StatMaster.Data
         public Dictionary<uint, float> attractionsEntranceFeeAvg = new Dictionary<uint, float>();
         public Dictionary<uint, float> shopsItemFeeAvg = new Dictionary<uint, float>();
 
+        public Dictionary<uint, uint> attractionsOpenedCount = new Dictionary<uint, uint>();
+        public Dictionary<uint, uint> shopsOpenedCount = new Dictionary<uint, uint>();
+        public Dictionary<uint, uint> attractionsCustomersCount = new Dictionary<uint, uint>();
+        public Dictionary<uint, uint> shopsCustomersCount = new Dictionary<uint, uint>();
+
         protected override Dictionary<string, object> getDict(string handle)
         {
             Dictionary<string, object> dict = base.getDict(handle);
@@ -65,6 +70,11 @@ namespace StatMaster.Data
             dict.Add("entranceFee", entranceFee);
             dict.Add("attractionsEntranceFeeAvg", attractionsEntranceFeeAvg);
             dict.Add("shopsItemFeeAvg", shopsItemFeeAvg);
+
+            dict.Add("attractionsOpenedCount", attractionsOpenedCount);
+            dict.Add("shopsOpenedCount", shopsOpenedCount);
+            dict.Add("attractionsCustomersCount", attractionsCustomersCount);
+            dict.Add("shopsCustomersCount", shopsCustomersCount);
 
             return dict;
         }
@@ -106,6 +116,10 @@ namespace StatMaster.Data
                 case "employeesCount":
                 case "attractionsCount":
                 case "shopsCount":
+                case "attractionsOpenedCount":
+                case "shopsOpenedCount":
+                case "attractionsCustomersCount":
+                case "shopsCustomersCount":
                     Dictionary<string, object> countValuesDict = dict[key] as Dictionary<string, object>;
                     foreach (string vdKey in countValuesDict.Keys)
                     {
@@ -126,8 +140,19 @@ namespace StatMaster.Data
                             case "shopsCount":
                                 shopsCount.Add(ts, count);
                                 break;
+                            case "attractionsOpenedCount":
+                                attractionsOpenedCount.Add(ts, count);
+                                break;
+                            case "shopsOpenedCount":
+                                shopsOpenedCount.Add(ts, count);
+                                break;
+                            case "attractionsCustomersCount":
+                                attractionsCustomersCount.Add(ts, count);
+                                break;
+                            case "shopsCustomersCount":
+                                shopsCustomersCount.Add(ts, count);
+                                break;
                         }
-                        
                     }
                     break;
                 case "money":

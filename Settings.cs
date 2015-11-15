@@ -25,6 +25,8 @@ namespace StatMaster
 
         public bool updateFeeProgressionData = true;
 
+        public bool updateFurtherProgressionData = true;
+
         public uint dataUpdateInterval = 10;
 
         public bool updateAutoSaveData = true;
@@ -33,7 +35,7 @@ namespace StatMaster
 
         public bool ignoreQuickSaveFileNames = true;
 
-        private uint _windowRectsCount = 11;
+        private uint _windowRectsCount = 12;
 
         private bool _showWindow = false;
 
@@ -124,6 +126,8 @@ namespace StatMaster
                     );
 
                     updateFeeProgressionData = GUI.Toggle(_rect(index++), updateFeeProgressionData, " Update fee progression data");
+
+                    updateFurtherProgressionData = GUI.Toggle(_rect(index++), updateFurtherProgressionData, " Update further progression data");
                 }
             }
             else
@@ -131,8 +135,11 @@ namespace StatMaster
                 GUI.Label(_rect(index++), "Update park progression data (disabled).");
             }
             if (!updateGameData || !updateParkData || !updateParkSessionData || !updateProgressionData)
+            {
                 GUI.Label(_rect(index++), "Update fee progression data (disabled).");
-
+                GUI.Label(_rect(index++), "Update further progression data (disabled).");
+            }
+                
             if (updateGameData && updateParkData) { 
                 updateAutoSaveData = GUI.Toggle(_rect(index++), updateAutoSaveData, " Update AutoSave mod data");
             } else {

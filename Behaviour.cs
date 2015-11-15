@@ -71,7 +71,8 @@ namespace StatMaster
             {
                 if (_settings.updateGameData &&
                     _settings.updateParkData && _settings.updateParkSessionData &&
-                    _settings.updateProgressionData) {
+                    _settings.updateProgressionData)
+                {
 
                     uint cTs = getCurrentTimestamp();
 
@@ -135,6 +136,48 @@ namespace StatMaster
                         */
                         _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsItemFeeAvg.Add(
                           cTs, shopsItemFeeAvg
+                        );
+                    }
+
+                    // further count values related to shops and attractions
+                    if (_settings.updateFurtherProgressionData)
+                    {
+                        Debug.LogMT("Update further progression data");
+
+                        // todo: improvements to get correct relations 
+                        // to changes in shops builded / destroyed status progression
+                        // related events available? need more info
+                        uint shopsOpenedCount = 0;
+                        uint shopsCustomersCount = 0;
+                        ReadOnlyCollection<Shop> shops = GameController.Instance.park.getShops();
+                        for (int i = 0; i < shops.Count; i++)
+                        {
+                            if (shops[i].opened) shopsOpenedCount++;
+                            shopsCustomersCount = Convert.ToUInt32(shops[i].customersCount);
+                        }
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsOpenedCount.Add(
+                          cTs, shopsOpenedCount
+                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsCustomersCount.Add(
+                          cTs, shopsCustomersCount
+                        );
+
+                        // todo: improvements to get correct relations 
+                        // to changes in attractions builded / destroyed status progression
+                        // related events available? need more info
+                        uint attractionsOpenedCount = 0;
+                        uint attractionsCustomersCount = 0;
+                        ReadOnlyCollection<Attraction> attractions = GameController.Instance.park.getAttractions();
+                        for (int i = 0; i < attractions.Count; i++)
+                        {
+                            if (attractions[i].state == Attraction.State.OPENED) attractionsOpenedCount++;
+                            attractionsCustomersCount = Convert.ToUInt32(attractions[i].customersCount);
+                        }
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsOpenedCount.Add(
+                          cTs, attractionsOpenedCount
+                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsCustomersCount.Add(
+                          cTs, attractionsCustomersCount
                         );
                     }
                 }

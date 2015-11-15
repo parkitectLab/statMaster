@@ -19,6 +19,9 @@ namespace StatMaster.Data
             dict.Add("updateParkSessionData", settings.updateParkSessionData);
             dict.Add("updateProgressionData", settings.updateProgressionData);
 
+            dict.Add("updateFeeProgressionData", settings.updateFeeProgressionData);
+            dict.Add("updateFurtherProgressionData", settings.updateFurtherProgressionData);
+
             dict.Add("dataUpdateInterval", settings.dataUpdateInterval);
 
             dict.Add("updateAutoSaveData", settings.updateAutoSaveData);
@@ -48,6 +51,12 @@ namespace StatMaster.Data
                     break;
                 case "updateProgressionData":
                     settings.updateProgressionData = Convert.ToBoolean(dict[key]);
+                    break;
+                case "updateFeeProgressionData":
+                    settings.updateFeeProgressionData = Convert.ToBoolean(dict[key]);
+                    break;
+                case "updateFurtherProgressionData":
+                    settings.updateFurtherProgressionData = Convert.ToBoolean(dict[key]);
                     break;
                 case "dataUpdateInterval":
                     settings.dataUpdateInterval = Convert.ToUInt32(dict[key]);
