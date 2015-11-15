@@ -25,9 +25,11 @@ namespace StatMaster
 
         public uint dataUpdateInterval = 10;
 
-        public bool ignoreQuickSaveEvents = true;
+        public bool updateAutoSaveData = true;
 
-        public bool ignoreAutoSaveEvents = true;
+        public bool ignoreAutoSaveFileNames = true;
+
+        public bool ignoreQuickSaveFileNames = true;
 
         private bool _showWindow = false;
 
@@ -45,7 +47,7 @@ namespace StatMaster
         void Start()
         {
             // set window to center of screen with default size
-            const int windowHeight = 275;
+            const int windowHeight = 300;
             const int windowWidth = 320;
             _window = new Rect(
                 Screen.width / 2 - windowWidth / 2,
@@ -123,9 +125,15 @@ namespace StatMaster
                 GUI.Label(_rect(index++), "Update park progression data (disabled).");
             }
 
-            ignoreQuickSaveEvents = GUI.Toggle(_rect(index++), ignoreQuickSaveEvents, " Ignore QuickSave-Events");
+            if (updateGameData && updateParkData && updateParkSessionData) { 
+                updateAutoSaveData = GUI.Toggle(_rect(index++), updateAutoSaveData, " Update AutoSave mod data");
+            } else {
+                GUI.Label(_rect(index++), "Update AutoSave mod data (disabled).");
+            }
 
-            ignoreAutoSaveEvents = GUI.Toggle(_rect(index++), ignoreAutoSaveEvents, " Ignore AutoSave-Events");
+            ignoreAutoSaveFileNames = GUI.Toggle(_rect(index++), ignoreAutoSaveFileNames, " Ignore AutoSave-File names");
+
+            ignoreQuickSaveFileNames = GUI.Toggle(_rect(index++), ignoreQuickSaveFileNames, " Ignore QuickSave-File names");
 
             devMode = GUI.Toggle(_rect(index++), devMode, " Developer mode with debug messages / actions");
 

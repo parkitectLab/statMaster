@@ -42,8 +42,11 @@ namespace StatMaster
                     GameController.Instance.park.OnNameChanged += onParkNameChangedHandler;
                     Parkitect.UI.EventManager.Instance.OnGameSaved += onGameSaved;
 
-                    _updateProgressionDataCoroutine = updateProgressionData();
-                    StartCoroutine(_updateProgressionDataCoroutine);
+                    if (_settings.updateParkSessionData)
+                    {
+                        _updateProgressionDataCoroutine = updateProgressionData();
+                        StartCoroutine(_updateProgressionDataCoroutine);
+                    }
                 }
                 else
                 {
@@ -65,7 +68,8 @@ namespace StatMaster
         {
             while (true)
             {
-                if (_settings.updateParkData && _settings.updateParkSessionData &&
+                if (_settings.updateGameData &&
+                    _settings.updateParkData && _settings.updateParkSessionData &&
                     _settings.updateProgressionData) {
 
                     uint cTs = getCurrentTimestamp();
@@ -204,6 +208,23 @@ namespace StatMaster
             return success;
         }
 
+        private bool addAutoSaveParkFileToData(string name, string mode = "load")
+        {
+            bool success = false;
+            if (name.IndexOf("QuickSave-") != -1 || name.IndexOf("AutoSave-") != -1)
+            {
+                bool isAutoSave = (name.IndexOf("AutoSave-") != -1);
+                // todo further data handling logic
+                if (_settings.updateParkSessionData)
+                {
+
+                }
+                success = true;
+            }
+            
+            return success;
+        }
+
         private void addParkFile(string mode = "load")
         {
             bool updated = false;
@@ -215,14 +236,16 @@ namespace StatMaster
                 );
                 string dFile = parkSaveFileElements[parkSaveFileElements.Length - 1];
 
-                if ((!_settings.ignoreQuickSaveEvents ||
-                     (_settings.ignoreQuickSaveEvents && dFile.IndexOf("QuickSave-") == -1)) &&
-                    (!_settings.ignoreAutoSaveEvents ||
-                     (_settings.ignoreAutoSaveEvents && dFile.IndexOf("AutoSave-") == -1)))
+                if ((!_settings.ignoreQuickSaveFileNames ||
+                     (_settings.ignoreQuickSaveFileNames && dFile.IndexOf("QuickSave-") == -1)) &&
+                    (!_settings.ignoreAutoSaveFileNames ||
+                     (_settings.ignoreAutoSaveFileNames && dFile.IndexOf("AutoSave-") == -1)))
                 {
                     updated = addParkFileToData(dFile, mode);
                     if (updated) Debug.LogMT("New park file " + dFile + " mode (" + mode + ")");
                 }
+                if (_settings.updateAutoSaveData)
+                    addAutoSaveParkFileToData(dFile, mode);
             }
             if (updated == false) Debug.LogMT("No new park file");
         }
@@ -321,7 +344,8 @@ namespace StatMaster
             if (_settings.updateGameData) { 
                 if (validPark && _settings.updateParkData)
                 {
-                    StopCoroutine(_updateProgressionDataCoroutine);
+                    if (_settings.updateParkSessionData)
+                        StopCoroutine(_updateProgressionDataCoroutine);
 
                     GameController.Instance.park.OnNameChanged -= onParkNameChangedHandler;
                     Parkitect.UI.EventManager.Instance.OnGameSaved -= onGameSaved;

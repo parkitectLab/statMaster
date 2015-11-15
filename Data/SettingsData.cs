@@ -14,7 +14,16 @@ namespace StatMaster.Data
 
             dict.Add("devMode", settings.devMode);
 
+            dict.Add("updateGameData", settings.updateGameData);
+            dict.Add("updateParkData", settings.updateParkData);
+            dict.Add("updateParkSessionData", settings.updateParkSessionData);
+            dict.Add("updateProgressionData", settings.updateProgressionData);
+
             dict.Add("dataUpdateInterval", settings.dataUpdateInterval);
+
+            dict.Add("updateAutoSaveData", settings.updateAutoSaveData);
+            dict.Add("ignoreQuickSaveFileNames", settings.ignoreQuickSaveFileNames);
+            dict.Add("ignoreAutoSaveFileNames", settings.ignoreAutoSaveFileNames);
 
             return dict;
         }
@@ -28,8 +37,29 @@ namespace StatMaster.Data
                 case "devMode":
                     settings.devMode = Convert.ToBoolean(dict[key]);
                     break;
+                case "updateGameData":
+                    settings.updateGameData = Convert.ToBoolean(dict[key]);
+                    break;
+                case "updateParkData":
+                    settings.updateParkData = Convert.ToBoolean(dict[key]);
+                    break;
+                case "updateParkSessionData":
+                    settings.updateParkSessionData = Convert.ToBoolean(dict[key]);
+                    break;
+                case "updateProgressionData":
+                    settings.updateProgressionData = Convert.ToBoolean(dict[key]);
+                    break;
                 case "dataUpdateInterval":
                     settings.dataUpdateInterval = Convert.ToUInt32(dict[key]);
+                    break;
+                case "updateAutoSaveData":
+                    settings.updateAutoSaveData = Convert.ToBoolean(dict[key]);
+                    break;
+                case "ignoreQuickSaveFileNames":
+                    settings.ignoreQuickSaveFileNames = Convert.ToBoolean(dict[key]);
+                    break;
+                case "ignoreAutoSaveFileNames":
+                    settings.ignoreAutoSaveFileNames = Convert.ToBoolean(dict[key]);
                     break;
             }
 
