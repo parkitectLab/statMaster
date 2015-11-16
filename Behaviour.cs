@@ -4,6 +4,7 @@ using System;
 using StatMaster.Data;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace StatMaster
 {
@@ -102,6 +103,8 @@ namespace StatMaster
                     // further park values
                     if (_settings.updateFurtherParkProgressionData)
                     {
+                        Debug.LogMT("Update further park progression data");
+
                         _data.currentPark.sessions[_data.currentPark.sessionIdx].money.Add(
                           cTs, GameController.Instance.park.parkInfo.money
                         );
@@ -116,6 +119,61 @@ namespace StatMaster
                         );
                         _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingPriceSatisfaction.Add(
                             cTs, GameController.Instance.park.parkInfo.RatingPriceSatisfaction
+                        );
+                    }
+
+                    if (_settings.updatePeopleProgressionData)
+                    {
+                        Debug.LogMT("Update people progression data");
+
+                        List<Person> people = GameController.Instance.park.people;
+                        float moneyAvg = 0f, happinessAvg = 0f, tirednessAvg = 0f, hungerAvg = 0f,
+                            thirstAvg = 0f, toiletUrgencyAvg = 0f, nauseaAvg = 0f;
+                        for (int i = 0; i < people.Count; i++)
+                        {
+                            moneyAvg += people[i].Money;
+                            happinessAvg += people[i].Happiness;
+                            tirednessAvg += people[i].Tiredness;
+                            hungerAvg += people[i].Hunger;
+                            thirstAvg += people[i].Thirst;
+                            toiletUrgencyAvg += people[i].ToiletUrgency;
+                            nauseaAvg += people[i].Nausea;
+                        }
+                        if (moneyAvg > 0f)
+                            moneyAvg = moneyAvg / people.Count;
+                        if (happinessAvg > 0f)
+                            happinessAvg = happinessAvg / people.Count;
+                        if (tirednessAvg > 0f)
+                            tirednessAvg = tirednessAvg / people.Count;
+                        if (hungerAvg > 0f)
+                            hungerAvg = hungerAvg / people.Count;
+                        if (thirstAvg > 0f)
+                            thirstAvg = thirstAvg / people.Count;
+                        if (toiletUrgencyAvg > 0f)
+                            toiletUrgencyAvg = toiletUrgencyAvg / people.Count;
+                        if (nauseaAvg > 0f)
+                            nauseaAvg = nauseaAvg / people.Count;
+
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].peopleMoneyAvg.Add(
+                          cTs, moneyAvg
+                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].peopleHappinessAvg.Add(
+                          cTs, happinessAvg
+                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].peopleTirednessAvg.Add(
+                          cTs, tirednessAvg
+                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].peopleHungerAvg.Add(
+                          cTs, hungerAvg
+                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].peopleThirstAvg.Add(
+                          cTs, thirstAvg
+                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].peopleToiletUrgencyAvg.Add(
+                          cTs, toiletUrgencyAvg
+                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].peopleNauseaAvg.Add(
+                          cTs, nauseaAvg
                         );
                     }
 

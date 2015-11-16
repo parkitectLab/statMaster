@@ -25,6 +25,8 @@ namespace StatMaster
 
         public bool updateFurtherParkProgressionData = true;
 
+        public bool updatePeopleProgressionData = true;
+
         public bool updateAttractionsProgressionData = true;
 
         public bool updateFurtherAttractionsProgressionData = true;
@@ -41,7 +43,7 @@ namespace StatMaster
 
         public bool ignoreQuickSaveFileNames = true;
 
-        private uint _windowRectsCount = 14;
+        private uint _windowRectsCount = 15;
 
         private bool _showWindow = false;
 
@@ -141,6 +143,8 @@ namespace StatMaster
             {
                 updateFurtherParkProgressionData = GUI.Toggle(_rect(index++), updateFurtherParkProgressionData, " Update further park progression data");
 
+                updatePeopleProgressionData = GUI.Toggle(_rect(index++), updatePeopleProgressionData, " Update people progression data");
+
                 updateAttractionsProgressionData = GUI.Toggle(_rect(index++), updateAttractionsProgressionData, " Update attractions progression data");
                 if (updateAttractionsProgressionData)
                 {
@@ -162,6 +166,7 @@ namespace StatMaster
             } else
             {
                 GUI.Label(_rect(index++), "Update further park progression data (disabled).");
+                GUI.Label(_rect(index++), "Update people progression data (disabled).");
                 GUI.Label(_rect(index++), "Update attractions progression data (disabled).");
                 GUI.Label(_rect(index++), "Update further attractions progression data (disabled).");
                 GUI.Label(_rect(index++), "Update shops progression data (disabled).");

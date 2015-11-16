@@ -41,6 +41,14 @@ namespace StatMaster.Data
         public Dictionary<uint, uint> shopsOpenedCount = new Dictionary<uint, uint>();
         public Dictionary<uint, uint> shopsCustomersCount = new Dictionary<uint, uint>();
 
+        public Dictionary<uint, float> peopleMoneyAvg = new Dictionary<uint, float>();
+        public Dictionary<uint, float> peopleHappinessAvg = new Dictionary<uint, float>();
+        public Dictionary<uint, float> peopleTirednessAvg = new Dictionary<uint, float>();
+        public Dictionary<uint, float> peopleHungerAvg = new Dictionary<uint, float>();
+        public Dictionary<uint, float> peopleThirstAvg = new Dictionary<uint, float>();
+        public Dictionary<uint, float> peopleToiletUrgencyAvg = new Dictionary<uint, float>();
+        public Dictionary<uint, float> peopleNauseaAvg = new Dictionary<uint, float>();
+
         protected override Dictionary<string, object> getDict(string handle)
         {
             Dictionary<string, object> dict = base.getDict(handle);
@@ -75,6 +83,14 @@ namespace StatMaster.Data
             dict.Add("shopsProductPriceAvg", shopsProductPriceAvg);
             dict.Add("shopsOpenedCount", shopsOpenedCount);
             dict.Add("shopsCustomersCount", shopsCustomersCount);
+
+            dict.Add("peopleMoneyAvg", peopleMoneyAvg);
+            dict.Add("peopleHappinessAvg", peopleHappinessAvg);
+            dict.Add("peopleTirednessAvg", peopleTirednessAvg);
+            dict.Add("peopleHungerAvg", peopleHungerAvg);
+            dict.Add("peopleThirstAvg", peopleThirstAvg);
+            dict.Add("peopleToiletUrgencyAvg", peopleToiletUrgencyAvg);
+            dict.Add("peopleNauseaAvg", peopleNauseaAvg);
 
             return dict;
         }
@@ -162,6 +178,13 @@ namespace StatMaster.Data
                 case "entranceFee":
                 case "attractionsEntranceFeeAvg":
                 case "shopsProductPriceAvg":
+                case "peopleMoneyAvg":
+                case "peopleHappinessAvg":
+                case "peopleTirednessAvg":
+                case "peopleHungerAvg":
+                case "peopleThirstAvg":
+                case "peopleToiletUrgencyAvg":
+                case "peopleNauseaAvg":
                     Dictionary<string, object> valuesDict = dict[key] as Dictionary<string, object>;
                     foreach (string vdKey in valuesDict.Keys)
                     {
@@ -190,6 +213,27 @@ namespace StatMaster.Data
                                 break;
                             case "shopsProductPriceAvg":
                                 shopsProductPriceAvg.Add(ts, value);
+                                break;
+                            case "peopleMoneyAvg":
+                                peopleMoneyAvg.Add(ts, value);
+                                break;
+                            case "peopleHappinessAvg":
+                                peopleHappinessAvg.Add(ts, value);
+                                break;
+                            case "peopleTirednessAvg":
+                                peopleTirednessAvg.Add(ts, value);
+                                break;
+                            case "peopleHungerAvg":
+                                peopleHungerAvg.Add(ts, value);
+                                break;
+                            case "peopleThirstAvg":
+                                peopleThirstAvg.Add(ts, value);
+                                break;
+                            case "peopleToiletUrgencyAvg":
+                                peopleToiletUrgencyAvg.Add(ts, value);
+                                break;
+                            case "peopleNauseaAvg":
+                                peopleNauseaAvg.Add(ts, value);
                                 break;
                         }
                     }

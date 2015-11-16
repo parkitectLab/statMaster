@@ -21,6 +21,8 @@ namespace StatMaster.Data
             dict.Add("updateParkProgressionData", settings.updateParkProgressionData);
             dict.Add("updateFurtherParkProgressionData", settings.updateFurtherParkProgressionData);
 
+            dict.Add("updatePeopleProgressionData", settings.updatePeopleProgressionData);
+
             dict.Add("updateAttractionsProgressionData", settings.updateAttractionsProgressionData);
             dict.Add("updateFurtherAttractionsProgressionData", settings.updateFurtherAttractionsProgressionData);
 
@@ -59,6 +61,9 @@ namespace StatMaster.Data
                     break;
                 case "updateFurtherParkProgressionData":
                     settings.updateFurtherParkProgressionData = Convert.ToBoolean(dict[key]);
+                    break;
+                case "updatePeopleProgressionData":
+                    settings.updatePeopleProgressionData = Convert.ToBoolean(dict[key]);
                     break;
                 case "updateAttractionsProgressionData":
                     settings.updateAttractionsProgressionData = Convert.ToBoolean(dict[key]);
