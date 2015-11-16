@@ -71,14 +71,14 @@ namespace StatMaster
             {
                 if (_settings.updateGameData &&
                     _settings.updateParkData && _settings.updateParkSessionData &&
-                    _settings.updateProgressionData)
+                    _settings.updateParkProgressionData)
                 {
 
                     uint cTs = getCurrentTimestamp();
 
-                    Debug.LogMT("Update progression data with interval " + _settings.dataUpdateInterval);
+                    Debug.LogMT("Update progression data with interval " + _settings.progressionDataUpdateInterval);
 
-                    // uint count values
+                    // park values
                     _data.currentPark.sessions[_data.currentPark.sessionIdx].guestsCount.Add(
                       cTs, Convert.ToUInt32(GameController.Instance.park.getGuests().Count)
                     );
@@ -92,28 +92,30 @@ namespace StatMaster
                       cTs, Convert.ToUInt32(GameController.Instance.park.getShops().Count)
                     );
 
-                    // float values
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].money.Add(
-                      cTs, GameController.Instance.park.parkInfo.money
-                    );
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingCleanliness.Add(
-                      cTs, GameController.Instance.park.parkInfo.RatingCleanliness
-                    );
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingHappiness.Add(
-                      cTs, GameController.Instance.park.parkInfo.RatingCleanliness
-                    );
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingPriceSatisfaction.Add(
-                      cTs, GameController.Instance.park.parkInfo.RatingPriceSatisfaction
-                    );
-
-                    // fee float values
-                    if (_settings.updateFeeProgressionData)
+                    // further park values
+                    if (_settings.updateFurtherParkProgressionData)
                     {
-                        Debug.LogMT("Update fee progression data");
-
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].entranceFee.Add(
-                          cTs, GameController.Instance.park.parkInfo.parkEntranceFee
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].money.Add(
+                          cTs, GameController.Instance.park.parkInfo.money
                         );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].entranceFee.Add(
+                            cTs, GameController.Instance.park.parkInfo.parkEntranceFee
+                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingCleanliness.Add(
+                            cTs, GameController.Instance.park.parkInfo.RatingCleanliness
+                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingHappiness.Add(
+                            cTs, GameController.Instance.park.parkInfo.RatingCleanliness
+                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingPriceSatisfaction.Add(
+                            cTs, GameController.Instance.park.parkInfo.RatingPriceSatisfaction
+                        );
+                    }
+
+                    // attractions values
+                    if (_settings.updateAttractionsProgressionData)
+                    {
+                        Debug.LogMT("Update attractions progression data");
 
                         float attractionsEntranceFeeAvg = 0f;
                         ReadOnlyCollection<Attraction> attractions = GameController.Instance.park.getAttractions();
@@ -127,74 +129,82 @@ namespace StatMaster
                           cTs, attractionsEntranceFeeAvg
                         );
 
-                        float shopsItemFeeAvg = 0f;
+                        // further count values related to attractions
+                        if (_settings.updateFurtherAttractionsProgressionData) {
+                            Debug.LogMT("Update further attractions progression data");
+
+                            // todo: improvements to get correct relations 
+                            // to changes in attractions builded / destroyed status progression
+                            // related events available? need more info
+                            uint attractionsOpenedCount = 0;
+                            uint attractionsCustomersCount = 0;
+                            for (int i = 0; i < attractions.Count; i++)
+                            {
+                                if (attractions[i].state == Attraction.State.OPENED) attractionsOpenedCount++;
+                                attractionsCustomersCount = Convert.ToUInt32(attractions[i].customersCount);
+                            }
+                            _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsOpenedCount.Add(
+                              cTs, attractionsOpenedCount
+                            );
+                            _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsCustomersCount.Add(
+                              cTs, attractionsCustomersCount
+                            );
+                        }
+                    }
+
+                    if (_settings.updateShopsProgressionData)
+                    {
+                        Debug.LogMT("Update shops progression data");
+
+                        float shopsProductPriceAvg = 0f;
                         ReadOnlyCollection<Shop> shops = GameController.Instance.park.getShops();
                         ProductShop ps;
                         ProductShopSettings pss;
-                        float itemsFeeAvg;
+                        float productPriceAvg;
                         for (int i = 0; i < shops.Count; i++) {
                             ps = (ProductShop)shops[i];
                             pss = (ProductShopSettings)ps.getSettings();
-                            itemsFeeAvg = 0f;
+                            productPriceAvg = 0f;
                             for (int j = 0; j < ps.products.Length; j++)
                             {
-                                itemsFeeAvg += pss.getProductSettings(ps.products[j]).price;
+                                productPriceAvg += pss.getProductSettings(ps.products[j]).price;
                             }
-                            if (itemsFeeAvg > 0f)
-                                itemsFeeAvg = itemsFeeAvg / ps.products.Length;
-                            shopsItemFeeAvg += itemsFeeAvg;
+                            if (productPriceAvg > 0f)
+                                productPriceAvg = productPriceAvg / ps.products.Length;
+                            shopsProductPriceAvg += productPriceAvg;
                         }
-                        if (shopsItemFeeAvg > 0f)
-                            shopsItemFeeAvg = shopsItemFeeAvg / shops.Count;
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsItemFeeAvg.Add(
-                          cTs, shopsItemFeeAvg
+                        if (shopsProductPriceAvg > 0f)
+                            shopsProductPriceAvg = shopsProductPriceAvg / shops.Count;
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsProductPriceAvg.Add(
+                          cTs, shopsProductPriceAvg
                         );
-                    }
 
-                    // further count values related to shops and attractions
-                    if (_settings.updateFurtherProgressionData)
-                    {
-                        Debug.LogMT("Update further progression data");
-
-                        // todo: improvements to get correct relations 
-                        // to changes in shops builded / destroyed status progression
-                        // related events available? need more info
-                        uint shopsOpenedCount = 0;
-                        uint shopsCustomersCount = 0;
-                        ReadOnlyCollection<Shop> shops = GameController.Instance.park.getShops();
-                        for (int i = 0; i < shops.Count; i++)
+                        // further count values related to shops
+                        if (_settings.updateFurtherShopsProgressionData)
                         {
-                            if (shops[i].opened) shopsOpenedCount++;
-                            shopsCustomersCount = Convert.ToUInt32(shops[i].customersCount);
-                        }
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsOpenedCount.Add(
-                          cTs, shopsOpenedCount
-                        );
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsCustomersCount.Add(
-                          cTs, shopsCustomersCount
-                        );
+                            Debug.LogMT("Update further shops progression data");
 
-                        // todo: improvements to get correct relations 
-                        // to changes in attractions builded / destroyed status progression
-                        // related events available? need more info
-                        uint attractionsOpenedCount = 0;
-                        uint attractionsCustomersCount = 0;
-                        ReadOnlyCollection<Attraction> attractions = GameController.Instance.park.getAttractions();
-                        for (int i = 0; i < attractions.Count; i++)
-                        {
-                            if (attractions[i].state == Attraction.State.OPENED) attractionsOpenedCount++;
-                            attractionsCustomersCount = Convert.ToUInt32(attractions[i].customersCount);
+                            // todo: improvements to get correct relations 
+                            // to changes in shops builded / destroyed status progression
+                            // related events available? need more info
+                            uint shopsOpenedCount = 0;
+                            uint shopsCustomersCount = 0;
+                            for (int i = 0; i < shops.Count; i++)
+                            {
+                                if (shops[i].opened) shopsOpenedCount++;
+                                shopsCustomersCount = Convert.ToUInt32(shops[i].customersCount);
+                            }
+                            _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsOpenedCount.Add(
+                              cTs, shopsOpenedCount
+                            );
+                            _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsCustomersCount.Add(
+                              cTs, shopsCustomersCount
+                            );
                         }
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsOpenedCount.Add(
-                          cTs, attractionsOpenedCount
-                        );
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsCustomersCount.Add(
-                          cTs, attractionsCustomersCount
-                        );
                     }
                 }
 
-                yield return new WaitForSeconds(_settings.dataUpdateInterval);
+                yield return new WaitForSeconds(_settings.progressionDataUpdateInterval);
             }
         }
 

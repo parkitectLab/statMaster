@@ -28,17 +28,17 @@ namespace StatMaster.Data
         public Dictionary<uint, uint> shopsCount = new Dictionary<uint, uint>();
 
         public Dictionary<uint, float> money = new Dictionary<uint, float>();
+        public Dictionary<uint, float> entranceFee = new Dictionary<uint, float>();
         public Dictionary<uint, float> ratingCleanliness = new Dictionary<uint, float>();
         public Dictionary<uint, float> ratingHappiness = new Dictionary<uint, float>();
         public Dictionary<uint, float> ratingPriceSatisfaction = new Dictionary<uint, float>();
 
-        public Dictionary<uint, float> entranceFee = new Dictionary<uint, float>();
         public Dictionary<uint, float> attractionsEntranceFeeAvg = new Dictionary<uint, float>();
-        public Dictionary<uint, float> shopsItemFeeAvg = new Dictionary<uint, float>();
-
         public Dictionary<uint, uint> attractionsOpenedCount = new Dictionary<uint, uint>();
-        public Dictionary<uint, uint> shopsOpenedCount = new Dictionary<uint, uint>();
         public Dictionary<uint, uint> attractionsCustomersCount = new Dictionary<uint, uint>();
+
+        public Dictionary<uint, float> shopsProductPriceAvg = new Dictionary<uint, float>();
+        public Dictionary<uint, uint> shopsOpenedCount = new Dictionary<uint, uint>();
         public Dictionary<uint, uint> shopsCustomersCount = new Dictionary<uint, uint>();
 
         protected override Dictionary<string, object> getDict(string handle)
@@ -63,17 +63,17 @@ namespace StatMaster.Data
             dict.Add("shopsCount", shopsCount);
 
             dict.Add("money", money);
+            dict.Add("entranceFee", entranceFee);
             dict.Add("ratingCleanliness", ratingCleanliness);
             dict.Add("ratingHappiness", ratingHappiness);
             dict.Add("ratingPriceSatisfaction", ratingPriceSatisfaction);
 
-            dict.Add("entranceFee", entranceFee);
             dict.Add("attractionsEntranceFeeAvg", attractionsEntranceFeeAvg);
-            dict.Add("shopsItemFeeAvg", shopsItemFeeAvg);
-
             dict.Add("attractionsOpenedCount", attractionsOpenedCount);
-            dict.Add("shopsOpenedCount", shopsOpenedCount);
             dict.Add("attractionsCustomersCount", attractionsCustomersCount);
+
+            dict.Add("shopsProductPriceAvg", shopsProductPriceAvg);
+            dict.Add("shopsOpenedCount", shopsOpenedCount);
             dict.Add("shopsCustomersCount", shopsCustomersCount);
 
             return dict;
@@ -161,7 +161,7 @@ namespace StatMaster.Data
                 case "ratingPriceSatisfaction":
                 case "entranceFee":
                 case "attractionsEntranceFeeAvg":
-                case "shopsItemFeeAvg":
+                case "shopsProductPriceAvg":
                     Dictionary<string, object> valuesDict = dict[key] as Dictionary<string, object>;
                     foreach (string vdKey in valuesDict.Keys)
                     {
@@ -188,8 +188,8 @@ namespace StatMaster.Data
                             case "attractionsEntranceFeeAvg":
                                 attractionsEntranceFeeAvg.Add(ts, value);
                                 break;
-                            case "shopsItemFeeAvg":
-                                shopsItemFeeAvg.Add(ts, value);
+                            case "shopsProductPriceAvg":
+                                shopsProductPriceAvg.Add(ts, value);
                                 break;
                         }
                     }
