@@ -2,8 +2,6 @@
 
 ## Data related
 * (average) Guest stats (properties in Guest?)
-* Shops related, improve shops item fee avg calculation
-  * Needs related shop property first
 * Attractions related, builded / destroyed progress
   * Needs related events to improve attraction related count values
 * Shops related, builded / destroyed progress

@@ -33,16 +33,21 @@ A Parkitect Game Modification which offers the ability to:
   - Used park names
   - Loaded file name
   - Further used file names
-+ Update Progression Data (depends on Park Session Data)
-  - Count values (Guests, employees, attractions, shops)
-  - Other values (Money, cleanliness, happiness, price satisfaction)
++ Update Park Progression Data (depends on Park Session Data)
+  - Guests, employees, attractions, shops count
 + Update Interval Progression Data (every 1 - 120 seconds)
   - all other data will be updated on session start / end
   - or if a related ingame event has been occured
-+ Update Fee Progression Data (depends on Progression Data)
-  - Park entrance fee, Average Attraction / Shop Item Fee
-+ Update Further Progression Data (depends on Progression Data)
-  - Count values (Attractions / Shops Opened & Customers)
++ Update Further Park Progression Data (depends on Park Progression Data)
+  - Money, entrance fee, cleanliness, happiness, price satisfaction
++ Update Attractions Progression Data (depends on Park Progression Data)
+  - Average attraction entrance fee
++ Update Further Attractions Progression Data (depends on Attractions Progression Data)
+  - Attractions opened & customers count
++ Update Shops Progression Data (depends on Park Progression Data)
+  - Average shops item price
++ Update Further Shops Progression Data (depends on Shops Progression Data)
+  - Shops opened & customers count
 + Update AutoSave mod data (depends on Park Data)
   - AutoSaves / QuickSaves count (for Park and Park Session)
 + Ignore AutoSave-File names (in regular park file names log)
