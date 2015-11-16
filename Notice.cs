@@ -7,8 +7,6 @@ namespace StatMaster
     class Notice
     {
 
-        private uint _windowRectsCount = 14;
-
         public bool showWindow = false;
 
         public uint windowWidth = 450;
