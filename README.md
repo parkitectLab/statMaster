@@ -40,6 +40,8 @@ A Parkitect Game Modification which offers the ability to:
   - or if a related ingame event has been occured
 + Update Further Park Progression Data (depends on Park Progression Data)
   - Money, entrance fee, cleanliness, happiness, price satisfaction
++ Update People Progression Data (depends on Park Progression Data)
+  - Average money, happiness, tiredness, hunger, thirst, toilet urgency, nausea
 + Update Attractions Progression Data (depends on Park Progression Data)
   - Average attraction entrance fee
 + Update Further Attractions Progression Data (depends on Attractions Progression Data)
