@@ -1,11 +1,15 @@
 # Parkitect StatMaster Todos
 
+
+* Backward compatibility pre-alpha 3 save games
+* Optimizing custom save events detection
+* Detect shop/attraction builded/destroyed
+
+[Technical StatMaster Thread](https://parkitectnexus.com/forum/4-modding-technical/12-statmaster)
+
 ## Data related
-* (average) Guest stats (properties in Guest?)
-* Attractions related, builded / destroyed progress
-  * Needs related events to improve attraction related count values
-* Shops related, builded / destroyed progress
-  * Needs related events to improve shop related count values
+* Financial data, attractions / shops / other / overall
+* Improve attractions/shops customers data handling in relation to build/destroy events
 
 ## Aggregator related
 * prepare data for different overview / filtered outputs
