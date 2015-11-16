@@ -52,6 +52,12 @@ namespace StatMaster
                 Directory.Delete(path, true);
         }
 
+        public void delete(string handle)
+        {
+            if (files.ContainsKey(handle) && File.Exists(path + files[handle]))
+                File.Delete(path + files[handle]);
+        }
+
         public List<string> loadAll()
         {
             errorOnLoad = false;

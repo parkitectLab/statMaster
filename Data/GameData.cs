@@ -83,6 +83,7 @@ namespace StatMaster.Data
                 {
                     msgs.AddRange(parks[parkGuid].loadByHandles());
                     errorOnLoad = (parks[parkGuid].errorOnLoad) ? parks[parkGuid].errorOnLoad : errorOnLoad;
+                    if (!errorOnLoad && parks[parkGuid].invalidDataVersion) parks.Remove(parkGuid);
                 }
             }
             return msgs;

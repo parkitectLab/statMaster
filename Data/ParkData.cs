@@ -117,6 +117,7 @@ namespace StatMaster.Data
                     { 
                         msgs.AddRange(sessions[sIdx].loadByHandles());
                         errorOnLoad = (sessions[sIdx].errorOnLoad) ? sessions[sIdx].errorOnLoad : errorOnLoad;
+                        if (!errorOnLoad && sessions[sIdx].invalidDataVersion) sessions.Remove(sIdx);
                     }
                 }
             ignoreSessionsOnFirstLoad = false;

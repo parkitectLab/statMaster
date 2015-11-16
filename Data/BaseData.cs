@@ -7,6 +7,8 @@ namespace StatMaster.Data
     class BaseData
     {
         public uint dataVersionIdx = 0;
+        public uint minDataVersionIdx = 0;
+        public bool invalidDataVersion = false;
 
         protected FilesHandler fh = new FilesHandler();
         protected List<string> handles = new List<string>();
@@ -73,6 +75,15 @@ namespace StatMaster.Data
                     success = success && (content != null);
                     if (success) success = success && setByDict(
                         handle, Json.Deserialize(content) as Dictionary<string, object>);
+                    if (minDataVersionIdx > 0)
+                    {
+                        if (dataVersionIdx != minDataVersionIdx)
+                        {
+                            fh.delete(handle);
+                            invalidDataVersion = true;
+                        }
+                    }
+
                 }
             }
             return success;
