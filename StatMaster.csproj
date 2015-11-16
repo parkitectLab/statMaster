@@ -56,6 +56,7 @@
     <Compile Include="Debug.cs" />
     <Compile Include="FilesHandler.cs" />
     <Compile Include="Data\Park\SessionData.cs" />
+    <Compile Include="Notice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\TimeData.cs" />
     <Compile Include="Data\ParkData.cs" />

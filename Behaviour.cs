@@ -19,6 +19,8 @@ namespace StatMaster
 
         private Settings _settings;
 
+        private Notice _notice = new Notice();
+
         private IEnumerator _updateProgressionDataCoroutine;
 
         private void Awake()
@@ -49,8 +51,13 @@ namespace StatMaster
                         StartCoroutine(_updateProgressionDataCoroutine);
                     }
                 }
-                else
+                else if (!validPark)
                 {
+                    _notice.addText("The current park is not compatible with StatMaster!");
+                    _notice.addText("No park data logging available, regular game data logging only!");
+                    _notice.addText("We are working on a solution, please wait for the next pre-alpha 5 release!");
+                    _notice.showWindow = true;
+
                     Debug.LogMT("No valid park found, park stats disabled!");
                 }
             }
@@ -383,13 +390,15 @@ namespace StatMaster
 
         private void updateData(string mode = "load")
         {
-            Debug.LogMT("Update park data with session " + _data.currentPark.sessionIdx);
+            Debug.LogMT("Update game data");
 
             uint cTs = getCurrentTimestamp();
             _data.tsEnd = cTs;
 
             if (validPark && _settings.updateParkData)
             {
+                Debug.LogMT("Update park data with session " + _data.currentPark.sessionIdx);
+
                 _data.currentPark.tsEnd = cTs;
                 Debug.LogMT("Current session end time ", _data.tsEnd);
 
@@ -412,6 +421,8 @@ namespace StatMaster
         {
             if (Application.loadedLevel != 2 || _settings.devMode != true)
                 return;
+
+            _notice.OnGUI();
 
             if (GUI.Button(new Rect(Screen.width - 200, 0, 200, 20), "Save Data"))
             {
