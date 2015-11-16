@@ -40,9 +40,18 @@ namespace StatMaster.Data
             }
             return dict;
         }
+
         protected override bool setObjByKey(string handle, string key, object obj)
         {
             bool success = base.setObjByKey(handle, key, obj);
+            if (dataVersionIdx == 0)
+            {
+                // related to dataVersionIdx = 0 in loadByHandles
+                // remove old data and keep main data valid if no newer dataVersionIdx has been loaded
+                // old park guid data will be ignored in the further process automatically
+                fh.deleteAll();
+                dataVersionIdx = 1;
+            }
 
             if (handle == "main")
             {
@@ -75,6 +84,7 @@ namespace StatMaster.Data
 
         public override List<string> loadByHandles()
         {
+            dataVersionIdx = 0;
             List<string> msgs = base.loadByHandles();
 
             foreach (string parkGuid in parks.Keys)

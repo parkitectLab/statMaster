@@ -302,7 +302,7 @@ namespace StatMaster
             Debug.LogMT("New data? " + !(_data.sessionIdx > 0));
 
             _data.tsSessionStarts.Add(cTs);
-            _data.sessionIdx++;
+            _data.sessionIdx = _data.tsSessionStarts.Count - 1;
             Debug.LogMT("Current session start time ", cTs);
 
             // determine existing park by guid to search for related     

@@ -25,6 +25,7 @@ namespace StatMaster.Data
         public ParkData()
         {
             dataVersionIdx = 1;
+            minDataVersionIdx = 1;
         }
 
         protected override Dictionary<string, object> getDict(string handle)
