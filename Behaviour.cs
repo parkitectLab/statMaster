@@ -128,12 +128,24 @@ namespace StatMaster
                         );
 
                         float shopsItemFeeAvg = 0f;
-                        /* not yet available? need more info ...
                         ReadOnlyCollection<Shop> shops = GameController.Instance.park.getShops();
-                        for (int i = 0; i < shops.Count; i++) { }
+                        ProductShop ps;
+                        ProductShopSettings pss;
+                        float itemsFeeAvg;
+                        for (int i = 0; i < shops.Count; i++) {
+                            ps = (ProductShop)shops[i];
+                            pss = (ProductShopSettings)ps.getSettings();
+                            itemsFeeAvg = 0f;
+                            for (int j = 0; j < ps.products.Length; j++)
+                            {
+                                itemsFeeAvg += pss.getProductSettings(ps.products[j]).price;
+                            }
+                            if (itemsFeeAvg > 0f)
+                                itemsFeeAvg = itemsFeeAvg / ps.products.Length;
+                            shopsItemFeeAvg += itemsFeeAvg;
+                        }
                         if (shopsItemFeeAvg > 0f)
                             shopsItemFeeAvg = shopsItemFeeAvg / shops.Count;
-                        */
                         _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsItemFeeAvg.Add(
                           cTs, shopsItemFeeAvg
                         );
