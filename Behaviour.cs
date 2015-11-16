@@ -293,10 +293,12 @@ namespace StatMaster
             uint cTs = (tsSessionStart > 0) ? tsSessionStart : getCurrentTimestamp();
 
             Debug.LogMT("Init session");
-            if (validPark && _settings.updateParkData) _data.currentParkGuid = GameController.Instance.park.guid;
+            if (validPark && _settings.updateParkData) _data.currentParkGuid = GameController.Instance.park.guid.ToLower();
             Debug.LogMT(_data.loadByHandles());
             if (_data.errorOnLoad) _data = new GameData();
+            if (validPark && _settings.updateParkData) _data.currentParkGuid = GameController.Instance.park.guid.ToLower();
             if (_data.tsStart == 0) _data.tsStart = cTs;
+            if (_data.playerGuid == null) _data.playerGuid = Guid.NewGuid().ToString();
             Debug.LogMT("New data? " + !(_data.sessionIdx > 0));
 
             _data.tsSessionStarts.Add(cTs);

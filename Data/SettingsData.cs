@@ -8,6 +8,11 @@ namespace StatMaster.Data
 
         public Settings settings;
 
+        public SettingsData()
+        {
+            dataVersionIdx = 1;
+        }
+
         protected override Dictionary<string, object> getDict(string handle)
         {
             Dictionary<string, object> dict = base.getDict(handle);
@@ -32,47 +37,47 @@ namespace StatMaster.Data
             return dict;
         }
 
-        protected override bool setByDictKey(Dictionary<string, object> dict, string key)
+        protected override bool setObjByKey(string handle, string key, object obj)
         {
-            bool success = base.setByDictKey(dict, key);
+            bool success = base.setObjByKey(handle, key, obj);
 
             switch (key)
             {
                 case "devMode":
-                    settings.devMode = Convert.ToBoolean(dict[key]);
+                    settings.devMode = Convert.ToBoolean(obj);
                     break;
                 case "updateGameData":
-                    settings.updateGameData = Convert.ToBoolean(dict[key]);
+                    settings.updateGameData = Convert.ToBoolean(obj);
                     break;
                 case "updateParkData":
-                    settings.updateParkData = Convert.ToBoolean(dict[key]);
+                    settings.updateParkData = Convert.ToBoolean(obj);
                     break;
                 case "updateParkSessionData":
-                    settings.updateParkSessionData = Convert.ToBoolean(dict[key]);
+                    settings.updateParkSessionData = Convert.ToBoolean(obj);
                     break;
                 case "updateProgressionData":
-                    settings.updateProgressionData = Convert.ToBoolean(dict[key]);
+                    settings.updateProgressionData = Convert.ToBoolean(obj);
                     break;
                 case "progressionDataUpdateInterval":
-                    settings.progressionDataUpdateInterval = Convert.ToUInt32(dict[key]);
+                    settings.progressionDataUpdateInterval = Convert.ToUInt32(obj);
                     break;
                 case "updatePeopleData":
-                    settings.updatePeopleData = Convert.ToBoolean(dict[key]);
+                    settings.updatePeopleData = Convert.ToBoolean(obj);
                     break;
                 case "updateAttractionsData":
-                    settings.updateAttractionsData = Convert.ToBoolean(dict[key]);
+                    settings.updateAttractionsData = Convert.ToBoolean(obj);
                     break;
                 case "updateShopsData":
-                    settings.updateShopsData = Convert.ToBoolean(dict[key]);
+                    settings.updateShopsData = Convert.ToBoolean(obj);
                     break;                
                 case "updateAutoSaveData":
-                    settings.updateAutoSaveData = Convert.ToBoolean(dict[key]);
+                    settings.updateAutoSaveData = Convert.ToBoolean(obj);
                     break;
                 case "ignoreQuickSaveFileNames":
-                    settings.ignoreQuickSaveFileNames = Convert.ToBoolean(dict[key]);
+                    settings.ignoreQuickSaveFileNames = Convert.ToBoolean(obj);
                     break;
                 case "ignoreAutoSaveFileNames":
-                    settings.ignoreAutoSaveFileNames = Convert.ToBoolean(dict[key]);
+                    settings.ignoreAutoSaveFileNames = Convert.ToBoolean(obj);
                     break;
             }
 

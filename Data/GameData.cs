@@ -4,6 +4,7 @@ namespace StatMaster.Data
 {
     class GameData : TimeData
     {
+        public string playerGuid = null;
 
         public bool currentParkOnly = true;
         public ParkData currentPark = null;
@@ -12,6 +13,7 @@ namespace StatMaster.Data
 
         public GameData()
         {
+            dataVersionIdx = 1;
             addHandle("main");
         }
 
@@ -19,52 +21,56 @@ namespace StatMaster.Data
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             dict = base.getDict(handle);
-            string parkHandle = "";
+
             if (handle == "main")
             {
                 dict = base.getDict(handle);
-                if (parks.Count == 0) return null;
+                dict.Add("playerGuid", playerGuid);
 
-                Dictionary<string, string> parksGF = new Dictionary<string, string>();
+                List<string> parkGuids = new List<string>();
                 foreach (string parkGuid in parks.Keys)
                 {
-                    // use parkitect guid + md5 data file name (guid with prefix)
-                    parkHandle = fh.calculateMD5Hash("statmaster_data_park_" + parkGuid).ToLower();
-                    parksGF.Add(parkGuid, parkHandle);
+                    parkGuids.Add(parkGuid);
                     if (currentParkOnly == false || (currentParkGuid == parkGuid))
                     {
-                        parks[parkGuid].addHandle("park_" + parkHandle);
+                        parks[parkGuid].addHandle("park_" + parkGuid.ToLower());
                     }
                 }
-                dict.Add("parksGF", parksGF);
+                dict.Add("parkGuids", parkGuids);
             }
             return dict;
         }
-        protected override bool setByDictKey(Dictionary<string, object> dict, string key)
+        protected override bool setObjByKey(string handle, string key, object obj)
         {
-            bool success = base.setByDictKey(dict, key);
-            string parkHandle = "";
-            switch (key)
+            bool success = base.setObjByKey(handle, key, obj);
+
+            if (handle == "main")
             {
-                case "parksGF":
-                    Dictionary<string, object> parksGF = dict[key] as Dictionary<string, object>;
-                    foreach (object parkG in parksGF.Keys)
-                    {
-                        if (currentParkOnly == false || (currentParkGuid == parkG.ToString())) {
-                            ParkData nPark = new ParkData();
-                            nPark.guid = parkG.ToString();
-                            parkHandle = fh.calculateMD5Hash("statmaster_data_park_" + nPark.guid).ToLower();
-                            nPark.addHandle("park_" + parkHandle);
-                            parks.Add(parkG.ToString(), nPark);
-                        } else
+                switch (key)
+                {
+                    case "playerGuid":
+                        playerGuid = obj.ToString();
+                        break;
+                    case "parkGuids":
+                        List<object> parkGuids = obj as List<object>;
+                        foreach (object parkGuid in parkGuids)
                         {
-                            parks.Add(parkG.ToString(), null);
+                            if (currentParkOnly == false || (currentParkGuid == parkGuid.ToString()))
+                            {
+                                ParkData nPark = new ParkData();
+                                nPark.guid = parkGuid.ToString();
+                                nPark.addHandle("park_" + nPark.guid);
+                                parks.Add(nPark.guid, nPark);
+                            }
+                            else
+                            {
+                                parks.Add(parkGuid.ToString(), null);
+                            }
                         }
-                    }
-                    if (parks.Count == 0) success = false;
-                    break;
+                        break;
+                }
             }
-            return true;
+            return success;
         }
 
         public override List<string> loadByHandles()

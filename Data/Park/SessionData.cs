@@ -49,6 +49,11 @@ namespace StatMaster.Data
         public Dictionary<uint, float> peopleToiletUrgencyAvg = new Dictionary<uint, float>();
         public Dictionary<uint, float> peopleNauseaAvg = new Dictionary<uint, float>();
 
+        public ParkSessionData()
+        {
+            dataVersionIdx = 1;
+        }
+
         protected override Dictionary<string, object> getDict(string handle)
         {
             Dictionary<string, object> dict = base.getDict(handle);
@@ -95,38 +100,38 @@ namespace StatMaster.Data
             return dict;
         }
 
-        protected override bool setByDictKey(Dictionary<string, object> dict, string key)
+        protected override bool setObjByKey(string handle, string key, object obj)
         {
-            bool success = base.setByDictKey(dict, key);
+            bool success = base.setObjByKey(handle, key, obj);
             switch (key)
             {
                 case "idx":
-                    idx = Convert.ToInt32(dict[key]);
+                    idx = Convert.ToInt32(obj);
                     break;
                 case "tsStart":
-                    tsStart = Convert.ToUInt32(dict[key]);
+                    tsStart = Convert.ToUInt32(obj);
                     break;
                 case "time":
-                    time = Convert.ToUInt32(dict[key]);
+                    time = Convert.ToUInt32(obj);
                     break;
                 case "names":
-                    List<object> dNames = dict[key] as List<object>;
+                    List<object> dNames = obj as List<object>;
                     if (dNames.Count > 0)
                         foreach (object name in dNames) names.Add(name.ToString());
                     break;
                 case "saveFiles":
-                    List<object> dSaveFiles = dict[key] as List<object>;
+                    List<object> dSaveFiles = obj as List<object>;
                     if (dSaveFiles.Count > 0)
                         foreach (object saveFile in dSaveFiles) saveFiles.Add(saveFile.ToString());
                     break;
                 case "loadFile":
-                    loadFile = (dict[key].ToString() != null) ? dict[key].ToString() : "";
+                    loadFile = (obj.ToString() != null) ? obj.ToString() : "";
                     break;
                 case "autoSavesCount":
-                    autoSavesCount = Convert.ToUInt32(dict[key]);
+                    autoSavesCount = Convert.ToUInt32(obj);
                     break;
                 case "quickSavesCount":
-                    quickSavesCount = Convert.ToUInt32(dict[key]);
+                    quickSavesCount = Convert.ToUInt32(obj);
                     break;
                 case "guestsCount":
                 case "employeesCount":
@@ -136,7 +141,7 @@ namespace StatMaster.Data
                 case "shopsOpenedCount":
                 case "attractionsCustomersCount":
                 case "shopsCustomersCount":
-                    Dictionary<string, object> countValuesDict = dict[key] as Dictionary<string, object>;
+                    Dictionary<string, object> countValuesDict = obj as Dictionary<string, object>;
                     foreach (string vdKey in countValuesDict.Keys)
                     {
                         uint ts = Convert.ToUInt32(vdKey);
@@ -185,7 +190,7 @@ namespace StatMaster.Data
                 case "peopleThirstAvg":
                 case "peopleToiletUrgencyAvg":
                 case "peopleNauseaAvg":
-                    Dictionary<string, object> valuesDict = dict[key] as Dictionary<string, object>;
+                    Dictionary<string, object> valuesDict = obj as Dictionary<string, object>;
                     foreach (string vdKey in valuesDict.Keys)
                     {
                         uint ts = Convert.ToUInt32(vdKey);

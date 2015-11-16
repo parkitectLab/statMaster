@@ -1,33 +1,48 @@
 ﻿using System.Collections.Generic;
 using MiniJSON;
+using System;
 
 namespace StatMaster.Data
 {
     class BaseData
     {
+        public uint dataVersionIdx = 0;
+
         protected FilesHandler fh = new FilesHandler();
         protected List<string> handles = new List<string>();
 
         public bool errorOnLoad = false;
         public bool errorOnSave = false;
 
+        // get dict to save data to json
         protected virtual Dictionary<string, object> getDict(string handle)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
+            dict.Add("dataVersionIdx", dataVersionIdx);
             return dict;
         }
 
-        protected virtual bool setByDictKey(Dictionary<string, object> dict, string key)
+        // set object by key to properties
+        protected virtual bool setObjByKey(string handle, string key, object obj)
         {
-            return true;
+            bool success = true;
+            switch (key)
+            {
+                case "dataVersionIdx":
+                    dataVersionIdx = Convert.ToUInt32(obj);
+                    if (dataVersionIdx == 0) success = false;
+                    break;
+            }
+            return success;
         }
 
-        protected virtual bool setByDict(Dictionary<string, object> dict)
+        // set by dict to get data from json data related dictionary
+        protected virtual bool setByDict(string handle, Dictionary<string, object> dict)
         {
             bool success = true;
             foreach (string key in dict.Keys)
             {
-                success = success && setByDictKey(dict, key);
+                success = success && setObjByKey(handle, key, dict[key]);
             }
             return success;
         }
@@ -50,13 +65,14 @@ namespace StatMaster.Data
                 {
                     Dictionary<string, object> dict = getDict(handle);
                     success = success && (dict != null);
-                    if (success) success = success && fh.set(handle, Json.Serialize(getDict(handle)));
+                    if (success) success = success && fh.set(handle, Json.Serialize(dict));
                 }
                 else
                 {
                     string content = fh.get(handle);
                     success = success && (content != null);
-                    if (success) success = success && setByDict(Json.Deserialize(content) as Dictionary<string, object>);
+                    if (success) success = success && setByDict(
+                        handle, Json.Deserialize(content) as Dictionary<string, object>);
                 }
             }
             return success;

@@ -14,32 +14,26 @@ namespace StatMaster.Data
         // last timestamp in record to go to
         public uint tsEnd = 0;
 
-        protected override bool setByDictKey(Dictionary<string, object> dict, string key)
+        protected override bool setObjByKey(string handle, string key, object obj)
         {
+            bool success = base.setObjByKey(handle, key, obj);
             switch (key)
             {
                 case "sessionIdx":
-                    sessionIdx = Convert.ToInt32(dict[key]);
+                    sessionIdx = Convert.ToInt32(obj);
                     break;
                 case "tsSessionStarts":
-                    List<object> starts = dict[key] as List<object>;
+                    List<object> starts = obj as List<object>;
                     if (starts.Count > 0)
                         foreach (object start in starts) tsSessionStarts.Add(Convert.ToUInt32(start));
                     break;
                 case "tsStart":
-                    tsStart = Convert.ToUInt32(dict[key]);
+                    tsStart = Convert.ToUInt32(obj);
                     break;
                 case "tsEnd":
-                    tsEnd = Convert.ToUInt32(dict[key]);
+                    tsEnd = Convert.ToUInt32(obj);
                     break;
             }
-            return true;
-        }
-
-        protected override bool setByDict(Dictionary<string, object> dict)
-        {
-            bool success = base.setByDict(dict);
-            sessionIdx = tsSessionStarts.Count - 1;
             return success;
         }
 

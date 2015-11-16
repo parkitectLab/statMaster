@@ -18,8 +18,14 @@ namespace StatMaster.Data
         public uint autoSavesCount = 0;
         public uint quickSavesCount = 0;
 
+        public bool ignoreSessionsOnFirstLoad = true;
         public bool currentSessionOnly = true;
         public Dictionary<int, ParkSessionData> sessions = new Dictionary<int, ParkSessionData>();
+
+        public ParkData()
+        {
+            dataVersionIdx = 1;
+        }
 
         protected override Dictionary<string, object> getDict(string handle)
         {
@@ -35,71 +41,63 @@ namespace StatMaster.Data
             dict.Add("autoSavesCount", autoSavesCount);
             dict.Add("quickSaveCount", quickSavesCount);
 
-            string sessionHandle = "";
-            Dictionary<int, string> sessionsIF = new Dictionary<int, string>();
+            List<int> sessionIdxs = new List<int>();
             foreach (int sIdx in sessions.Keys)
             {
-                // use session idx + md5 data file name (idx with prefix)
-                sessionHandle = fh.calculateMD5Hash(
-                    "statmaster_data_park_" + guid + "_session_" + sIdx
-                ).ToLower();
-                sessionsIF.Add(sIdx, sessionHandle);
+                sessionIdxs.Add(sIdx);
                 if (currentSessionOnly == false || (sessionIdx == sIdx))
                 {
-                    sessions[sIdx].addHandle("park_session_" + sessionHandle);
+                    sessions[sIdx].addHandle("park_" + guid + "_session_" + sIdx);
                 }
             }
 
-            dict.Add("sessionsIF", sessionsIF);
+            dict.Add("sessionIdxs", sessionIdxs);
             return dict;
         }
 
-        protected override bool setByDictKey(Dictionary<string, object> dict, string key)
+        protected override bool setObjByKey(string handle, string key, object obj)
         {
-            string sessionHandle = "";
-            bool success = base.setByDictKey(dict, key);
+            bool success = base.setObjByKey(handle, key, obj);
             switch (key)
             {
                 case "guid":
-                    guid = dict[key].ToString();
+                    guid = obj.ToString();
                     if (guid.Length == 0) success = false;
                     break;
                 case "time":
-                    time = Convert.ToUInt32(dict[key]);
+                    time = Convert.ToUInt32(obj);
                     break;
                 case "names":
-                    List<object> dNames = dict[key] as List<object>;
+                    List<object> dNames = obj as List<object>;
                     if (dNames.Count > 0)
                         foreach (object name in dNames) names.Add(name.ToString());
                     break;
                 case "files":
-                    List<object> dFiles = dict[key] as List<object>;
+                    List<object> dFiles = obj as List<object>;
                     if (dFiles.Count > 0)
                         foreach (object file in dFiles) files.Add(file.ToString());
                     break;
                 case "autoSavesCount":
-                    autoSavesCount = Convert.ToUInt32(dict[key]);
+                    autoSavesCount = Convert.ToUInt32(obj);
                     break;
                 case "quickSavesCount":
-                    quickSavesCount = Convert.ToUInt32(dict[key]);
+                    quickSavesCount = Convert.ToUInt32(obj);
                     break;
-                case "sessionsIF":
-                    Dictionary<string, object> sessionsIF = dict[key] as Dictionary<string, object>;
-                    foreach (object sessionI in sessionsIF.Keys)
+                case "sessionIdxs":
+                    List<object> sessionIdxs = obj as List<object>;
+                    foreach (object sIdx in sessionIdxs)
                     {
-                        if (currentSessionOnly == false || (sessionIdx == Convert.ToInt32(sessionI)))
+                        if (ignoreSessionsOnFirstLoad == false &&
+                            (currentSessionOnly == false || (sessionIdx == Convert.ToInt32(sIdx))))
                         {
                             ParkSessionData nSession = new ParkSessionData();
-                            nSession.idx = Convert.ToInt32(sessionI);
-                            sessionHandle = fh.calculateMD5Hash(
-                                "statmaster_data_park_" + guid + "_session_" + nSession.idx
-                            ).ToLower();
-                            nSession.addHandle("park_session_" + sessionHandle);
+                            nSession.idx = Convert.ToInt32(sIdx);
+                            nSession.addHandle("park_" + guid + "_session_" + sIdx);
                             sessions.Add(nSession.idx, nSession);
                         }
                         else
                         {
-                            sessions.Add(Convert.ToInt32(sessionI), null);
+                            sessions.Add(Convert.ToInt32(sIdx), null);
                         }
                     }
                     if (sessions.Count == 0) success = false;
@@ -114,12 +112,14 @@ namespace StatMaster.Data
             if (sessions.Count > 0)
                 foreach (int sIdx in sessions.Keys)
                 {
-                    if (currentSessionOnly == false || (sessionIdx == sIdx))
+                    if (ignoreSessionsOnFirstLoad == false && 
+                        (currentSessionOnly == false || (sessionIdx == sIdx)))
                     { 
                         msgs.AddRange(sessions[sIdx].loadByHandles());
                         errorOnLoad = (sessions[sIdx].errorOnLoad) ? sessions[sIdx].errorOnLoad : errorOnLoad;
                     }
                 }
+            ignoreSessionsOnFirstLoad = false;
             return msgs;
         }
 

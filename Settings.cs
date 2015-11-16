@@ -37,7 +37,7 @@ namespace StatMaster
 
         public bool ignoreQuickSaveFileNames = true;
 
-        private uint _windowRectsCount = 12;
+        private uint _windowRectsCount = 14;
 
         private bool _showWindow = false;
 
