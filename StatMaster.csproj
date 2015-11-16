@@ -72,6 +72,9 @@
     <None Include="README.md" />
     <None Include="TODOS.md" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\Park\Session\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
     <VisualStudio AllowExistingFolder="true" />

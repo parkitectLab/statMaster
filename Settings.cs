@@ -21,21 +21,15 @@ namespace StatMaster
 
         public bool updateParkSessionData = true;
 
-        public bool updateParkProgressionData = true;
-
-        public bool updateFurtherParkProgressionData = true;
-
-        public bool updatePeopleProgressionData = true;
-
-        public bool updateAttractionsProgressionData = true;
-
-        public bool updateFurtherAttractionsProgressionData = true;
-
-        public bool updateShopsProgressionData = true;
-
-        public bool updateFurtherShopsProgressionData = true;
+        public bool updateProgressionData = true;
 
         public uint progressionDataUpdateInterval = 10;
+
+        public bool updatePeopleData = true;
+
+        public bool updateAttractionsData = true;
+
+        public bool updateShopsData = true;
 
         public bool updateAutoSaveData = true;
 
@@ -43,7 +37,7 @@ namespace StatMaster
 
         public bool ignoreQuickSaveFileNames = true;
 
-        private uint _windowRectsCount = 15;
+        private uint _windowRectsCount = 12;
 
         private bool _showWindow = false;
 
@@ -125,52 +119,28 @@ namespace StatMaster
 
             if (updateGameData && updateParkData && updateParkSessionData)
             {
-                updateParkProgressionData = GUI.Toggle(_rect(index++), updateParkProgressionData, " Update park progression data");
-                if (updateParkProgressionData)
+                updateProgressionData = GUI.Toggle(_rect(index++), updateProgressionData, " Update progression data");
+                if (updateProgressionData)
                 {
-                    GUI.Label(_rect(index++), "Update park progression data every " + progressionDataUpdateInterval + " seconds.");
+                    GUI.Label(_rect(index++), "Update progression data every " + progressionDataUpdateInterval + " seconds.");
                     progressionDataUpdateInterval = Convert.ToUInt32(
                         GUI.HorizontalSlider(_rect(index++), progressionDataUpdateInterval, 1, 120)
                     ); 
                 }
+
+                updatePeopleData = GUI.Toggle(_rect(index++), updatePeopleData, " Update people progression data");
+
+                updateAttractionsData = GUI.Toggle(_rect(index++), updateAttractionsData, " Update attractions progression data");
+
+                updateShopsData = GUI.Toggle(_rect(index++), updateShopsData, " Update shops data");
             }
             else
             {
-                GUI.Label(_rect(index++), "Update park progression data (disabled).");
-            }
+                GUI.Label(_rect(index++), "Update progression data (disabled).");
 
-            if (updateGameData && updateParkData && updateParkSessionData && updateParkProgressionData)
-            {
-                updateFurtherParkProgressionData = GUI.Toggle(_rect(index++), updateFurtherParkProgressionData, " Update further park progression data");
-
-                updatePeopleProgressionData = GUI.Toggle(_rect(index++), updatePeopleProgressionData, " Update people progression data");
-
-                updateAttractionsProgressionData = GUI.Toggle(_rect(index++), updateAttractionsProgressionData, " Update attractions progression data");
-                if (updateAttractionsProgressionData)
-                {
-                    updateFurtherAttractionsProgressionData = GUI.Toggle(_rect(index++), updateFurtherAttractionsProgressionData, " Update further attractions progression data");
-                } else
-                {
-                    GUI.Label(_rect(index++), "Update further attractions progression data (disabled).");
-                }
-
-                updateShopsProgressionData = GUI.Toggle(_rect(index++), updateShopsProgressionData, " Update shops progression data");
-                if (updateShopsProgressionData)
-                {
-                    updateFurtherShopsProgressionData = GUI.Toggle(_rect(index++), updateFurtherShopsProgressionData, " Update further shops progression data");
-                }
-                else
-                {
-                    GUI.Label(_rect(index++), "Update further shops progression data (disabled).");
-                }
-            } else
-            {
-                GUI.Label(_rect(index++), "Update further park progression data (disabled).");
-                GUI.Label(_rect(index++), "Update people progression data (disabled).");
-                GUI.Label(_rect(index++), "Update attractions progression data (disabled).");
-                GUI.Label(_rect(index++), "Update further attractions progression data (disabled).");
-                GUI.Label(_rect(index++), "Update shops progression data (disabled).");
-                GUI.Label(_rect(index++), "Update further shops progression data (disabled).");
+                GUI.Label(_rect(index++), "Update people data (disabled).");
+                GUI.Label(_rect(index++), "Update attractions data (disabled).");
+                GUI.Label(_rect(index++), "Update shops data (disabled).");
             }
 
             if (updateGameData && updateParkData) { 

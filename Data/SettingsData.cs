@@ -18,18 +18,12 @@ namespace StatMaster.Data
             dict.Add("updateParkData", settings.updateParkData);
             dict.Add("updateParkSessionData", settings.updateParkSessionData);
 
-            dict.Add("updateParkProgressionData", settings.updateParkProgressionData);
-            dict.Add("updateFurtherParkProgressionData", settings.updateFurtherParkProgressionData);
-
-            dict.Add("updatePeopleProgressionData", settings.updatePeopleProgressionData);
-
-            dict.Add("updateAttractionsProgressionData", settings.updateAttractionsProgressionData);
-            dict.Add("updateFurtherAttractionsProgressionData", settings.updateFurtherAttractionsProgressionData);
-
-            dict.Add("updateShopsProgressionData", settings.updateShopsProgressionData);
-            dict.Add("updateFurtherShopsProgressionData", settings.updateFurtherShopsProgressionData);
-
+            dict.Add("updateProgressionData", settings.updateProgressionData);
             dict.Add("progressionDataUpdateInterval", settings.progressionDataUpdateInterval);
+
+            dict.Add("updatePeopleData", settings.updatePeopleData);
+            dict.Add("updateAttractionsData", settings.updateAttractionsData);
+            dict.Add("updateShopsnData", settings.updateShopsData);
 
             dict.Add("updateAutoSaveData", settings.updateAutoSaveData);
             dict.Add("ignoreQuickSaveFileNames", settings.ignoreQuickSaveFileNames);
@@ -56,30 +50,21 @@ namespace StatMaster.Data
                 case "updateParkSessionData":
                     settings.updateParkSessionData = Convert.ToBoolean(dict[key]);
                     break;
-                case "updateParkProgressionData":
-                    settings.updateParkProgressionData = Convert.ToBoolean(dict[key]);
-                    break;
-                case "updateFurtherParkProgressionData":
-                    settings.updateFurtherParkProgressionData = Convert.ToBoolean(dict[key]);
-                    break;
-                case "updatePeopleProgressionData":
-                    settings.updatePeopleProgressionData = Convert.ToBoolean(dict[key]);
-                    break;
-                case "updateAttractionsProgressionData":
-                    settings.updateAttractionsProgressionData = Convert.ToBoolean(dict[key]);
-                    break;
-                case "updateFurtherAttractionsProgressionData":
-                    settings.updateFurtherAttractionsProgressionData = Convert.ToBoolean(dict[key]);
-                    break;
-                case "updateShopsProgressionData":
-                    settings.updateShopsProgressionData = Convert.ToBoolean(dict[key]);
-                    break;
-                case "updateFurtherShopsProgressionData":
-                    settings.updateFurtherShopsProgressionData = Convert.ToBoolean(dict[key]);
+                case "updateProgressionData":
+                    settings.updateProgressionData = Convert.ToBoolean(dict[key]);
                     break;
                 case "progressionDataUpdateInterval":
                     settings.progressionDataUpdateInterval = Convert.ToUInt32(dict[key]);
                     break;
+                case "updatePeopleData":
+                    settings.updatePeopleData = Convert.ToBoolean(dict[key]);
+                    break;
+                case "updateAttractionsData":
+                    settings.updateAttractionsData = Convert.ToBoolean(dict[key]);
+                    break;
+                case "updateShopsData":
+                    settings.updateShopsData = Convert.ToBoolean(dict[key]);
+                    break;                
                 case "updateAutoSaveData":
                     settings.updateAutoSaveData = Convert.ToBoolean(dict[key]);
                     break;

@@ -79,7 +79,7 @@ namespace StatMaster
             {
                 if (_settings.updateGameData &&
                     _settings.updateParkData && _settings.updateParkSessionData &&
-                    _settings.updateParkProgressionData)
+                    _settings.updateProgressionData)
                 {
 
                     uint cTs = getCurrentTimestamp();
@@ -100,29 +100,24 @@ namespace StatMaster
                       cTs, Convert.ToUInt32(GameController.Instance.park.getShops().Count)
                     );
 
-                    // further park values
-                    if (_settings.updateFurtherParkProgressionData)
-                    {
-                        Debug.LogMT("Update further park progression data");
+                    // further park info values
+                    _data.currentPark.sessions[_data.currentPark.sessionIdx].money.Add(
+                        cTs, GameController.Instance.park.parkInfo.money
+                    );
+                    _data.currentPark.sessions[_data.currentPark.sessionIdx].entranceFee.Add(
+                        cTs, GameController.Instance.park.parkInfo.parkEntranceFee
+                    );
+                    _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingCleanliness.Add(
+                        cTs, GameController.Instance.park.parkInfo.RatingCleanliness
+                    );
+                    _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingHappiness.Add(
+                        cTs, GameController.Instance.park.parkInfo.RatingCleanliness
+                    );
+                    _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingPriceSatisfaction.Add(
+                        cTs, GameController.Instance.park.parkInfo.RatingPriceSatisfaction
+                    );
 
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].money.Add(
-                          cTs, GameController.Instance.park.parkInfo.money
-                        );
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].entranceFee.Add(
-                            cTs, GameController.Instance.park.parkInfo.parkEntranceFee
-                        );
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingCleanliness.Add(
-                            cTs, GameController.Instance.park.parkInfo.RatingCleanliness
-                        );
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingHappiness.Add(
-                            cTs, GameController.Instance.park.parkInfo.RatingCleanliness
-                        );
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingPriceSatisfaction.Add(
-                            cTs, GameController.Instance.park.parkInfo.RatingPriceSatisfaction
-                        );
-                    }
-
-                    if (_settings.updatePeopleProgressionData)
+                    if (_settings.updatePeopleData)
                     {
                         Debug.LogMT("Update people progression data");
 
@@ -178,7 +173,7 @@ namespace StatMaster
                     }
 
                     // attractions values
-                    if (_settings.updateAttractionsProgressionData)
+                    if (_settings.updateAttractionsData)
                     {
                         Debug.LogMT("Update attractions progression data");
 
@@ -194,30 +189,25 @@ namespace StatMaster
                           cTs, attractionsEntranceFeeAvg
                         );
 
-                        // further count values related to attractions
-                        if (_settings.updateFurtherAttractionsProgressionData) {
-                            Debug.LogMT("Update further attractions progression data");
-
-                            // todo: improvements to get correct relations 
-                            // to changes in attractions builded / destroyed status progression
-                            // related events available? need more info
-                            uint attractionsOpenedCount = 0;
-                            uint attractionsCustomersCount = 0;
-                            for (int i = 0; i < attractions.Count; i++)
-                            {
-                                if (attractions[i].state == Attraction.State.OPENED) attractionsOpenedCount++;
-                                attractionsCustomersCount = Convert.ToUInt32(attractions[i].customersCount);
-                            }
-                            _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsOpenedCount.Add(
-                              cTs, attractionsOpenedCount
-                            );
-                            _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsCustomersCount.Add(
-                              cTs, attractionsCustomersCount
-                            );
+                        // todo: improvements to get correct relations 
+                        // to changes in attractions builded / destroyed status progression
+                        // related events available? need more info
+                        uint attractionsOpenedCount = 0;
+                        uint attractionsCustomersCount = 0;
+                        for (int i = 0; i < attractions.Count; i++)
+                        {
+                            if (attractions[i].state == Attraction.State.OPENED) attractionsOpenedCount++;
+                            attractionsCustomersCount = Convert.ToUInt32(attractions[i].customersCount);
                         }
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsOpenedCount.Add(
+                            cTs, attractionsOpenedCount
+                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsCustomersCount.Add(
+                            cTs, attractionsCustomersCount
+                        );
                     }
 
-                    if (_settings.updateShopsProgressionData)
+                    if (_settings.updateShopsData)
                     {
                         Debug.LogMT("Update shops progression data");
 
@@ -244,28 +234,22 @@ namespace StatMaster
                           cTs, shopsProductPriceAvg
                         );
 
-                        // further count values related to shops
-                        if (_settings.updateFurtherShopsProgressionData)
+                        // todo: improvements to get correct relations 
+                        // to changes in shops builded / destroyed status progression
+                        // related events available? need more info
+                        uint shopsOpenedCount = 0;
+                        uint shopsCustomersCount = 0;
+                        for (int i = 0; i < shops.Count; i++)
                         {
-                            Debug.LogMT("Update further shops progression data");
-
-                            // todo: improvements to get correct relations 
-                            // to changes in shops builded / destroyed status progression
-                            // related events available? need more info
-                            uint shopsOpenedCount = 0;
-                            uint shopsCustomersCount = 0;
-                            for (int i = 0; i < shops.Count; i++)
-                            {
-                                if (shops[i].opened) shopsOpenedCount++;
-                                shopsCustomersCount = Convert.ToUInt32(shops[i].customersCount);
-                            }
-                            _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsOpenedCount.Add(
-                              cTs, shopsOpenedCount
-                            );
-                            _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsCustomersCount.Add(
-                              cTs, shopsCustomersCount
-                            );
+                            if (shops[i].opened) shopsOpenedCount++;
+                            shopsCustomersCount = Convert.ToUInt32(shops[i].customersCount);
                         }
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsOpenedCount.Add(
+                            cTs, shopsOpenedCount
+                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsCustomersCount.Add(
+                            cTs, shopsCustomersCount
+                        );
                     }
                 }
 
