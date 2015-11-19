@@ -40,7 +40,7 @@ namespace StatMaster
 
                 Debug.isEnable = _settings.devMode;
 
-                initSession();
+                initSession(false);
                 if (validPark && _settings.updateParkData)
                 {
                     GameController.Instance.park.OnNameChanged += onParkNameChangedHandler;
@@ -82,7 +82,7 @@ namespace StatMaster
                     _settings.updateProgressionData)
                 {
 
-                    uint cTs = getCurrentTimestamp();
+                    uint cTs = Main.getCurrentTimestamp();
 
                     Debug.LogMT("Update progression data with interval " + _settings.progressionDataUpdateInterval);
 
@@ -277,63 +277,26 @@ namespace StatMaster
 
         private void onStartPlayingParkHandler()
         {
-            tsSessionStart = getCurrentTimestamp();
+            tsSessionStart = Main.getCurrentTimestamp();
+            _data.currentGameStart = tsSessionStart;
             Debug.LogMT("Started playing at ", tsSessionStart);
             eventsCallCount++;
         }
 
-        private uint getCurrentTimestamp()
-        {
-            TimeSpan epochTicks = new TimeSpan(new DateTime(1970, 1, 1).Ticks);
-            TimeSpan unixTicks = new TimeSpan(DateTime.UtcNow.Ticks) - epochTicks;
-            return Convert.ToUInt32(unixTicks.TotalSeconds);
-        }
-
-        private void initSession() {
-            uint cTs = (tsSessionStart > 0) ? tsSessionStart : getCurrentTimestamp();
-
+        private void initSession(bool resetGameData) {
             Debug.LogMT("Init session");
-            if (validPark && _settings.updateParkData) _data.currentParkGuid = GameController.Instance.park.guid.ToLower();
+            if (tsSessionStart == 0) tsSessionStart = Main.getCurrentTimestamp();
+            if (resetGameData) _data = new GameData();
+            _data.currentGameStart = tsSessionStart;
+            if (validPark) _data.currentParkGuid = GameController.Instance.park.guid.ToLower();
             Debug.LogMT(_data.loadByHandles());
-            if (_data.errorOnLoad) _data = new GameData();
-            if (validPark && _settings.updateParkData) _data.currentParkGuid = GameController.Instance.park.guid.ToLower();
-            if (_data.tsStart == 0) _data.tsStart = cTs;
-            if (_data.playerGuid == null) _data.playerGuid = Guid.NewGuid().ToString();
+
+            _data.init();
+
             Debug.LogMT("New data? " + !(_data.sessionIdx > 0));
-
-            _data.tsSessionStarts.Add(cTs);
-            _data.sessionIdx = _data.tsSessionStarts.Count - 1;
-            Debug.LogMT("Current session start time ", cTs);
-
-            // determine existing park by guid to search for related     
-            if (validPark && _settings.updateParkData)
-            {
-                if (_data.parks.ContainsKey(GameController.Instance.park.guid))
-                {
-                    Debug.LogMT("Found park with guid " + GameController.Instance.park.guid);
-                    _data.currentPark = _data.parks[GameController.Instance.park.guid];
-                }
-                if (_data.currentPark == null)
-                {
-                    Debug.LogMT("Add new park with guid " + GameController.Instance.park.guid);
-                    _data.currentPark = new ParkData();
-                    _data.currentPark.guid = GameController.Instance.park.guid;
-                    _data.parks.Add(GameController.Instance.park.guid, _data.currentPark);
-                }
-
-                if (_data.currentPark.tsStart == 0) _data.currentPark.tsStart = cTs;
-                _data.currentPark.tsEnd = cTs;
-                _data.currentPark.tsSessionStarts.Add(cTs);
-                _data.currentPark.sessionIdx = _data.currentPark.tsSessionStarts.Count - 1;
-
-                if (_settings.updateParkSessionData)
-                {
-                    ParkSessionData _parkDataSession = new ParkSessionData();
-                    _parkDataSession.tsStart = cTs;
-                    _parkDataSession.idx = _data.currentPark.sessionIdx;
-                    _data.currentPark.sessions.Add(_data.currentPark.sessionIdx, _parkDataSession);
-                }
-            }
+            
+            Debug.LogMT("Current session start time ", 
+                _data.tsSessionStarts[_data.tsSessionStarts.Count - 1]);
 
             updateData("load");
         }
@@ -436,7 +399,7 @@ namespace StatMaster
         {
             Debug.LogMT("Update game data");
 
-            uint cTs = getCurrentTimestamp();
+            uint cTs = Main.getCurrentTimestamp();
             _data.tsEnd = cTs;
 
             if (validPark && _settings.updateParkData)
@@ -477,18 +440,16 @@ namespace StatMaster
             {
                 updateData("save");
                 Debug.LogMT(_data.saveByHandles());
-                tsSessionStart = getCurrentTimestamp();
-                _data = new GameData();
-                initSession();
+                tsSessionStart = 0;
+                initSession(true);
             }
             if (GUI.Button(new Rect(Screen.width - 200, 60, 200, 20), "Reset Data"))
             {
                 FilesHandler fh = new FilesHandler();
                 fh.deleteAll();
                 Debug.LogMT("All data files have been deleted");
-                tsSessionStart = getCurrentTimestamp();
-                _data = new GameData();
-                initSession();
+                tsSessionStart = 0;
+                initSession(true);
             }
             if (GUI.Button(new Rect(Screen.width - 200, 90, 200, 20), "Debug Data"))
             {

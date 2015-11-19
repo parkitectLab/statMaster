@@ -3,18 +3,36 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using System.IO;
+using System.IO.IsolatedStorage;
 
 namespace StatMaster
 {
     class FilesHandler
     {
         private string path = Application.persistentDataPath + "/statMaster/";
+        private string subFolder = "";
         private string ext = ".json";
         public Dictionary<string, string> files = new Dictionary<string, string>();
         public Dictionary<string, string> contents = new Dictionary<string, string>();
 
         public bool errorOnLoad = false;
         public bool errorOnSave = false;
+
+        public bool invalidPath = false;
+        public string invalidPathMessage = "";
+
+        public FilesHandler()
+        {
+            try
+            {
+                Directory.CreateDirectory(path);
+            }
+            catch (IOException e)
+            {
+                invalidPath = true;
+                invalidPathMessage = e.Message;
+            }
+        }
 
         public void add(string handle)
         {
@@ -30,6 +48,32 @@ namespace StatMaster
         public string get(string handle)
         {
             return contents.ContainsKey(handle) ? contents[handle] : null;
+        }
+
+        public void setSubFolder(string newSubFolder)
+        {
+            subFolder = newSubFolder + "/";
+
+            string[] subFolderParts = subFolder.Split('/');
+            string currentSubFolder = "";
+            for (var i = 0; i < subFolderParts.Length; i++)
+            {
+                if (subFolderParts[i].Length > 0)
+                {
+                    currentSubFolder += subFolderParts[i] + "/";
+                    try
+                    {
+                        Directory.CreateDirectory(path + currentSubFolder);
+                    }
+                    catch (IOException e)
+                    {
+                        invalidPath = true;
+                        invalidPathMessage = e.Message;
+                        return;
+                    }
+                }
+            }
+            
         }
 
         public string calculateMD5Hash(string input)
@@ -66,7 +110,7 @@ namespace StatMaster
             {
                 try
                 {
-                    if (File.Exists(path + files[handle]))
+                    if (File.Exists(path + subFolder + files[handle]))
                     {
                         FileStream file = File.Open(path + files[handle], FileMode.Open);
                         try
@@ -96,6 +140,11 @@ namespace StatMaster
                         }
                     }
                 }
+                catch (IsolatedStorageException e)
+                {
+                    errorOnLoad = true;
+                    messages.Add("Failed to get file from path / sub folder " + handle + " data. Error: " + e.Message);
+                }
                 catch (IOException e)
                 {
                     errorOnLoad = true;
@@ -113,8 +162,7 @@ namespace StatMaster
             {
                 try
                 {
-                    Directory.CreateDirectory(path);
-                    FileStream file = File.Create(path + files[handle]);
+                    FileStream file = File.Create(path + subFolder + files[handle]);
                     try
                     {
                         if (contents[handle] == "")
@@ -142,6 +190,11 @@ namespace StatMaster
                     {
                         file.Close();
                     }
+                }
+                catch (IsolatedStorageException e)
+                {
+                    errorOnLoad = true;
+                    messages.Add("Failed to set file to path / sub folder " + handle + " data. Error: " + e.Message);
                 }
                 catch (IOException e)
                 {

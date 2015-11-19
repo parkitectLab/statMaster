@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace StatMaster.Data
 {
@@ -9,6 +10,8 @@ namespace StatMaster.Data
         public bool currentParkOnly = true;
         public ParkData currentPark = null;
         public string currentParkGuid = null;
+        public uint currentGameStart = 0;
+
         public Dictionary<string, ParkData> parks = new Dictionary<string, ParkData>();
 
         public GameData()
@@ -31,10 +34,6 @@ namespace StatMaster.Data
                 foreach (string parkGuid in parks.Keys)
                 {
                     parkGuids.Add(parkGuid);
-                    if (currentParkOnly == false || (currentParkGuid == parkGuid))
-                    {
-                        parks[parkGuid].addHandle("park_" + parkGuid.ToLower());
-                    }
                 }
                 dict.Add("parkGuids", parkGuids);
             }
@@ -67,9 +66,13 @@ namespace StatMaster.Data
                             if (currentParkOnly == false || (currentParkGuid == parkGuid.ToString()))
                             {
                                 ParkData nPark = new ParkData();
-                                nPark.guid = parkGuid.ToString();
-                                nPark.addHandle("park_" + nPark.guid);
+                                nPark.setGuid(parkGuid.ToString());
                                 parks.Add(nPark.guid, nPark);
+
+                                if (currentParkGuid == parkGuid.ToString())
+                                {
+                                    currentPark = nPark;
+                                }
                             }
                             else
                             {
@@ -82,6 +85,24 @@ namespace StatMaster.Data
             return success;
         }
 
+        public void init()
+        {
+            if (tsStart == 0) tsStart = Main.getCurrentTimestamp();
+            if (playerGuid == null) playerGuid = Guid.NewGuid().ToString();
+
+            tsSessionStarts.Add(currentGameStart);
+            sessionIdx = tsSessionStarts.Count - 1;
+
+            if (currentPark == null && currentParkGuid.Length > 0)
+            {
+                currentPark = new ParkData();
+                currentPark.setGuid(currentParkGuid);
+                parks.Add(currentPark.guid, currentPark);
+            }
+
+            currentPark.init();
+        }
+
         public override List<string> loadByHandles()
         {
             dataVersionIdx = 0;
@@ -92,10 +113,13 @@ namespace StatMaster.Data
                 if (currentParkOnly == false || (currentParkGuid == parkGuid))
                 {
                     msgs.AddRange(parks[parkGuid].loadByHandles());
-                    errorOnLoad = (parks[parkGuid].errorOnLoad) ? parks[parkGuid].errorOnLoad : errorOnLoad;
-                    if (!errorOnLoad && parks[parkGuid].invalidDataVersion) parks.Remove(parkGuid);
+                    // todo remove deprecated files too
+                    if (parks[parkGuid].errorOnLoad) parks.Remove(parkGuid);
+                    if (!parks[parkGuid].errorOnLoad && parks[parkGuid].invalidDataVersion) parks.Remove(parkGuid);
+                    if (parks.ContainsKey(parkGuid) && currentParkGuid == parkGuid) currentPark = parks[parkGuid];
                 }
             }
+
             return msgs;
         }
 

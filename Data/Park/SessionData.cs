@@ -53,6 +53,13 @@ namespace StatMaster.Data
         {
             dataVersionIdx = 1;
             minDataVersionIdx = 1;
+            addHandle("main");
+        }
+
+        public void setIdx(string parkGuid, int newIdx)
+        {
+            idx = newIdx;
+            setSubFolder("park_" + parkGuid + "/session_" + newIdx);
         }
 
         protected override Dictionary<string, object> getDict(string handle)

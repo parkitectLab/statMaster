@@ -26,6 +26,13 @@ namespace StatMaster.Data
         {
             dataVersionIdx = 1;
             minDataVersionIdx = 1;
+            addHandle("main");
+        }
+
+        public void setGuid(string newGuid)
+        {
+            guid = newGuid;
+            setSubFolder("park_" + guid);
         }
 
         protected override Dictionary<string, object> getDict(string handle)
@@ -46,10 +53,6 @@ namespace StatMaster.Data
             foreach (int sIdx in sessions.Keys)
             {
                 sessionIdxs.Add(sIdx);
-                if (currentSessionOnly == false || (sessionIdx == sIdx))
-                {
-                    sessions[sIdx].addHandle("park_" + guid + "_session_" + sIdx);
-                }
             }
 
             dict.Add("sessionIdxs", sessionIdxs);
@@ -92,8 +95,7 @@ namespace StatMaster.Data
                             (currentSessionOnly == false || (sessionIdx == Convert.ToInt32(sIdx))))
                         {
                             ParkSessionData nSession = new ParkSessionData();
-                            nSession.idx = Convert.ToInt32(sIdx);
-                            nSession.addHandle("park_" + guid + "_session_" + sIdx);
+                            nSession.setIdx(guid, Convert.ToInt32(sIdx));
                             sessions.Add(nSession.idx, nSession);
                         }
                         else
@@ -107,6 +109,21 @@ namespace StatMaster.Data
             return success;
         }
 
+        public void init()
+        {
+            tsSessionStarts.Add(Main.getCurrentTimestamp());
+
+            if (tsStart == 0)
+                tsStart = tsSessionStarts[tsSessionStarts.Count - 1];
+            sessionIdx = tsSessionStarts.Count - 1;
+            tsEnd = tsStart;
+
+            ParkSessionData parkDataSession = new ParkSessionData();
+            parkDataSession.tsStart = tsSessionStarts[tsSessionStarts.Count - 1];
+            parkDataSession.setIdx(guid, sessionIdx);
+            sessions.Add(sessionIdx, parkDataSession);
+        }
+
         public override List<string> loadByHandles()
         {
             List<string> msgs = base.loadByHandles();
@@ -117,8 +134,8 @@ namespace StatMaster.Data
                         (currentSessionOnly == false || (sessionIdx == sIdx)))
                     { 
                         msgs.AddRange(sessions[sIdx].loadByHandles());
-                        errorOnLoad = (sessions[sIdx].errorOnLoad) ? sessions[sIdx].errorOnLoad : errorOnLoad;
-                        if (!errorOnLoad && sessions[sIdx].invalidDataVersion) sessions.Remove(sIdx);
+                        if (sessions[sIdx].errorOnLoad) sessions.Remove(sIdx);
+                        if (!sessions[sIdx].errorOnLoad && sessions[sIdx].invalidDataVersion) sessions.Remove(sIdx);
                     }
                 }
             ignoreSessionsOnFirstLoad = false;

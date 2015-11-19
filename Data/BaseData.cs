@@ -32,7 +32,6 @@ namespace StatMaster.Data
             {
                 case "dataVersionIdx":
                     dataVersionIdx = Convert.ToUInt32(obj);
-                    if (dataVersionIdx == 0) success = false;
                     break;
             }
             return success;
@@ -47,6 +46,11 @@ namespace StatMaster.Data
                 success = success && setObjByKey(handle, key, dict[key]);
             }
             return success;
+        }
+
+        public void setSubFolder(string subFolder)
+        {
+            fh.setSubFolder(subFolder);
         }
 
         public void addHandle(string handle)
