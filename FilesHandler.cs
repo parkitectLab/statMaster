@@ -73,7 +73,6 @@ namespace StatMaster
                     }
                 }
             }
-            
         }
 
         public string calculateMD5Hash(string input)
@@ -93,7 +92,24 @@ namespace StatMaster
         public void deleteAll()
         {
             if (Directory.Exists(path))
-                Directory.Delete(path, true);
+            {
+                DirectoryInfo dir = new DirectoryInfo(path);
+                
+                FileInfo[] files = dir.GetFiles();
+                foreach (FileInfo file in files)
+                {
+                    if (file.Name != "settings.json")
+                      file.Delete();
+                }
+
+                DirectoryInfo[] dirs = dir.GetDirectories();
+                foreach (DirectoryInfo subdir in dirs)
+                {
+                    if (subdir.Name.IndexOf("backup_dv_") == -1)
+                        subdir.Delete(true);
+                }
+            }
+                
         }
 
         public void backupAll(uint dataVersion)
@@ -102,8 +118,8 @@ namespace StatMaster
             if (!Directory.Exists(destPath))
             {
                 Directory.CreateDirectory(destPath);
+                DirectoryCopy(path, destPath, true);
             }
-            DirectoryCopy(path, destPath, true);
         }
 
         private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
@@ -156,7 +172,7 @@ namespace StatMaster
                 {
                     if (File.Exists(path + subFolder + files[handle]))
                     {
-                        FileStream file = File.Open(path + files[handle], FileMode.Open);
+                        FileStream file = File.Open(path + subFolder + files[handle], FileMode.Open);
                         try
                         {
                             try
