@@ -61,6 +61,17 @@ namespace StatMaster
 
                     Debug.LogMT("No valid park found, park stats disabled!");
                 }
+                if (_data.oldDataVersion)
+                {
+                    _notice.addText("Detected old data version, old data files have been removed!");
+                    _notice.addText("Main game data have been converted to new data version!");
+                    _notice.addText("If you need old park / park session data have a look into:");
+                    _notice.addText("persistentDataFolder/statMaster/backup_dv_num");
+                    _notice.showWindow = true;
+                    _data.oldDataVersion = false;
+
+                    Debug.LogMT("Old data version detected!");
+                }
             }
         }
 
