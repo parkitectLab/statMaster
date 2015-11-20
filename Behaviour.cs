@@ -98,7 +98,7 @@ namespace StatMaster
                     Debug.LogMT("Update progression data with interval " + _settings.progressionDataUpdateInterval);
 
                     // park progression count values
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].countData.updateRange(
+                    _data.currentPark.sessions[_data.currentPark.sessionIdx].progressionCountData.updateRange(
                         Convert.ToUInt32(GameController.Instance.park.getGuests().Count),
                         Convert.ToUInt32(GameController.Instance.park.getEmployees().Count),
                         Convert.ToUInt32(GameController.Instance.park.getAttractions().Count),
@@ -106,20 +106,12 @@ namespace StatMaster
                     );
 
                     // further park info values
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].money.Add(
-                        cTs, GameController.Instance.park.parkInfo.money
-                    );
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].entranceFee.Add(
-                        cTs, GameController.Instance.park.parkInfo.parkEntranceFee
-                    );
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingCleanliness.Add(
-                        cTs, GameController.Instance.park.parkInfo.RatingCleanliness
-                    );
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingHappiness.Add(
-                        cTs, GameController.Instance.park.parkInfo.RatingCleanliness
-                    );
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].ratingPriceSatisfaction.Add(
-                        cTs, GameController.Instance.park.parkInfo.RatingPriceSatisfaction
+                    _data.currentPark.sessions[_data.currentPark.sessionIdx].progressionFurtherData.updateRange(
+                        GameController.Instance.park.parkInfo.money,
+                        GameController.Instance.park.parkInfo.parkEntranceFee,
+                        GameController.Instance.park.parkInfo.RatingCleanliness,
+                        GameController.Instance.park.parkInfo.RatingHappiness,
+                        GameController.Instance.park.parkInfo.RatingPriceSatisfaction
                     );
 
                     if (_settings.updatePeopleData)

@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Data\BaseData.cs" />
     <Compile Include="Data\Park\ProgressionData.cs" />
+    <Compile Include="Data\Park\Progression\FurtherData.cs" />
     <Compile Include="Data\Park\Progression\CountData.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="FilesHandler.cs" />

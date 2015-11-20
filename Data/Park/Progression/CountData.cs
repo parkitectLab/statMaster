@@ -1,11 +1,9 @@
-﻿using System;
-using MiniJSON;
+﻿using MiniJSON;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace StatMaster.Data.Park.Progression
 {
-    class ParkCountDataValues
+    class ProgressionCountDataValues
     {
         public List<uint> guestsCount = new List<uint>();
         public List<uint> employeesCount = new List<uint>();
@@ -13,27 +11,27 @@ namespace StatMaster.Data.Park.Progression
         public List<uint> shopsCount = new List<uint>();
     }
 
-    class ParkCountData : ProgressionData
+    class ProgressionCountData : ProgressionData
     {
 
-        public ParkCountData(string parkGuid, int sessionIdx)
+        public ProgressionCountData(string parkGuid, int sessionIdx)
         {
             dataVersionIdx = 1;
             minDataVersionIdx = 1;
             setSubFolder("park_" + parkGuid + "/session_" + sessionIdx);
-            addHandle("counts");
+            addHandle("progression_counts");
         }
 
         public override void addRange()
         {
             base.addRange();
-            rangeObjects.Add(new ParkCountDataValues());
+            rangeObjects.Add(new ProgressionCountDataValues());
         }
 
         public void updateRange(uint guestsCount, uint employeesCount, uint attractionsCount, uint shopsCount)
         {
             base.updateRange();
-            ParkCountDataValues values = (ParkCountDataValues)rangeObjects[ranges.Count - 1];
+            ProgressionCountDataValues values = (ProgressionCountDataValues)rangeObjects[ranges.Count - 1];
             values.guestsCount.Add(guestsCount);
             values.employeesCount.Add(guestsCount);
             values.attractionsCount.Add(guestsCount);
@@ -44,7 +42,7 @@ namespace StatMaster.Data.Park.Progression
         {
             Dictionary<string, string> obj = new Dictionary<string, string>();
 
-            ParkCountDataValues values = (ParkCountDataValues)rangeObjects[idx];
+            ProgressionCountDataValues values = (ProgressionCountDataValues)rangeObjects[idx];
 
             obj.Add("guestsCount", Json.Serialize(values.guestsCount));
             obj.Add("employeesCount", Json.Serialize(values.employeesCount));
@@ -56,7 +54,7 @@ namespace StatMaster.Data.Park.Progression
 
         protected override bool addValueObj(object obj)
         {
-            rangeObjects.Add((ParkCountDataValues)obj);
+            rangeObjects.Add((ProgressionCountDataValues)obj);
             return true;
         }
     }

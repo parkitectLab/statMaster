@@ -13,7 +13,8 @@ namespace StatMaster.Data.Park
         // to recognize a file load
         public string loadFile = "";
 
-        public Progression.ParkCountData countData;
+        public Progression.ProgressionCountData progressionCountData;
+        public Progression.ProgressionFurtherData progressionFurtherData;
 
         public uint autoSavesCount = 0;
         public uint quickSavesCount = 0;
@@ -23,13 +24,6 @@ namespace StatMaster.Data.Park
         // last updated value of ParkInfo.ParkTime in session
         public uint time = 0;
 
-        // park progression data
-
-        public Dictionary<uint, float> money = new Dictionary<uint, float>();
-        public Dictionary<uint, float> entranceFee = new Dictionary<uint, float>();
-        public Dictionary<uint, float> ratingCleanliness = new Dictionary<uint, float>();
-        public Dictionary<uint, float> ratingHappiness = new Dictionary<uint, float>();
-        public Dictionary<uint, float> ratingPriceSatisfaction = new Dictionary<uint, float>();
 
         public Dictionary<uint, float> attractionsEntranceFeeAvg = new Dictionary<uint, float>();
         public Dictionary<uint, uint> attractionsOpenedCount = new Dictionary<uint, uint>();
@@ -75,12 +69,6 @@ namespace StatMaster.Data.Park
 
             dict.Add("autoSavesCount", autoSavesCount);
             dict.Add("quickSaveCount", quickSavesCount);
-
-            dict.Add("money", money);
-            dict.Add("entranceFee", entranceFee);
-            dict.Add("ratingCleanliness", ratingCleanliness);
-            dict.Add("ratingHappiness", ratingHappiness);
-            dict.Add("ratingPriceSatisfaction", ratingPriceSatisfaction);
 
             dict.Add("attractionsEntranceFeeAvg", attractionsEntranceFeeAvg);
             dict.Add("attractionsOpenedCount", attractionsOpenedCount);
@@ -187,21 +175,6 @@ namespace StatMaster.Data.Park
 
                         switch (key)
                         {
-                            case "money":
-                                money.Add(ts, value);
-                                break;
-                            case "ratingCleanliness":
-                                ratingCleanliness.Add(ts, value);
-                                break;
-                            case "ratingHappiness":
-                                ratingHappiness.Add(ts, value);
-                                break;
-                            case "ratingPriceSatisfaction":
-                                ratingPriceSatisfaction.Add(ts, value);
-                                break;
-                            case "entranceFee":
-                                entranceFee.Add(ts, value);
-                                break;
                             case "attractionsEntranceFeeAvg":
                                 attractionsEntranceFeeAvg.Add(ts, value);
                                 break;
@@ -238,22 +211,28 @@ namespace StatMaster.Data.Park
 
         public void init(string parkGuid)
         {
-            countData = new Progression.ParkCountData(parkGuid, idx);
-            countData.addRange();
+            progressionCountData = new Progression.ProgressionCountData(parkGuid, idx);
+            progressionCountData.addRange();
+
+            progressionFurtherData = new Progression.ProgressionFurtherData(parkGuid, idx);
+            progressionFurtherData.addRange();
         }
 
         public void update(uint parkTime)
         {
             time = parkTime;
 
-            countData.updateRange();
+            progressionCountData.updateRange();
+            progressionFurtherData.updateRange();
         }
 
         public override List<string> loadByHandles()
         {
             List<string> msgs = base.loadByHandles();
 
-            msgs.AddRange(countData.loadByHandles());
+            msgs.AddRange(progressionCountData.loadByHandles());
+            msgs.AddRange(progressionFurtherData.loadByHandles());
+
             return msgs;
         }
 
@@ -261,8 +240,12 @@ namespace StatMaster.Data.Park
         {
             List<string> msgs = base.saveByHandles();
 
-            msgs.AddRange(countData.saveByHandles());
-            errorOnSave = (countData.errorOnSave) ? countData.errorOnSave : errorOnSave;
+            msgs.AddRange(progressionCountData.saveByHandles());
+            errorOnSave = (progressionCountData.errorOnSave) ? progressionCountData.errorOnSave : errorOnSave;
+
+            msgs.AddRange(progressionFurtherData.saveByHandles());
+            errorOnSave = (progressionFurtherData.errorOnSave) ? progressionFurtherData.errorOnSave : errorOnSave;
+
             return msgs;
         }
 
