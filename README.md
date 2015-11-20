@@ -11,6 +11,9 @@ A Parkitect Game Modification which offers the ability to:
 + Please use pre-alpha 4 (or later) parks to get full park statistics
   - old parks (pre-alpha 3, savegames) can not have own statistics currently
   - as long as Parkitect does not generate a Park-GUID therefor
++ Old data versions
+  - old files in pesistentDataFolder/statMaster/backup_dv_num
+  - main game data will be converted to new data version
 
 ## Ingame Settings
 
@@ -31,23 +34,18 @@ A Parkitect Game Modification which offers the ability to:
   - Used park names
   - Loaded file name
   - Further used file names
-+ Update Park Progression Data (depends on Park Session Data)
++ Update Progression Data (depends on Park Session Data)
   - Guests, employees, attractions, shops count
+  - Money, entrance fee, cleanliness, happiness, price satisfaction
 + Update Interval Progression Data (every 1 - 120 seconds)
   - all other data will be updated on session start / end
   - or if a related ingame event has been occured
-+ Update Further Park Progression Data (depends on Park Progression Data)
-  - Money, entrance fee, cleanliness, happiness, price satisfaction
-+ Update People Progression Data (depends on Park Progression Data)
++ Update People Data (depends on Park Session / Progression Data)
   - Average money, happiness, tiredness, hunger, thirst, toilet urgency, nausea
-+ Update Attractions Progression Data (depends on Park Progression Data)
-  - Average attraction entrance fee
-+ Update Further Attractions Progression Data (depends on Attractions Progression Data)
-  - Attractions opened & customers count
-+ Update Shops Progression Data (depends on Park Progression Data)
-  - Average shops item price
-+ Update Further Shops Progression Data (depends on Shops Progression Data)
-  - Shops opened & customers count
++ Update Attractions Data (depends on Park Session / Progression Data)
+  - Average attraction entrance fee, Attractions opened & customers count
++ Update Shops Data (depends on Park Session / Progression Data)
+  - Average shops item price, Shops opened & customers count
 + Update AutoSave mod data (depends on Park Data)
   - AutoSaves / QuickSaves count (for Park and Park Session)
 + Ignore AutoSave-File names (in regular park file names log)
