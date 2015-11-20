@@ -53,6 +53,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\BaseData.cs" />
+    <Compile Include="Data\Park\ProgressionData.cs" />
+    <Compile Include="Data\Park\Progression\CountData.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="FilesHandler.cs" />
     <Compile Include="Data\Park\SessionData.cs" />
@@ -72,9 +74,7 @@
     <None Include="README.md" />
     <None Include="TODOS.md" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\Park\Session\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
     <VisualStudio AllowExistingFolder="true" />

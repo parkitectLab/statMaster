@@ -97,18 +97,12 @@ namespace StatMaster
 
                     Debug.LogMT("Update progression data with interval " + _settings.progressionDataUpdateInterval);
 
-                    // park values
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].guestsCount.Add(
-                      cTs, Convert.ToUInt32(GameController.Instance.park.getGuests().Count)
-                    );
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].employeesCount.Add(
-                      cTs, Convert.ToUInt32(GameController.Instance.park.getEmployees().Count)
-                    );
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsCount.Add(
-                      cTs, Convert.ToUInt32(GameController.Instance.park.getAttractions().Count)
-                    );
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsCount.Add(
-                      cTs, Convert.ToUInt32(GameController.Instance.park.getShops().Count)
+                    // park progression count values
+                    _data.currentPark.sessions[_data.currentPark.sessionIdx].countData.updateRange(
+                        Convert.ToUInt32(GameController.Instance.park.getGuests().Count),
+                        Convert.ToUInt32(GameController.Instance.park.getEmployees().Count),
+                        Convert.ToUInt32(GameController.Instance.park.getAttractions().Count),
+                        Convert.ToUInt32(GameController.Instance.park.getShops().Count)
                     );
 
                     // further park info values
@@ -425,8 +419,9 @@ namespace StatMaster
 
                 if (_settings.updateParkSessionData)
                 {
-                    ParkSessionData pds = _data.currentPark.sessions[_data.currentPark.sessionIdx];
-                    pds.time = _data.currentPark.time;
+                    _data.currentPark.sessions[_data.currentPark.sessionIdx].update(
+                        _data.currentPark.time
+                    );
                 }
 
                 string parkName = GameController.Instance.park.parkName;

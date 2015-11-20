@@ -20,7 +20,7 @@ namespace StatMaster.Data
 
         public bool ignoreSessionsOnFirstLoad = true;
         public bool currentSessionOnly = true;
-        public Dictionary<int, ParkSessionData> sessions = new Dictionary<int, ParkSessionData>();
+        public Dictionary<int, Park.ParkSessionData> sessions = new Dictionary<int, Park.ParkSessionData>();
 
         public ParkData()
         {
@@ -90,13 +90,13 @@ namespace StatMaster.Data
                     break;
                 case "sessionIdxs":
                     List<object> sessionIdxs = obj as List<object>;
-                    sessions = new Dictionary<int, ParkSessionData>();
+                    sessions = new Dictionary<int, Park.ParkSessionData>();
                     foreach (object sIdx in sessionIdxs)
                     {
                         if (ignoreSessionsOnFirstLoad == false &&
                             (currentSessionOnly == false || (sessionIdx == Convert.ToInt32(sIdx))))
                         {
-                            ParkSessionData nSession = new ParkSessionData();
+                            Park.ParkSessionData nSession = new Park.ParkSessionData();
                             nSession.setIdx(guid, Convert.ToInt32(sIdx));
                             sessions.Add(nSession.idx, nSession);
                         }
@@ -122,9 +122,11 @@ namespace StatMaster.Data
             tsSessionStarts.Add(cTs);
             sessionIdx = tsSessionStarts.Count - 1;
 
-            ParkSessionData parkDataSession = new ParkSessionData();
+            Park.ParkSessionData parkDataSession = new Park.ParkSessionData();
             parkDataSession.tsStart = tsSessionStarts[tsSessionStarts.Count - 1];
             parkDataSession.setIdx(guid, tsSessionStarts.Count - 1);
+
+            parkDataSession.init(guid);
 
             sessions.Add(tsSessionStarts.Count - 1, parkDataSession);
         }

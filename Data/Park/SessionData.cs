@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace StatMaster.Data
+namespace StatMaster.Data.Park
 {
     class ParkSessionData : BaseData
     {
@@ -13,6 +13,8 @@ namespace StatMaster.Data
         // to recognize a file load
         public string loadFile = "";
 
+        public Progression.ParkCountData countData;
+
         public uint autoSavesCount = 0;
         public uint quickSavesCount = 0;
 
@@ -22,10 +24,6 @@ namespace StatMaster.Data
         public uint time = 0;
 
         // park progression data
-        public Dictionary<uint, uint> guestsCount = new Dictionary<uint, uint>();
-        public Dictionary<uint, uint> employeesCount = new Dictionary<uint, uint>();
-        public Dictionary<uint, uint> attractionsCount = new Dictionary<uint, uint>();
-        public Dictionary<uint, uint> shopsCount = new Dictionary<uint, uint>();
 
         public Dictionary<uint, float> money = new Dictionary<uint, float>();
         public Dictionary<uint, float> entranceFee = new Dictionary<uint, float>();
@@ -77,11 +75,6 @@ namespace StatMaster.Data
 
             dict.Add("autoSavesCount", autoSavesCount);
             dict.Add("quickSaveCount", quickSavesCount);
-
-            dict.Add("guestsCount", guestsCount);
-            dict.Add("employeesCount", employeesCount);
-            dict.Add("attractionsCount", attractionsCount);
-            dict.Add("shopsCount", shopsCount);
 
             dict.Add("money", money);
             dict.Add("entranceFee", entranceFee);
@@ -157,18 +150,6 @@ namespace StatMaster.Data
 
                         switch (key)
                         {
-                            case "guestsCount":
-                                guestsCount.Add(ts, count);
-                                break;
-                            case "employeesCount":
-                                employeesCount.Add(ts, count);
-                                break;
-                            case "attractionsCount":
-                                attractionsCount.Add(ts, count);
-                                break;
-                            case "shopsCount":
-                                shopsCount.Add(ts, count);
-                                break;
                             case "attractionsOpenedCount":
                                 attractionsOpenedCount.Add(ts, count);
                                 break;
@@ -254,5 +235,36 @@ namespace StatMaster.Data
             }
             return success;
         }
+
+        public void init(string parkGuid)
+        {
+            countData = new Progression.ParkCountData(parkGuid, idx);
+            countData.addRange();
+        }
+
+        public void update(uint parkTime)
+        {
+            time = parkTime;
+
+            countData.updateRange();
+        }
+
+        public override List<string> loadByHandles()
+        {
+            List<string> msgs = base.loadByHandles();
+
+            msgs.AddRange(countData.loadByHandles());
+            return msgs;
+        }
+
+        public override List<string> saveByHandles()
+        {
+            List<string> msgs = base.saveByHandles();
+
+            msgs.AddRange(countData.saveByHandles());
+            errorOnSave = (countData.errorOnSave) ? countData.errorOnSave : errorOnSave;
+            return msgs;
+        }
+
     }
 }
