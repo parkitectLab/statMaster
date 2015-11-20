@@ -8,7 +8,7 @@ namespace StatMaster.Data
     {
         public uint dataVersionIdx = 0;
         public uint minDataVersionIdx = 0;
-        public bool invalidDataVersion = false;
+        public bool oldDataVersion = false;
 
         protected FilesHandler fh = new FilesHandler();
         protected List<string> handles = new List<string>();
@@ -84,7 +84,7 @@ namespace StatMaster.Data
                         if (dataVersionIdx != minDataVersionIdx)
                         {
                             fh.delete(handle);
-                            invalidDataVersion = true;
+                            oldDataVersion = true;
                         }
                     }
 

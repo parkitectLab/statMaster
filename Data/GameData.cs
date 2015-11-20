@@ -43,16 +43,6 @@ namespace StatMaster.Data
         protected override bool setObjByKey(string handle, string key, object obj)
         {
             bool success = base.setObjByKey(handle, key, obj);
-            if (key == "dataVersion")
-            {
-                if (dataVersionIdx == 0)
-                {
-                    // related to dataVersionIdx = 0 in loadByHandles
-                    // backup old data and keep main data valid if no newer dataVersionIdx has been loaded
-                    // old park guid data will be ignored in the further process automatically
-                    fh.backupAll(dataVersionIdx);
-                }
-            }
 
             if (handle == "main")
             {
@@ -109,8 +99,18 @@ namespace StatMaster.Data
         public override List<string> loadByHandles()
         {
             uint currentDataVersionIdx = dataVersionIdx;
-            dataVersionIdx = 0; // set to 0 to check data version from file inside setObjByKey
+            dataVersionIdx = 0; // set to 0 to check data version from file
             List<string> msgs = base.loadByHandles();
+            Debug.LogMT("data version " + dataVersionIdx);
+            if (dataVersionIdx == 0)
+            {
+                // related to dataVersionIdx = 0 in loadByHandles
+                // backup old data and keep main data valid if no newer dataVersionIdx has been loaded
+                // old park guid data will be ignored in the further process automatically
+                fh.backupAll(dataVersionIdx);
+                fh.deleteAll();
+                oldDataVersion = true;
+            }
             dataVersionIdx = currentDataVersionIdx;
 
             List<string> parkGuidsToRemove = new List<string>();
@@ -119,7 +119,7 @@ namespace StatMaster.Data
                 if (currentParkOnly == false || (currentParkGuid == parkGuid))
                 {
                     msgs.AddRange(parks[parkGuid].loadByHandles());
-                    if (parks[parkGuid].errorOnLoad || parks[parkGuid].invalidDataVersion)
+                    if (parks[parkGuid].errorOnLoad || parks[parkGuid].oldDataVersion)
                     {
                         parkGuidsToRemove.Add(parkGuid);
                     }

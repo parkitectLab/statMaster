@@ -142,7 +142,7 @@ namespace StatMaster.Data
                         (currentSessionOnly == false || (sessionIdx == sIdx)))
                     { 
                         msgs.AddRange(sessions[sIdx].loadByHandles());
-                        if (sessions[sIdx].errorOnLoad || sessions[sIdx].invalidDataVersion)
+                        if (sessions[sIdx].errorOnLoad || sessions[sIdx].oldDataVersion)
                         {
                             sessionIdxsToRemove.Add(sIdx);
                         } 
