@@ -43,13 +43,15 @@ namespace StatMaster.Data
         protected override bool setObjByKey(string handle, string key, object obj)
         {
             bool success = base.setObjByKey(handle, key, obj);
-            if (dataVersionIdx == 0)
+            if (key == "dataVersion")
             {
-                // related to dataVersionIdx = 0 in loadByHandles
-                // remove old data and keep main data valid if no newer dataVersionIdx has been loaded
-                // old park guid data will be ignored in the further process automatically
-                fh.deleteAll();
-                dataVersionIdx = 1;
+                if (dataVersionIdx == 0)
+                {
+                    // related to dataVersionIdx = 0 in loadByHandles
+                    // remove old data and keep main data valid if no newer dataVersionIdx has been loaded
+                    // old park guid data will be ignored in the further process automatically
+                    fh.deleteAll(); // todo backup method
+                }
             }
 
             if (handle == "main")
@@ -97,26 +99,41 @@ namespace StatMaster.Data
             {
                 currentPark = new ParkData();
                 currentPark.setGuid(currentParkGuid);
-                parks.Add(currentPark.guid, currentPark);
             }
+            if (!parks.ContainsKey(currentPark.guid))
+                parks.Add(currentPark.guid, currentPark);
 
             currentPark.init();
         }
 
         public override List<string> loadByHandles()
         {
-            dataVersionIdx = 0;
+            uint currentDataVersionIdx = dataVersionIdx;
+            dataVersionIdx = 0; // set to 0 to check data version from file inside setObjByKey
             List<string> msgs = base.loadByHandles();
+            dataVersionIdx = currentDataVersionIdx;
 
+            List<string> parkGuidsToRemove = new List<string>();
             foreach (string parkGuid in parks.Keys)
             {
                 if (currentParkOnly == false || (currentParkGuid == parkGuid))
                 {
                     msgs.AddRange(parks[parkGuid].loadByHandles());
-                    // todo remove deprecated files too
-                    if (parks[parkGuid].errorOnLoad) parks.Remove(parkGuid);
-                    if (!parks[parkGuid].errorOnLoad && parks[parkGuid].invalidDataVersion) parks.Remove(parkGuid);
-                    if (parks.ContainsKey(parkGuid) && currentParkGuid == parkGuid) currentPark = parks[parkGuid];
+                    if (parks[parkGuid].errorOnLoad || parks[parkGuid].invalidDataVersion)
+                    {
+                        parkGuidsToRemove.Add(parkGuid);
+                    }
+                    else if (parks.ContainsKey(parkGuid) && currentParkGuid == parkGuid)
+                    {
+                        currentPark = parks[parkGuid];
+                    }
+                }
+            }
+            if (parkGuidsToRemove.Count > 0)
+            {
+                foreach (string parkGuid in parkGuidsToRemove)
+                {
+                    parks.Remove(parkGuid);
                 }
             }
 

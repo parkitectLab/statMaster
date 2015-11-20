@@ -62,6 +62,7 @@ namespace StatMaster.Data
         protected override bool setObjByKey(string handle, string key, object obj)
         {
             bool success = base.setObjByKey(handle, key, obj);
+
             switch (key)
             {
                 case "guid":
@@ -89,6 +90,7 @@ namespace StatMaster.Data
                     break;
                 case "sessionIdxs":
                     List<object> sessionIdxs = obj as List<object>;
+                    sessions = new Dictionary<int, ParkSessionData>();
                     foreach (object sIdx in sessionIdxs)
                     {
                         if (ignoreSessionsOnFirstLoad == false &&
@@ -111,22 +113,28 @@ namespace StatMaster.Data
 
         public void init()
         {
-            tsSessionStarts.Add(Main.getCurrentTimestamp());
+            uint cTs = Main.getCurrentTimestamp();
 
             if (tsStart == 0)
-                tsStart = tsSessionStarts[tsSessionStarts.Count - 1];
+                tsStart = cTs;
+            tsEnd = cTs;
+
+            tsSessionStarts.Add(cTs);
             sessionIdx = tsSessionStarts.Count - 1;
-            tsEnd = tsStart;
 
             ParkSessionData parkDataSession = new ParkSessionData();
             parkDataSession.tsStart = tsSessionStarts[tsSessionStarts.Count - 1];
-            parkDataSession.setIdx(guid, sessionIdx);
-            sessions.Add(sessionIdx, parkDataSession);
+            parkDataSession.setIdx(guid, tsSessionStarts.Count - 1);
+
+            sessions.Add(tsSessionStarts.Count - 1, parkDataSession);
         }
 
         public override List<string> loadByHandles()
         {
             List<string> msgs = base.loadByHandles();
+
+            List<int> sessionIdxsToRemove = new List<int>();
+
             if (sessions.Count > 0)
                 foreach (int sIdx in sessions.Keys)
                 {
@@ -134,10 +142,21 @@ namespace StatMaster.Data
                         (currentSessionOnly == false || (sessionIdx == sIdx)))
                     { 
                         msgs.AddRange(sessions[sIdx].loadByHandles());
-                        if (sessions[sIdx].errorOnLoad) sessions.Remove(sIdx);
-                        if (!sessions[sIdx].errorOnLoad && sessions[sIdx].invalidDataVersion) sessions.Remove(sIdx);
+                        if (sessions[sIdx].errorOnLoad || sessions[sIdx].invalidDataVersion)
+                        {
+                            sessionIdxsToRemove.Add(sIdx);
+                        } 
                     }
                 }
+
+            if (sessionIdxsToRemove.Count > 0)
+            {
+                foreach (int sIdx in sessionIdxsToRemove)
+                {
+                    sessions.Remove(sIdx);
+                }
+            }
+
             ignoreSessionsOnFirstLoad = false;
             return msgs;
         }

@@ -127,12 +127,12 @@ namespace StatMaster
                             {
                                 throw new System.Exception("Content cannot be empty");
                             }
-                            messages.Add("Loaded " + handle + " data. " + contents[handle]);
+                            messages.Add("Loaded " + subFolder + " " + handle + " data. " + contents[handle]);
                         }
                         catch (System.Exception e)
                         {
                             errorOnLoad = true;
-                            messages.Add("Failed to load " + handle + " data. Error: " + e.Message);
+                            messages.Add("Failed to load " + subFolder + " " + handle + " data. Error: " + e.Message);
                         }
                         finally
                         {
@@ -143,12 +143,12 @@ namespace StatMaster
                 catch (IsolatedStorageException e)
                 {
                     errorOnLoad = true;
-                    messages.Add("Failed to get file from path / sub folder " + handle + " data. Error: " + e.Message);
+                    messages.Add("Failed to get file from path / sub folder " + subFolder + " " + handle + " data. Error: " + e.Message);
                 }
                 catch (IOException e)
                 {
                     errorOnLoad = true;
-                    messages.Add("Failed to handle file for " + handle + " data. Error: " + e.Message);
+                    messages.Add("Failed to handle file for " + subFolder + " " + handle + " data. Error: " + e.Message);
                 }
             }
             return messages;
@@ -174,7 +174,7 @@ namespace StatMaster
                             StreamWriter sw = new StreamWriter(file);
                             sw.Write(contents[handle]);
                             sw.Flush();
-                            messages.Add("Saved " + handle + " data.");
+                            messages.Add("Saved " + subFolder + " " + handle + " data.");
                         }
                         catch
                         {
@@ -184,7 +184,7 @@ namespace StatMaster
                     catch (System.Exception e)
                     {
                         errorOnSave = true;
-                        messages.Add("Failed to save " + handle + " data. Error: " + e.Message);
+                        messages.Add("Failed to save " + subFolder + " " + handle + " data. Error: " + e.Message);
                     }
                     finally
                     {
@@ -194,12 +194,12 @@ namespace StatMaster
                 catch (IsolatedStorageException e)
                 {
                     errorOnLoad = true;
-                    messages.Add("Failed to set file to path / sub folder " + handle + " data. Error: " + e.Message);
+                    messages.Add("Failed to set file to path / sub folder " + subFolder + " " + handle + " data. Error: " + e.Message);
                 }
                 catch (IOException e)
                 {
                     errorOnSave = true;
-                    messages.Add("Failed to handle file for " + handle + " data. Error: " + e.Message);
+                    messages.Add("Failed to handle file for " + subFolder + " " + handle + " data. Error: " + e.Message);
                 }
             }
             return messages;
