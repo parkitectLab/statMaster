@@ -56,6 +56,7 @@
     <Compile Include="Data\Park\ProgressionData.cs" />
     <Compile Include="Data\Park\Progression\FurtherData.cs" />
     <Compile Include="Data\Park\Progression\CountData.cs" />
+    <Compile Include="Data\Park\Progression\AttractionsData.cs" />
     <Compile Include="Data\Park\Progression\PeopleData.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="FilesHandler.cs" />

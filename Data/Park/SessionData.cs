@@ -16,8 +16,8 @@ namespace StatMaster.Data.Park
         public Progression.ProgressionCountData progressionCountData;
         public Progression.ProgressionFurtherData progressionFurtherData;
         public Progression.ProgressionPeopleData progressionPeopleData;
+        public Progression.ProgressionAttractionsData progressionAttractionsData;
 
-        public uint progressionUpdateInterval = 10;
 
         public uint autoSavesCount = 0;
         public uint quickSavesCount = 0;
@@ -26,10 +26,6 @@ namespace StatMaster.Data.Park
         public uint tsStart = 0;
         // last updated value of ParkInfo.ParkTime in session
         public uint time = 0;
-
-        public Dictionary<uint, float> attractionsEntranceFeeAvg = new Dictionary<uint, float>();
-        public Dictionary<uint, uint> attractionsOpenedCount = new Dictionary<uint, uint>();
-        public Dictionary<uint, uint> attractionsCustomersCount = new Dictionary<uint, uint>();
 
         public Dictionary<uint, float> shopsProductPriceAvg = new Dictionary<uint, float>();
         public Dictionary<uint, uint> shopsOpenedCount = new Dictionary<uint, uint>();
@@ -63,10 +59,6 @@ namespace StatMaster.Data.Park
 
             dict.Add("autoSavesCount", autoSavesCount);
             dict.Add("quickSaveCount", quickSavesCount);
-
-            dict.Add("attractionsEntranceFeeAvg", attractionsEntranceFeeAvg);
-            dict.Add("attractionsOpenedCount", attractionsOpenedCount);
-            dict.Add("attractionsCustomersCount", attractionsCustomersCount);
 
             dict.Add("shopsProductPriceAvg", shopsProductPriceAvg);
             dict.Add("shopsOpenedCount", shopsOpenedCount);
@@ -108,68 +100,6 @@ namespace StatMaster.Data.Park
                 case "quickSavesCount":
                     quickSavesCount = Convert.ToUInt32(obj);
                     break;
-                case "guestsCount":
-                case "employeesCount":
-                case "attractionsCount":
-                case "shopsCount":
-                case "attractionsOpenedCount":
-                case "shopsOpenedCount":
-                case "attractionsCustomersCount":
-                case "shopsCustomersCount":
-                    Dictionary<string, object> countValuesDict = obj as Dictionary<string, object>;
-                    foreach (string vdKey in countValuesDict.Keys)
-                    {
-                        uint ts = Convert.ToUInt32(vdKey);
-                        uint count = Convert.ToUInt32(countValuesDict[vdKey]);
-
-                        switch (key)
-                        {
-                            case "attractionsOpenedCount":
-                                attractionsOpenedCount.Add(ts, count);
-                                break;
-                            case "shopsOpenedCount":
-                                shopsOpenedCount.Add(ts, count);
-                                break;
-                            case "attractionsCustomersCount":
-                                attractionsCustomersCount.Add(ts, count);
-                                break;
-                            case "shopsCustomersCount":
-                                shopsCustomersCount.Add(ts, count);
-                                break;
-                        }
-                    }
-                    break;
-                case "money":
-                case "ratingCleanliness":
-                case "ratingHappiness":
-                case "ratingPriceSatisfaction":
-                case "entranceFee":
-                case "attractionsEntranceFeeAvg":
-                case "shopsProductPriceAvg":
-                case "peopleMoneyAvg":
-                case "peopleHappinessAvg":
-                case "peopleTirednessAvg":
-                case "peopleHungerAvg":
-                case "peopleThirstAvg":
-                case "peopleToiletUrgencyAvg":
-                case "peopleNauseaAvg":
-                    Dictionary<string, object> valuesDict = obj as Dictionary<string, object>;
-                    foreach (string vdKey in valuesDict.Keys)
-                    {
-                        uint ts = Convert.ToUInt32(vdKey);
-                        float value = Convert.ToSingle(valuesDict[vdKey]);
-
-                        switch (key)
-                        {
-                            case "attractionsEntranceFeeAvg":
-                                attractionsEntranceFeeAvg.Add(ts, value);
-                                break;
-                            case "shopsProductPriceAvg":
-                                shopsProductPriceAvg.Add(ts, value);
-                                break;
-                        }
-                    }
-                    break;
             }
             return success;
         }
@@ -182,6 +112,8 @@ namespace StatMaster.Data.Park
 
             progressionPeopleData = new Progression.ProgressionPeopleData(parkGuid, idx);
 
+            progressionAttractionsData = new Progression.ProgressionAttractionsData(parkGuid, idx);
+
             initNewProgressionRange(settings);
         }
 
@@ -191,10 +123,12 @@ namespace StatMaster.Data.Park
             progressionCountData.updateRangeTime();
             progressionFurtherData.updateRangeTime();
             progressionPeopleData.updateRangeTime();
+            progressionAttractionsData.updateRangeTime();
 
             progressionCountData.addRange(settings);
             progressionFurtherData.addRange(settings);
             progressionPeopleData.addRange(settings);
+            progressionAttractionsData.addRange(settings);
         }
 
         public void update(uint parkTime)
@@ -209,6 +143,7 @@ namespace StatMaster.Data.Park
             msgs.AddRange(progressionCountData.loadByHandles());
             msgs.AddRange(progressionFurtherData.loadByHandles());
             msgs.AddRange(progressionPeopleData.loadByHandles());
+            msgs.AddRange(progressionAttractionsData.loadByHandles());
 
             return msgs;
         }
@@ -225,6 +160,9 @@ namespace StatMaster.Data.Park
 
             msgs.AddRange(progressionPeopleData.saveByHandles());
             errorOnSave = (progressionPeopleData.errorOnSave) ? progressionPeopleData.errorOnSave : errorOnSave;
+
+            msgs.AddRange(progressionAttractionsData.saveByHandles());
+            errorOnSave = (progressionAttractionsData.errorOnSave) ? progressionAttractionsData.errorOnSave : errorOnSave;
 
             return msgs;
         }

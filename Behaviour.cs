@@ -114,35 +114,7 @@ namespace StatMaster
                     if (_settings.updateAttractionsData)
                     {
                         Debug.LogMT("Update attractions progression data");
-
-                        float attractionsEntranceFeeAvg = 0f;
-                        ReadOnlyCollection<Attraction> attractions = GameController.Instance.park.getAttractions();
-                        for (int i = 0; i < attractions.Count; i++)
-                        {
-                            attractionsEntranceFeeAvg += attractions[i].entranceFee;
-                        }
-                        if (attractionsEntranceFeeAvg > 0f)
-                            attractionsEntranceFeeAvg = attractionsEntranceFeeAvg / attractions.Count;
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsEntranceFeeAvg.Add(
-                          cTs, attractionsEntranceFeeAvg
-                        );
-
-                        // todo: improvements to get correct relations 
-                        // to changes in attractions builded / destroyed status progression
-                        // related events available? need more info
-                        uint attractionsOpenedCount = 0;
-                        uint attractionsCustomersCount = 0;
-                        for (int i = 0; i < attractions.Count; i++)
-                        {
-                            if (attractions[i].state == Attraction.State.OPENED) attractionsOpenedCount++;
-                            attractionsCustomersCount = Convert.ToUInt32(attractions[i].customersCount);
-                        }
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsOpenedCount.Add(
-                            cTs, attractionsOpenedCount
-                        );
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].attractionsCustomersCount.Add(
-                            cTs, attractionsCustomersCount
-                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].progressionAttractionsData.updateRange();
                     }
 
                     if (_settings.updateShopsData)
