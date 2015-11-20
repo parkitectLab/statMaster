@@ -17,7 +17,7 @@ namespace StatMaster.Data.Park
         public Progression.ProgressionFurtherData progressionFurtherData;
         public Progression.ProgressionPeopleData progressionPeopleData;
         public Progression.ProgressionAttractionsData progressionAttractionsData;
-
+        public Progression.ProgressionShopsData progressionShopsData;
 
         public uint autoSavesCount = 0;
         public uint quickSavesCount = 0;
@@ -26,10 +26,6 @@ namespace StatMaster.Data.Park
         public uint tsStart = 0;
         // last updated value of ParkInfo.ParkTime in session
         public uint time = 0;
-
-        public Dictionary<uint, float> shopsProductPriceAvg = new Dictionary<uint, float>();
-        public Dictionary<uint, uint> shopsOpenedCount = new Dictionary<uint, uint>();
-        public Dictionary<uint, uint> shopsCustomersCount = new Dictionary<uint, uint>();
 
         public ParkSessionData()
         {
@@ -59,10 +55,6 @@ namespace StatMaster.Data.Park
 
             dict.Add("autoSavesCount", autoSavesCount);
             dict.Add("quickSaveCount", quickSavesCount);
-
-            dict.Add("shopsProductPriceAvg", shopsProductPriceAvg);
-            dict.Add("shopsOpenedCount", shopsOpenedCount);
-            dict.Add("shopsCustomersCount", shopsCustomersCount);
 
             return dict;
         }
@@ -114,6 +106,8 @@ namespace StatMaster.Data.Park
 
             progressionAttractionsData = new Progression.ProgressionAttractionsData(parkGuid, idx);
 
+            progressionShopsData = new Progression.ProgressionShopsData(parkGuid, idx);
+
             initNewProgressionRange(settings);
         }
 
@@ -124,11 +118,13 @@ namespace StatMaster.Data.Park
             progressionFurtherData.updateRangeTime();
             progressionPeopleData.updateRangeTime();
             progressionAttractionsData.updateRangeTime();
+            progressionShopsData.updateRangeTime();
 
             progressionCountData.addRange(settings);
             progressionFurtherData.addRange(settings);
             progressionPeopleData.addRange(settings);
             progressionAttractionsData.addRange(settings);
+            progressionShopsData.addRange(settings);
         }
 
         public void update(uint parkTime)
@@ -144,6 +140,7 @@ namespace StatMaster.Data.Park
             msgs.AddRange(progressionFurtherData.loadByHandles());
             msgs.AddRange(progressionPeopleData.loadByHandles());
             msgs.AddRange(progressionAttractionsData.loadByHandles());
+            msgs.AddRange(progressionShopsData.loadByHandles());
 
             return msgs;
         }
@@ -163,6 +160,9 @@ namespace StatMaster.Data.Park
 
             msgs.AddRange(progressionAttractionsData.saveByHandles());
             errorOnSave = (progressionAttractionsData.errorOnSave) ? progressionAttractionsData.errorOnSave : errorOnSave;
+
+            msgs.AddRange(progressionShopsData.saveByHandles());
+            errorOnSave = (progressionShopsData.errorOnSave) ? progressionShopsData.errorOnSave : errorOnSave;
 
             return msgs;
         }

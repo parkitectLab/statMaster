@@ -32,8 +32,7 @@ namespace StatMaster.Data.Park.Progression
         public override void updateRange()
         {
             base.updateRange();
-
-
+            
             float entranceFeeAvg = 0f;
             ReadOnlyCollection<Attraction> attractions = GameController.Instance.park.getAttractions();
             for (int i = 0; i < attractions.Count; i++)

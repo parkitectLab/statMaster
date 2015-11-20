@@ -120,46 +120,7 @@ namespace StatMaster
                     if (_settings.updateShopsData)
                     {
                         Debug.LogMT("Update shops progression data");
-
-                        float shopsProductPriceAvg = 0f;
-                        ReadOnlyCollection<Shop> shops = GameController.Instance.park.getShops();
-                        ProductShop ps;
-                        ProductShopSettings pss;
-                        float productPriceAvg;
-                        for (int i = 0; i < shops.Count; i++) {
-                            ps = (ProductShop)shops[i];
-                            pss = (ProductShopSettings)ps.getSettings();
-                            productPriceAvg = 0f;
-                            for (int j = 0; j < ps.products.Length; j++)
-                            {
-                                productPriceAvg += pss.getProductSettings(ps.products[j]).price;
-                            }
-                            if (productPriceAvg > 0f)
-                                productPriceAvg = productPriceAvg / ps.products.Length;
-                            shopsProductPriceAvg += productPriceAvg;
-                        }
-                        if (shopsProductPriceAvg > 0f)
-                            shopsProductPriceAvg = shopsProductPriceAvg / shops.Count;
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsProductPriceAvg.Add(
-                          cTs, shopsProductPriceAvg
-                        );
-
-                        // todo: improvements to get correct relations 
-                        // to changes in shops builded / destroyed status progression
-                        // related events available? need more info
-                        uint shopsOpenedCount = 0;
-                        uint shopsCustomersCount = 0;
-                        for (int i = 0; i < shops.Count; i++)
-                        {
-                            if (shops[i].opened) shopsOpenedCount++;
-                            shopsCustomersCount = Convert.ToUInt32(shops[i].customersCount);
-                        }
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsOpenedCount.Add(
-                            cTs, shopsOpenedCount
-                        );
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].shopsCustomersCount.Add(
-                            cTs, shopsCustomersCount
-                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].progressionShopsData.updateRange();
                     }
                 }
 
