@@ -11,8 +11,6 @@ A Parkitect Game Modification which offers the ability to:
 + Please use pre-alpha 4 (or later) parks to get full park statistics
   - old parks (pre-alpha 3, savegames) can not have own statistics currently
   - as long as Parkitect does not generate a Park-GUID therefor
-+ AutoSave Mod related, current problems with regular save actions after AutoSave mod actions
-  - https://parkitectnexus.com/assets/472f0d493e/autosave#comment-95881f2823
 
 ## Ingame Settings
 
