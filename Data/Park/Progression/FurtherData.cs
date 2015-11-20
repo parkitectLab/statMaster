@@ -23,9 +23,9 @@ namespace StatMaster.Data.Park.Progression
             addHandle("progression_further");
         }
 
-        public override void addRange()
+        public override void addRange(Settings settings)
         {
-            base.addRange();
+            base.addRange(settings);
             rangeObjects.Add(new ProgressionFurtherDataValues());
         }
 
@@ -36,11 +36,11 @@ namespace StatMaster.Data.Park.Progression
         {
             base.updateRange();
             ProgressionFurtherDataValues values = (ProgressionFurtherDataValues)rangeObjects[ranges.Count - 1];
-            values.money.Add(money);
-            values.entranceFee.Add(entranceFee);
-            values.ratingCleanliness.Add(ratingCleanliness);
-            values.ratingHappiness.Add(ratingHappiness);
-            values.ratingPriceSatisfaction.Add(ratingPriceSatisfaction);
+            values.money.Add(GameController.Instance.park.parkInfo.money);
+            values.entranceFee.Add(GameController.Instance.park.parkInfo.parkEntranceFee);
+            values.ratingCleanliness.Add(GameController.Instance.park.parkInfo.RatingCleanliness);
+            values.ratingHappiness.Add(GameController.Instance.park.parkInfo.RatingHappiness);
+            values.ratingPriceSatisfaction.Add(GameController.Instance.park.parkInfo.RatingPriceSatisfaction);
         }
 
         protected override Dictionary<string, string> getValuesDict(int idx)

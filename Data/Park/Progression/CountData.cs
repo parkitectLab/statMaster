@@ -1,4 +1,5 @@
 ﻿using MiniJSON;
+using System;
 using System.Collections.Generic;
 
 namespace StatMaster.Data.Park.Progression
@@ -22,20 +23,20 @@ namespace StatMaster.Data.Park.Progression
             addHandle("progression_counts");
         }
 
-        public override void addRange()
+        public override void addRange(Settings settings)
         {
-            base.addRange();
+            base.addRange(settings);
             rangeObjects.Add(new ProgressionCountDataValues());
         }
 
-        public void updateRange(uint guestsCount, uint employeesCount, uint attractionsCount, uint shopsCount)
+        public override void updateRange()
         {
             base.updateRange();
             ProgressionCountDataValues values = (ProgressionCountDataValues)rangeObjects[ranges.Count - 1];
-            values.guestsCount.Add(guestsCount);
-            values.employeesCount.Add(guestsCount);
-            values.attractionsCount.Add(guestsCount);
-            values.shopsCount.Add(guestsCount);
+            values.guestsCount.Add(Convert.ToUInt32(GameController.Instance.park.getGuests().Count));
+            values.employeesCount.Add(Convert.ToUInt32(GameController.Instance.park.getEmployees().Count));
+            values.attractionsCount.Add(Convert.ToUInt32(GameController.Instance.park.getAttractions().Count));
+            values.shopsCount.Add(Convert.ToUInt32(GameController.Instance.park.getShops().Count));
         }
 
         protected override Dictionary<string, string> getValuesDict(int idx)

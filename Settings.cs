@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using StatMaster.Data;
 using System;
+using System.Collections.Generic;
 
 namespace StatMaster
 {
@@ -24,6 +25,8 @@ namespace StatMaster
         public bool updateProgressionData = true;
 
         public uint progressionDataUpdateInterval = 10;
+
+        public Dictionary<string, uint> progressionOld = new Dictionary<string, uint>();
 
         public bool updatePeopleData = true;
 
@@ -50,6 +53,12 @@ namespace StatMaster
             _data.settings = this;
             _data.addHandle("settings");
             _data.loadByHandles();
+
+            progressionOld.Add("updateInterval", progressionDataUpdateInterval);
+            progressionOld.Add("updateData", Convert.ToUInt32(updateProgressionData));
+            progressionOld.Add("updatePeopleData", Convert.ToUInt32(updatePeopleData));
+            progressionOld.Add("updateAttractionsData", Convert.ToUInt32(updateAttractionsData));
+            progressionOld.Add("updateShopsData", Convert.ToUInt32(updateShopsData));
         }
 
         void Start()
@@ -84,6 +93,15 @@ namespace StatMaster
             if (isActive == true && (Input.GetKeyDown(toggleKey)))
             {
                 _showWindow = !_showWindow;
+
+                if (_showWindow)
+                {
+                    progressionOld["updateInterval"] = progressionDataUpdateInterval;
+                    progressionOld["updateData"] = Convert.ToUInt32(updateProgressionData);
+                    progressionOld["updatePeopleData"] = Convert.ToUInt32(updatePeopleData);
+                    progressionOld["updateAttractionsData"] = Convert.ToUInt32(updateAttractionsData);
+                    progressionOld["updateShopsData"] = Convert.ToUInt32(updateShopsData);
+                }
             }
         }
 
@@ -162,7 +180,10 @@ namespace StatMaster
 
             devMode = GUI.Toggle(_rect(index++), devMode, " Developer mode with debug messages / actions");
 
-            if (GUI.Button(_rect(index++), "Close")) _showWindow = false;
+            if (GUI.Button(_rect(index++), "Close"))
+            {
+                _showWindow = false;
+            }
 
             GUI.DragWindow(new Rect(0, 0, 10000, 10000));
         }
@@ -173,6 +194,26 @@ namespace StatMaster
                 return;
 
             _window = GUI.Window(0, _window, _doWindow, "StatMaster Settings");
+        }
+
+        public bool hasProgressionOldChanged(string key)
+        {
+            // todo improvements for update data status values and further implementation
+            // to avoid data tracking timeframe inconsistence on live settings changes
+            switch (key)
+            {
+                case "updateInterval":
+                    return progressionOld["updateInterval"] != progressionDataUpdateInterval;
+                case "updateData":
+                    return progressionOld["updateData"] != Convert.ToUInt32(updateProgressionData);
+                case "updatePeopleData":
+                    return progressionOld["updatePeopleData"] != Convert.ToUInt32(updatePeopleData);
+                case "updateAttractionsData":
+                    return progressionOld["updateAttractionsData"] != Convert.ToUInt32(updateAttractionsData);
+                case "updateShopsData":
+                    return progressionOld["updateShopsData"] != Convert.ToUInt32(updateShopsData);
+            }
+            return false;
         }
     }
 }

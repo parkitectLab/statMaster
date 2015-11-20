@@ -8,18 +8,25 @@ namespace StatMaster.Data.Park
         public List<uint[]> ranges = new List<uint[]>();
         public List<object> rangeObjects = new List<object>();
 
-        public virtual void addRange()
+        public virtual void addRange(Settings settings)
         {
-            uint[] ts = new uint[2];
+            uint[] ts = new uint[3];
             uint cTs = Main.getCurrentTimestamp();
-            ts[0] = cTs;
-            ts[1] = cTs;
+            ts[0] = settings.progressionDataUpdateInterval;
+            ts[1] = cTs; // start timestamp
+            ts[2] = cTs; // current end timestamp
             ranges.Add(ts);
         }
 
         public virtual void updateRange()
         {
-            ranges[ranges.Count - 1][1] = Main.getCurrentTimestamp();
+            updateRangeTime();
+        }
+
+        public void updateRangeTime()
+        {
+            if (ranges.Count != 0)
+                ranges[ranges.Count - 1][2] = Main.getCurrentTimestamp();
         }
 
         protected override Dictionary<string, object> getDict(string handle)

@@ -111,7 +111,7 @@ namespace StatMaster.Data
             return success;
         }
 
-        public void init()
+        public void init(Settings settings)
         {
             uint cTs = Main.getCurrentTimestamp();
 
@@ -126,7 +126,7 @@ namespace StatMaster.Data
             parkDataSession.tsStart = tsSessionStarts[tsSessionStarts.Count - 1];
             parkDataSession.setIdx(guid, tsSessionStarts.Count - 1);
 
-            parkDataSession.init(guid);
+            parkDataSession.init(guid, settings);
 
             sessions.Add(tsSessionStarts.Count - 1, parkDataSession);
         }

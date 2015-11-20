@@ -93,80 +93,21 @@ namespace StatMaster
                     _settings.updateProgressionData)
                 {
 
+                    if (_settings.hasProgressionOldChanged("updateInterval"))
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].initNewProgressionRange(_settings);
+
                     uint cTs = Main.getCurrentTimestamp();
 
                     Debug.LogMT("Update progression data with interval " + _settings.progressionDataUpdateInterval);
-
                     // park progression count values
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].progressionCountData.updateRange(
-                        Convert.ToUInt32(GameController.Instance.park.getGuests().Count),
-                        Convert.ToUInt32(GameController.Instance.park.getEmployees().Count),
-                        Convert.ToUInt32(GameController.Instance.park.getAttractions().Count),
-                        Convert.ToUInt32(GameController.Instance.park.getShops().Count)
-                    );
-
+                    _data.currentPark.sessions[_data.currentPark.sessionIdx].progressionCountData.updateRange();
                     // further park info values
-                    _data.currentPark.sessions[_data.currentPark.sessionIdx].progressionFurtherData.updateRange(
-                        GameController.Instance.park.parkInfo.money,
-                        GameController.Instance.park.parkInfo.parkEntranceFee,
-                        GameController.Instance.park.parkInfo.RatingCleanliness,
-                        GameController.Instance.park.parkInfo.RatingHappiness,
-                        GameController.Instance.park.parkInfo.RatingPriceSatisfaction
-                    );
+                    _data.currentPark.sessions[_data.currentPark.sessionIdx].progressionFurtherData.updateRange();
 
                     if (_settings.updatePeopleData)
                     {
                         Debug.LogMT("Update people progression data");
-
-                        List<Person> people = GameController.Instance.park.people;
-                        float moneyAvg = 0f, happinessAvg = 0f, tirednessAvg = 0f, hungerAvg = 0f,
-                            thirstAvg = 0f, toiletUrgencyAvg = 0f, nauseaAvg = 0f;
-                        for (int i = 0; i < people.Count; i++)
-                        {
-                            moneyAvg += people[i].Money;
-                            happinessAvg += people[i].Happiness;
-                            tirednessAvg += people[i].Tiredness;
-                            hungerAvg += people[i].Hunger;
-                            thirstAvg += people[i].Thirst;
-                            toiletUrgencyAvg += people[i].ToiletUrgency;
-                            nauseaAvg += people[i].Nausea;
-                        }
-                        if (moneyAvg > 0f)
-                            moneyAvg = moneyAvg / people.Count;
-                        if (happinessAvg > 0f)
-                            happinessAvg = happinessAvg / people.Count;
-                        if (tirednessAvg > 0f)
-                            tirednessAvg = tirednessAvg / people.Count;
-                        if (hungerAvg > 0f)
-                            hungerAvg = hungerAvg / people.Count;
-                        if (thirstAvg > 0f)
-                            thirstAvg = thirstAvg / people.Count;
-                        if (toiletUrgencyAvg > 0f)
-                            toiletUrgencyAvg = toiletUrgencyAvg / people.Count;
-                        if (nauseaAvg > 0f)
-                            nauseaAvg = nauseaAvg / people.Count;
-
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].peopleMoneyAvg.Add(
-                          cTs, moneyAvg
-                        );
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].peopleHappinessAvg.Add(
-                          cTs, happinessAvg
-                        );
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].peopleTirednessAvg.Add(
-                          cTs, tirednessAvg
-                        );
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].peopleHungerAvg.Add(
-                          cTs, hungerAvg
-                        );
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].peopleThirstAvg.Add(
-                          cTs, thirstAvg
-                        );
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].peopleToiletUrgencyAvg.Add(
-                          cTs, toiletUrgencyAvg
-                        );
-                        _data.currentPark.sessions[_data.currentPark.sessionIdx].peopleNauseaAvg.Add(
-                          cTs, nauseaAvg
-                        );
+                        _data.currentPark.sessions[_data.currentPark.sessionIdx].progressionPeopleData.updateRange();
                     }
 
                     // attractions values
@@ -288,7 +229,7 @@ namespace StatMaster
             if (validPark) _data.currentParkGuid = GameController.Instance.park.guid.ToLower();
             Debug.LogMT(_data.loadByHandles());
 
-            _data.init();
+            _data.init(_settings);
 
             Debug.LogMT("New data? " + !(_data.sessionIdx > 0));
             

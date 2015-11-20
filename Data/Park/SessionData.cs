@@ -15,6 +15,9 @@ namespace StatMaster.Data.Park
 
         public Progression.ProgressionCountData progressionCountData;
         public Progression.ProgressionFurtherData progressionFurtherData;
+        public Progression.ProgressionPeopleData progressionPeopleData;
+
+        public uint progressionUpdateInterval = 10;
 
         public uint autoSavesCount = 0;
         public uint quickSavesCount = 0;
@@ -24,7 +27,6 @@ namespace StatMaster.Data.Park
         // last updated value of ParkInfo.ParkTime in session
         public uint time = 0;
 
-
         public Dictionary<uint, float> attractionsEntranceFeeAvg = new Dictionary<uint, float>();
         public Dictionary<uint, uint> attractionsOpenedCount = new Dictionary<uint, uint>();
         public Dictionary<uint, uint> attractionsCustomersCount = new Dictionary<uint, uint>();
@@ -32,14 +34,6 @@ namespace StatMaster.Data.Park
         public Dictionary<uint, float> shopsProductPriceAvg = new Dictionary<uint, float>();
         public Dictionary<uint, uint> shopsOpenedCount = new Dictionary<uint, uint>();
         public Dictionary<uint, uint> shopsCustomersCount = new Dictionary<uint, uint>();
-
-        public Dictionary<uint, float> peopleMoneyAvg = new Dictionary<uint, float>();
-        public Dictionary<uint, float> peopleHappinessAvg = new Dictionary<uint, float>();
-        public Dictionary<uint, float> peopleTirednessAvg = new Dictionary<uint, float>();
-        public Dictionary<uint, float> peopleHungerAvg = new Dictionary<uint, float>();
-        public Dictionary<uint, float> peopleThirstAvg = new Dictionary<uint, float>();
-        public Dictionary<uint, float> peopleToiletUrgencyAvg = new Dictionary<uint, float>();
-        public Dictionary<uint, float> peopleNauseaAvg = new Dictionary<uint, float>();
 
         public ParkSessionData()
         {
@@ -77,14 +71,6 @@ namespace StatMaster.Data.Park
             dict.Add("shopsProductPriceAvg", shopsProductPriceAvg);
             dict.Add("shopsOpenedCount", shopsOpenedCount);
             dict.Add("shopsCustomersCount", shopsCustomersCount);
-
-            dict.Add("peopleMoneyAvg", peopleMoneyAvg);
-            dict.Add("peopleHappinessAvg", peopleHappinessAvg);
-            dict.Add("peopleTirednessAvg", peopleTirednessAvg);
-            dict.Add("peopleHungerAvg", peopleHungerAvg);
-            dict.Add("peopleThirstAvg", peopleThirstAvg);
-            dict.Add("peopleToiletUrgencyAvg", peopleToiletUrgencyAvg);
-            dict.Add("peopleNauseaAvg", peopleNauseaAvg);
 
             return dict;
         }
@@ -181,27 +167,6 @@ namespace StatMaster.Data.Park
                             case "shopsProductPriceAvg":
                                 shopsProductPriceAvg.Add(ts, value);
                                 break;
-                            case "peopleMoneyAvg":
-                                peopleMoneyAvg.Add(ts, value);
-                                break;
-                            case "peopleHappinessAvg":
-                                peopleHappinessAvg.Add(ts, value);
-                                break;
-                            case "peopleTirednessAvg":
-                                peopleTirednessAvg.Add(ts, value);
-                                break;
-                            case "peopleHungerAvg":
-                                peopleHungerAvg.Add(ts, value);
-                                break;
-                            case "peopleThirstAvg":
-                                peopleThirstAvg.Add(ts, value);
-                                break;
-                            case "peopleToiletUrgencyAvg":
-                                peopleToiletUrgencyAvg.Add(ts, value);
-                                break;
-                            case "peopleNauseaAvg":
-                                peopleNauseaAvg.Add(ts, value);
-                                break;
                         }
                     }
                     break;
@@ -209,21 +174,32 @@ namespace StatMaster.Data.Park
             return success;
         }
 
-        public void init(string parkGuid)
+        public void init(string parkGuid, Settings settings)
         {
             progressionCountData = new Progression.ProgressionCountData(parkGuid, idx);
-            progressionCountData.addRange();
 
             progressionFurtherData = new Progression.ProgressionFurtherData(parkGuid, idx);
-            progressionFurtherData.addRange();
+
+            progressionPeopleData = new Progression.ProgressionPeopleData(parkGuid, idx);
+
+            initNewProgressionRange(settings);
+        }
+
+        public void initNewProgressionRange(Settings settings)
+        {
+
+            progressionCountData.updateRangeTime();
+            progressionFurtherData.updateRangeTime();
+            progressionPeopleData.updateRangeTime();
+
+            progressionCountData.addRange(settings);
+            progressionFurtherData.addRange(settings);
+            progressionPeopleData.addRange(settings);
         }
 
         public void update(uint parkTime)
         {
             time = parkTime;
-
-            progressionCountData.updateRange();
-            progressionFurtherData.updateRange();
         }
 
         public override List<string> loadByHandles()
@@ -232,6 +208,7 @@ namespace StatMaster.Data.Park
 
             msgs.AddRange(progressionCountData.loadByHandles());
             msgs.AddRange(progressionFurtherData.loadByHandles());
+            msgs.AddRange(progressionPeopleData.loadByHandles());
 
             return msgs;
         }
@@ -245,6 +222,9 @@ namespace StatMaster.Data.Park
 
             msgs.AddRange(progressionFurtherData.saveByHandles());
             errorOnSave = (progressionFurtherData.errorOnSave) ? progressionFurtherData.errorOnSave : errorOnSave;
+
+            msgs.AddRange(progressionPeopleData.saveByHandles());
+            errorOnSave = (progressionPeopleData.errorOnSave) ? progressionPeopleData.errorOnSave : errorOnSave;
 
             return msgs;
         }

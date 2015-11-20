@@ -77,7 +77,7 @@ namespace StatMaster.Data
             return success;
         }
 
-        public void init()
+        public void init(Settings settings)
         {
             if (tsStart == 0) tsStart = Main.getCurrentTimestamp();
             if (playerGuid == null) playerGuid = Guid.NewGuid().ToString();
@@ -93,7 +93,7 @@ namespace StatMaster.Data
             if (!parks.ContainsKey(currentPark.guid))
                 parks.Add(currentPark.guid, currentPark);
 
-            currentPark.init();
+            currentPark.init(settings);
         }
 
         public override List<string> loadByHandles()
