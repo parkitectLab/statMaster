@@ -48,9 +48,9 @@ namespace StatMaster.Data
                 if (dataVersionIdx == 0)
                 {
                     // related to dataVersionIdx = 0 in loadByHandles
-                    // remove old data and keep main data valid if no newer dataVersionIdx has been loaded
+                    // backup old data and keep main data valid if no newer dataVersionIdx has been loaded
                     // old park guid data will be ignored in the further process automatically
-                    fh.deleteAll(); // todo backup method
+                    fh.backupAll(dataVersionIdx);
                 }
             }
 
